@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<title>Admin – Kuželky Benešov</title>
+
+<!-- ✅ SPRÁVNÉ NAČTENÍ STYLŮ -->
+<link rel="stylesheet" href="style.css">
+
+<!-- ✅ SPRÁVNÉ NAČTENÍ SCRIPTŮ -->
+<script src="script.js"></script>
+
+</head>
+
+<body>
+
+<header>
+    <img src="img/benesov.jpg" alt="">
+    <h1>Kuželky Benešov – Admin</h1>
+    <img src="img/logo.jpg" alt="">
+</header>
+
+<nav>
+    <a href="index.html">Domů</a>
+    <a href="aktuality.html">Aktuality</a>
+    <a href="historie.html">Historie</a>
+    <a href="druzstva.html">Družstva</a>
+    <a href="rezervace.html">Rezervace</a>
+    <a href="habadura.html">Habaďura</a>
+    <a href="kontakty.html">Kontakty</a>
+    <a href="admin.html">Admin</a>
+</nav>
+
+<main class="box">
+
+<div id="loginBox">
+    <h2>Přihlášení do administrace</h2>
+    <label>Heslo:</label>
+    <input type="password" id="adminPwd">
+    <button type="button" class="btn" onclick="login()">Přihlásit</button>
+    <div id="loginError" style="color:red;margin-top:10px;"></div>
+</div>
+
+<div id="adminPanel" style="display:none;">
+    <h2>Administrace rezervací</h2>
+
+    <label>Filtrovat datum:</label>
+    <input type="date" id="filterDate" onchange="loadAdminList()">
+
+    <table id="rezTable">
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Čas</th>
+                <th>Dráha</th>
+                <th>Jméno</th>
+                <th>Email</th>
+                <th>Tel</th>
+                <th>Poznámka</th>
+                <th>Stav</th>
+                <th>Zrušit</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<script>
+/*************** KONFIGURACE ***************/
+const API_URL = "https://script.google.com/macros/s/AKfycbxz87E8TLbXQ-b8xeBGGrG9DM2BJJ5w33hhMbyuZ8eoe_Lcjas7YFT3ZZjuS3Z8LHYA/exec";
+const ADMIN_PWD = "xprom115";
+let loggedIn = false;
+
+/*************** LOGIN ***************/
+function login() {
+    const pwd = document.getElementById("adminPwd").value;
+
+    if (pwd !== ADMIN_PWD){
+        document.getElementById("loginError").innerText = "Nesprávné heslo!";
+        return;
+    }
+
+    loggedIn = true;
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+
+    loadAdminList();
+}
+
+/*************** LOAD LIST ***************/
+async function loadAdminList(){
+    if (!loggedIn) return;
+
+    const filter = document.getElementById("filterDate").value;
+    const res = await fetch(API_URL + "?action=admin_list&pwd=" + ADMIN_PWD);
+    const data = await res.json();
+
+    const tbody = document.querySelector("#rezTable tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(item => {
+        const d = new Date(item.datum);
+        const datum = d.toLocaleDateString("cs-CZ");
+
+        const t = new Date(item.cas);
+        const cas = t.toLocaleTimeString("cs-CZ", {hour:"2-digit", minute:"2-digit"});
+
+        if (filter && datum !== new Date(filter).toLocaleDateString("cs-CZ")) return;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${datum}</td>
+            <td>${cas}</td>
+            <td>${item.draha}</td>
+            <td>${item.jmeno}</td>
+            <td>${item.email}</td>
+            <td>${item.tel}</td>
+            <td>${item.poznamka}</td>
+            <td>${item.stav}</td>
+            <td><button onclick="cancelRez(${item.row})" class="btn" style="background:#c62828;">Zrušit</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+/*************** CANCEL ***************/
+async function cancelRez(row){
+    if(!confirm("Opravdu zrušit rezervaci?")) return;
+
+    const res = await fetch(API_URL + "?action=admin_cancel&pwd=" + ADMIN_PWD + "&row=" + row);
+    const txt = await res.text();
+
+    if(txt === "OK"){
+        alert("Rezervace byla zrušena.");
+        loadAdminList();
+    } else {
+        alert("Chyba: " + txt);
+    }
+}
+</script>
+
+</body>
+</html>

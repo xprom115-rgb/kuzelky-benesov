@@ -1,0 +1,142 @@
+/******************************/
+/* GLOBAL BACKGROUND          */
+/******************************/
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url("img/Benesov_kuzelky2.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+}
+
+/******************************/
+/* DARK OVERLAY FOR READABILITY */
+/******************************/
+body::before {
+    content: "";
+    position: fixed;
+    top:0; left:0;
+    width:100%; height:100%;
+    background: rgba(0,0,0,0.55);
+    z-index:-1;
+}
+
+/******************************/
+/* HEADER                     */
+/******************************/
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,70,0.7);
+    padding: 10px 20px;
+    border-bottom: 3px solid #ffcc00;
+}
+
+header img {
+    height: 70px;
+    width: auto;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 32px;
+    color: #ffcc00;
+    text-shadow: 1px 1px 4px black;
+}
+
+/******************************/
+/* NAVIGATION                 */
+/******************************/
+nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    background: rgba(0,0,70,0.6);
+    padding: 12px;
+    border-bottom: 2px solid #ffcc00;
+}
+
+nav a {
+    color: #ffcc00;
+    font-size: 18px;
+    padding: 8px 12px;
+    text-decoration: none;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+nav a:hover {
+    background: #ffcc00;
+    color: black;
+}
+
+/******************************/
+/* MAIN BOX (CARD STYLE)      */
+/******************************/
+.box {
+    max-width: 900px;
+    margin: 40px auto;
+    background: rgba(0,0,0,0.55);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #000;
+}
+
+/******************************/
+/* HEADINGS                   */
+/******************************/
+h2, h3 {
+    color: #ffcc00;
+    text-shadow: 1px 1px 2px black;
+}
+
+/******************************/
+/* BUTTONS                    */
+/******************************/
+button, .btn {
+    background: #ffcc00;
+    color: black;
+    border: none;
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+button:hover, .btn:hover {
+    background: #ffe066;
+}
+
+/******************************/
+/* INPUTS & TEXTAREAS         */
+/******************************/
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 15px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+/******************************/
+/* TEAM BOXES (Družstva)      */
+/******************************/
+.team-box {
+    background: rgba(255,255,255,0.15);
+    padding: 15px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.team-box:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.team-content {
+    display: none;
+    background: rgba(0,0,0,0.4);
+    padding: 15px;
