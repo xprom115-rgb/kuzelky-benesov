@@ -4,40 +4,134 @@
 <meta charset="UTF-8">
 <title>Admin – Kuželky Benešov</title>
 
-<!-- ✅ SPRÁVNÉ NAČTENÍ STYLŮ -->
-<link rel="stylesheet" href="style.css">
+<!-- ✅ CSS -->
+<link rel="stylesheet" href="/kuzelky-benesov/style.css">
 
-<!-- ✅ SPRÁVNÉ NAČTENÍ SCRIPTŮ -->
-<script src="script.js"></script>
+<!-- ✅ Globální JS -->
+<script src="/kuzelky-benesov/script.js"></script>
+
+<style>
+body { font-family: Arial, sans-serif; background:#eee; }
+.box {
+    max-width: 900px; margin: 30px auto; padding: 25px;
+    background: rgba(0,0,0,0.65); color: white; border-radius: 10px;
+}
+table { width:100%; border-collapse: collapse; background:white; color:black; margin-top:20px; }
+th, td { padding:8px; border:1px solid #ccc; }
+th { background:#004aad; color:white; }
+.btn { padding:6px 12px; border-radius:6px; background:#ffcc00; border:none; cursor:pointer; }
+.btn:hover { background:#ffe066; }
+</style>
+
+<script>
+/* ✅ Sem patří tvoje aktuální EXEC URL */
+let API_URL = "https://script.google.com/macros/s/AKfycbxz87E8TLbXQ-b8xeBGGrG9DM2BJJ5w33hhMbyuZ8eoe_Lcjas7YFT3ZZjuS3Z8LHYA/exec";
+
+let ADMIN_PWD = "xprom115";
+let loggedIn = false;
+
+function login(){
+    const pwd = document.getElementById("adminPwd").value;
+
+    if (pwd !== ADMIN_PWD){
+        document.getElementById("loginError").innerText = "Nesprávné heslo!";
+        return;
+    }
+
+    loggedIn = true;
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+
+    loadAdminList();
+}
+
+async function loadAdminList(){
+    if (!loggedIn) return;
+
+    const filter = document.getElementById("filterDate").value;
+
+    const res = await fetch(API_URL + "?action=admin_list&pwd=" + ADMIN_PWD);
+    const data = await res.json();
+
+    const tbody = document.querySelector("#rezTable tbody");
+    tbody.innerHTML = "";
+
+    data.forEach(item => {
+
+        let d = new Date(item.datum);
+        let datum = d.toLocaleDateString("cs-CZ");
+
+        let t = new Date(item.cas);
+        let cas = t.toLocaleTimeString("cs-CZ", {hour:"2-digit", minute:"2-digit"});
+
+        if(filter && datum !== new Date(filter).toLocaleDateString("cs-CZ")) return;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${datum}</td>
+            <td>${cas}</td>
+            <td>${item.draha}</td>
+            <td>${item.jmeno}</td>
+            <td>${item.email}</td>
+            <td>${item.tel}</td>
+            <td>${item.poznamka}</td>
+            <td>${item.stav}</td>
+            <td>
+                <button class="btn" style="background:#c62828;color:white;" onclick="cancelRez(${item.row})">
+                    Zrušit
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+async function cancelRez(row){
+    if(!confirm("Opravdu zrušit rezervaci?")) return;
+
+    const res = await fetch(API_URL + "?action=admin_cancel&pwd=" + ADMIN_PWD + "&row=" + row);
+    const txt = await res.text();
+
+    if (txt === "OK"){
+        alert("Rezervace zrušena.");
+        loadAdminList();
+    } else {
+        alert("Chyba: " + txt);
+    }
+}
+</script>
 
 </head>
 
 <body>
 
 <header>
-    <img src="img/benesov.jpg" alt="">
+    <img src="/kuzelky-benesov/img/benesov.jpg" alt="">
     <h1>Kuželky Benešov – Admin</h1>
-    <img src="img/logo.jpg" alt="">
+    <img src="/kuzelky-benesov/img/logo.jpg" alt="">
 </header>
 
 <nav>
-    <a href="index.html">Domů</a>
-    <a href="aktuality.html">Aktuality</a>
-    <a href="historie.html">Historie</a>
-    <a href="druzstva.html">Družstva</a>
-    <a href="rezervace.html">Rezervace</a>
-    <a href="habadura.html">Habaďura</a>
-    <a href="kontakty.html">Kontakty</a>
-    <a href="admin.html">Admin</a>
+    <a href="/kuzelky-benesov/index.html">Domů</a>
+    <a href="/kuzelky-benesov/aktuality.html">Aktuality</a>
+    <a href="/kuzelky-benesov/historie.html">Historie</a>
+    <a href="/kuzelky-benesov/druzstva.html">Družstva</a>
+    <a href="/kuzelky-benesov/rezervace.html">Rezervace</a>
+    <a href="/kuzelky-benesov/habadura.html">Habaďura</a>
+    <a href="/kuzelky-benesov/kontakty.html">Kontakty</a>
+    <a href="/kuzelky-benesov/admin.html">Admin</a>
 </nav>
 
 <main class="box">
 
 <div id="loginBox">
     <h2>Přihlášení do administrace</h2>
+
     <label>Heslo:</label>
     <input type="password" id="adminPwd">
-    <button type="button" class="btn" onclick="login()">Přihlásit</button>
+
+    <button class="btn" onclick="login()">Přihlásit</button>
+
     <div id="loginError" style="color:red;margin-top:10px;"></div>
 </div>
 
@@ -69,79 +163,6 @@
 
 <footer>© Kuželky Benešov – 2026</footer>
 
-<script>
-/*************** KONFIGURACE ***************/
-const API_URL = "https://script.google.com/macros/s/AKfycbxz87E8TLbXQ-b8xeBGGrG9DM2BJJ5w33hhMbyuZ8eoe_Lcjas7YFT3ZZjuS3Z8LHYA/exec";
-const ADMIN_PWD = "xprom115";
-let loggedIn = false;
-
-/*************** LOGIN ***************/
-function login() {
-    const pwd = document.getElementById("adminPwd").value;
-
-    if (pwd !== ADMIN_PWD){
-        document.getElementById("loginError").innerText = "Nesprávné heslo!";
-        return;
-    }
-
-    loggedIn = true;
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-
-    loadAdminList();
-}
-
-/*************** LOAD LIST ***************/
-async function loadAdminList(){
-    if (!loggedIn) return;
-
-    const filter = document.getElementById("filterDate").value;
-    const res = await fetch(API_URL + "?action=admin_list&pwd=" + ADMIN_PWD);
-    const data = await res.json();
-
-    const tbody = document.querySelector("#rezTable tbody");
-    tbody.innerHTML = "";
-
-    data.forEach(item => {
-        const d = new Date(item.datum);
-        const datum = d.toLocaleDateString("cs-CZ");
-
-        const t = new Date(item.cas);
-        const cas = t.toLocaleTimeString("cs-CZ", {hour:"2-digit", minute:"2-digit"});
-
-        if (filter && datum !== new Date(filter).toLocaleDateString("cs-CZ")) return;
-
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-            <td>${datum}</td>
-            <td>${cas}</td>
-            <td>${item.draha}</td>
-            <td>${item.jmeno}</td>
-            <td>${item.email}</td>
-            <td>${item.tel}</td>
-            <td>${item.poznamka}</td>
-            <td>${item.stav}</td>
-            <td><button onclick="cancelRez(${item.row})" class="btn" style="background:#c62828;">Zrušit</button></td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-/*************** CANCEL ***************/
-async function cancelRez(row){
-    if(!confirm("Opravdu zrušit rezervaci?")) return;
-
-    const res = await fetch(API_URL + "?action=admin_cancel&pwd=" + ADMIN_PWD + "&row=" + row);
-    const txt = await res.text();
-
-    if(txt === "OK"){
-        alert("Rezervace byla zrušena.");
-        loadAdminList();
-    } else {
-        alert("Chyba: " + txt);
-    }
-}
-</script>
-
 </body>
 </html>
+``
