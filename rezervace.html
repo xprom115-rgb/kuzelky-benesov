@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Rezervace – Kuželky Benešov</title>
 
 <!-- ✅ CSS -->
-<link rel="stylesheet" href="/kuzelky-bPICKR -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickrpt src="https://cdn.jsdelivr.net/npm/flatpickcript src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js"></script>
+<link rel="stylesheet" href="/kuzelky-benesov/style.css">
+
+<!-- ✅ FLATPICKR -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js"></script>
 
 </head>
 
@@ -34,7 +38,7 @@
 <h2>Rezervace drah</h2>
 
 <label><strong>Datum:</strong></label>
-<input id="datePick" placeholder="Vyberte datum" style="width:100%;padding:10px;" />
+<input id="datePick" placeholder="Vyberte datum" style="width:100%; padding:10px;">
 
 <div id="slotsArea" style="margin-top:20px; display:none;">
     <h3>Dostupné časy:</h3>
@@ -43,7 +47,7 @@
 
 <div id="formArea" style="margin-top:20px; display:none;">
 
-    <label>Délka rezervace (hodiny):</label>
+    <label>Délka rezervace:</label>
     <select id="delka">
         <option value="1">1 hodina</option>
         <option value="2">2 hodiny</option>
@@ -52,13 +56,13 @@
     </select>
 
     <label>Jméno:</label>
-    <input id="jmeno" type="text" />
+    <input id="jmeno" type="text">
 
     <label>Email:</label>
-    <input id="email" type="email" />
+    <input id="email" type="email">
 
     <label>Telefon:</label>
-    <input id="tel" type="text" />
+    <input id="tel" type="text">
 
     <label>Poznámka:</label>
     <textarea id="poznamka"></textarea>
@@ -70,57 +74,56 @@
 
 </main>
 
-<footer>
-    © Kuželky Benešov – 2026
-</footer>
+<footer>© Kuželky Benešov – 2026</footer>
 
-<!-- ✅ JS API -->
 <script>
+/* ✅ API URL (správná) */
 const API_URL = "https://script.google.com/macros/s/AKfycbxz87E8TLbXQ-b8xeBGGrG9DM2BJJ5w33hhMbyuZ8eoe_Lcjas7YFT3ZZjuS3Z8LHYA/exec";
 
 let selectedDate = null;
 let selectedTime = null;
 let selectedLane = null;
 
-/* ✅ Flatpickr */
+/* ✅ Inicializace flatpickru */
 flatpickr("#datePick", {
     dateFormat: "Y-m-d",
     locale: "cs",
     minDate: "today",
-    onChange: function(selectedDates, dateStr) {
+    onChange: function(_, dateStr){
         selectedDate = dateStr;
         loadSlots(dateStr);
     }
 });
 
-/* ✅ Sloty */
+/* ✅ Načtení slotů */
 async function loadSlots(date){
     const res = await fetch(API_URL + "?action=slots&date=" + date);
     const data = await res.json();
 
     document.getElementById("slotsArea").style.display = "block";
+
     const out = document.getElementById("slotsOutput");
     out.innerHTML = "";
 
     data.forEach(d => {
         out.innerHTML += `<h4>Dráha ${d.draha}</h4>`;
 
-        if (d.casy.length === 0) {
+        if(d.casy.length === 0){
             out.innerHTML += `<div style="color:red;">Žádné volné časy</div>`;
             return;
         }
 
         d.casy.forEach(cas => {
             out.innerHTML += `
-            <button onclick="selectSlot(${d.draha}, '${cas}')"
-            style="margin:4px; padding:8px 12px;">
+              <button onclick="selectSlot(${d.draha}, '${cas}')" 
+                style="margin:4px; padding:8px 12px;">
                 ${cas}
-            </button>`;
+              </button>`;
         });
     });
 }
 
-/* ✅ Výběr slotu */
+/* ✅ Výběr času */
 function selectSlot(draha, cas){
     selectedLane = draha;
     selectedTime = cas;
@@ -130,9 +133,9 @@ function selectSlot(draha, cas){
         `Vybráno: dráha <b>${draha}</b>, čas <b>${cas}</b>`;
 }
 
-/* ✅ Odeslání rezervace */
+/* ✅ Odeslat rezervaci */
 async function sendReservation(){
-    const payload = {
+    const data = {
         action:"reserve",
         datum:selectedDate,
         cas:selectedTime,
@@ -146,7 +149,7 @@ async function sendReservation(){
 
     const res = await fetch(API_URL, {
         method:"POST",
-        body:JSON.stringify(payload)
+        body:JSON.stringify(data)
     });
 
     const txt = await res.text();
@@ -156,12 +159,11 @@ async function sendReservation(){
         document.getElementById("formArea").style.display = "none";
         document.getElementById("result").innerHTML =
         `<div style="font-size:26px; color:#00ff00; text-align:center; margin-top:30px;">
-           ✅ Rezervace byla úspěšně vytvořena
+            ✅ Rezervace byla úspěšně vytvořena
         </div>`;
-    }
-    else {
+    } else {
         document.getElementById("result").innerHTML =
-        `<span style="color:red;">❌ Chyba: ${txt}</span>`;
+            `<span style="color:red;">❌ Chyba: ${txt}</span>`;
     }
 }
 </script>
