@@ -1,34 +1,32 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <title>Rezervace – Kuželky Benešov</title>
 
-/kuzelky-benesov/style.css
-
-https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css
-https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js
-https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js
+<!-- ✅ CSS -->
+<link rel="stylesheet" href="/kuzelky-bPICKR -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickrpt src="https://cdn.jsdelivr.net/npm/flatpickcript src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js"></script>
 
 </head>
 
 <body>
 
 <header>
-    /kuzelky-benesov/img/benesov.jpg
+    <img src="/kuzelky-benesov/img/benesov.jpg" alt="" />
     <h1>Kuželky Benešov</h1>
-    /kuzelky-benesov/img/logo.jpg
+    <img src="/kuzelky-benesov/img/logo.jpg" alt="" />
 </header>
 
 <nav>
-    /kuzelky-benesov/index.htmlDomů</a>
-    /kuzelky-benesov/aktuality.htmlAktuality</a>
-    /kuzelky-benesov/historie.htmlHistorie</a>
-    /kuzelky-benesov/druzstva.htmlDružstva</a>
-    /kuzelky-benesov/rezervace.htmlRezervace</a>
-    /kuzelky-benesov/habadura.htmlHabaďura</a>
-    /kuzelky-benesov/kontakty.htmlKontakty</a>
-    /kuzelky-benesov/admin.htmlAdmin</a>
+    <a href="/kuzelky-benesov/index.html">Domů</a>
+    <a href="/kuzelky-benesov/aktuality.html">Aktuality</a>
+    <a href="/kuzelky-benesov/historie.html">Historie</a>
+    <a href="/kuzelky-benesov/druzstva.html">Družstva</a>
+    <a href="/kuzelky-benesov/rezervace.html">Rezervace</a>
+    <a href="/kuzelky-benesov/habadura.html">Habaďura</a>
+    <a href="/kuzelky-benesov/kontakty.html">Kontakty</a>
+    <a href="/kuzelky-benesov/admin.html">Admin</a>
 </nav>
 
 <main class="box">
@@ -36,7 +34,7 @@ https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js
 <h2>Rezervace drah</h2>
 
 <label><strong>Datum:</strong></label>
-<input id="datePick" placeholder="Vyberte datum" style="width:100%;padding:10px;">
+<input id="datePick" placeholder="Vyberte datum" style="width:100%;padding:10px;" />
 
 <div id="slotsArea" style="margin-top:20px; display:none;">
     <h3>Dostupné časy:</h3>
@@ -45,7 +43,7 @@ https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js
 
 <div id="formArea" style="margin-top:20px; display:none;">
 
-    <label>Délka rezervace:</label>
+    <label>Délka rezervace (hodiny):</label>
     <select id="delka">
         <option value="1">1 hodina</option>
         <option value="2">2 hodiny</option>
@@ -54,13 +52,13 @@ https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js
     </select>
 
     <label>Jméno:</label>
-    <input id="jmeno" type="text">
+    <input id="jmeno" type="text" />
 
     <label>Email:</label>
-    <input id="email" type="email">
+    <input id="email" type="email" />
 
     <label>Telefon:</label>
-    <input id="tel" type="text">
+    <input id="tel" type="text" />
 
     <label>Poznámka:</label>
     <textarea id="poznamka"></textarea>
@@ -72,9 +70,11 @@ https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js
 
 </main>
 
-<footer>© Kuželky Benešov – 2026</footer>
+<footer>
+    © Kuželky Benešov – 2026
+</footer>
 
-
+<!-- ✅ JS API -->
 <script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxz87E8TLbXQ-b8xeBGGrG9DM2BJJ5w33hhMbyuZ8eoe_Lcjas7YFT3ZZjuS3Z8LHYA/exec";
 
@@ -82,6 +82,7 @@ let selectedDate = null;
 let selectedTime = null;
 let selectedLane = null;
 
+/* ✅ Flatpickr */
 flatpickr("#datePick", {
     dateFormat: "Y-m-d",
     locale: "cs",
@@ -92,6 +93,7 @@ flatpickr("#datePick", {
     }
 });
 
+/* ✅ Sloty */
 async function loadSlots(date){
     const res = await fetch(API_URL + "?action=slots&date=" + date);
     const data = await res.json();
@@ -103,7 +105,7 @@ async function loadSlots(date){
     data.forEach(d => {
         out.innerHTML += `<h4>Dráha ${d.draha}</h4>`;
 
-        if(d.casy.length === 0){
+        if (d.casy.length === 0) {
             out.innerHTML += `<div style="color:red;">Žádné volné časy</div>`;
             return;
         }
@@ -118,6 +120,7 @@ async function loadSlots(date){
     });
 }
 
+/* ✅ Výběr slotu */
 function selectSlot(draha, cas){
     selectedLane = draha;
     selectedTime = cas;
@@ -127,6 +130,7 @@ function selectSlot(draha, cas){
         `Vybráno: dráha <b>${draha}</b>, čas <b>${cas}</b>`;
 }
 
+/* ✅ Odeslání rezervace */
 async function sendReservation(){
     const payload = {
         action:"reserve",
