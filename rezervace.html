@@ -4,25 +4,31 @@
 <meta charset="UTF-8">
 <title>Rezervace – Kuželky Benešov</title>
 
-<!-- ✅ CSS styl webu -->
-<link rel="stylesheet" href="style.css">
+/kuzelky-benesov/style.css
 
-<!-- ✅ FLATPICKR – správná verze -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css
+https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js
+https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js
 
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js"></script>
+</head>
 
-<!-- ✅ Globální skript -->
-<script src="script.js"></script>
-</head
-    aktuality.htmlAktuality</a>
-    historie.htmlHistorie</a>
-    druzstva.htmlDružstva</a>
-    rezervace.htmlRezervace</a>
-    habadura.htmlHabaďura</a>
-    kontakty.htmlKontakty</a>
-    <a href="admin.html">Admin</a>
+<body>
+
+<header>
+    /kuzelky-benesov/img/benesov.jpg
+    <h1>Kuželky Benešov</h1>
+    /kuzelky-benesov/img/logo.jpg
+</header>
+
+<nav>
+    /kuzelky-benesov/index.htmlDomů</a>
+    /kuzelky-benesov/aktuality.htmlAktuality</a>
+    /kuzelky-benesov/historie.htmlHistorie</a>
+    /kuzelky-benesov/druzstva.htmlDružstva</a>
+    /kuzelky-benesov/rezervace.htmlRezervace</a>
+    /kuzelky-benesov/habadura.htmlHabaďura</a>
+    /kuzelky-benesov/kontakty.htmlKontakty</a>
+    /kuzelky-benesov/admin.htmlAdmin</a>
 </nav>
 
 <main class="box">
@@ -39,7 +45,7 @@
 
 <div id="formArea" style="margin-top:20px; display:none;">
 
-    <label>Délka rezervace (hodiny):</label>
+    <label>Délka rezervace:</label>
     <select id="delka">
         <option value="1">1 hodina</option>
         <option value="2">2 hodiny</option>
@@ -68,20 +74,14 @@
 
 <footer>© Kuželky Benešov – 2026</footer>
 
+
 <script>
-/**************************************/
-/* ✅ TVOJE FINÁLNÍ EXEC API URL */
-/**************************************/
 const API_URL = "https://script.google.com/macros/s/AKfycbxz87E8TLbXQ-b8xeBGGrG9DM2BJJ5w33hhMbyuZ8eoe_Lcjas7YFT3ZZjuS3Z8LHYA/exec";
 
-/* Globální stav */
 let selectedDate = null;
 let selectedTime = null;
 let selectedLane = null;
 
-/**************************************/
-/* ✅ Inicializace FLATPICKR */
-/**************************************/
 flatpickr("#datePick", {
     dateFormat: "Y-m-d",
     locale: "cs",
@@ -92,12 +92,7 @@ flatpickr("#datePick", {
     }
 });
 
-/**************************************/
-/* ✅ Načtení slotů */
-/**************************************/
 async function loadSlots(date){
-    if(!date) return;
-
     const res = await fetch(API_URL + "?action=slots&date=" + date);
     const data = await res.json();
 
@@ -115,17 +110,14 @@ async function loadSlots(date){
 
         d.casy.forEach(cas => {
             out.innerHTML += `
-                <button onclick="selectSlot(${d.draha}, '${cas}')"
-                style="margin:4px; padding:8px 12px;">
+            <button onclick="selectSlot(${d.draha}, '${cas}')"
+            style="margin:4px; padding:8px 12px;">
                 ${cas}
-                </button>`;
+            </button>`;
         });
     });
 }
 
-/**************************************/
-/* ✅ Výběr slotu */
-/**************************************/
 function selectSlot(draha, cas){
     selectedLane = draha;
     selectedTime = cas;
@@ -135,9 +127,6 @@ function selectSlot(draha, cas){
         `Vybráno: dráha <b>${draha}</b>, čas <b>${cas}</b>`;
 }
 
-/**************************************/
-/* ✅ Odeslání rezervace */
-/**************************************/
 async function sendReservation(){
     const payload = {
         action:"reserve",
@@ -163,7 +152,7 @@ async function sendReservation(){
         document.getElementById("formArea").style.display = "none";
         document.getElementById("result").innerHTML =
         `<div style="font-size:26px; color:#00ff00; text-align:center; margin-top:30px;">
-            ✅ Rezervace byla úspěšně vytvořena
+           ✅ Rezervace byla úspěšně vytvořena
         </div>`;
     }
     else {
@@ -175,4 +164,3 @@ async function sendReservation(){
 
 </body>
 </html>
-``
