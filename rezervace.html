@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Rezervace – Kuželky Benešov</title>
 
-<!-- CSS -->
 <link rel="stylesheet" href="/kuzelky-benesov/style.css">
 
-<!-- Flatpickr -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/cs.js"></script>
@@ -17,9 +15,9 @@
 <body>
 
 <header>
-    <img src="/kuzelky-benesov/img/benesov.jpg" alt="">
+    <img src="/kuzelky-benesov/img/benesov.jpg">
     <h1>Kuželky Benešov</h1>
-    <img src="/kuzelky-benesov/img/logo.jpg" alt="">
+    <img src="/kuzelky-benesov/img/logo.jpg">
 </header>
 
 <nav>
@@ -76,26 +74,23 @@
 <footer>© Kuželky Benešov – 2026</footer>
 
 <script>
-// ✅ API URL – tvoje aktuální EXEC URL
-const API_URL = "https://script.google.com/macros/s/AKfycbzGTbKV32W10Iv2x6Yf2GbG50tesYBFxHYw788Svkl_yuk2VrX5xSdk1uB-az19R7BN/exec";
+const API_URL = "SEM_VLOŽ_SVOJI_EXEC_URL";
 
 let selectedDate = null;
 let selectedTime = null;
 let selectedLane = null;
 
-/* Flatpickr */
 flatpickr("#datePick", {
     dateFormat: "Y-m-d",
     locale: "cs",
     minDate: "today",
-    onChange: function (_, dateStr) {
+    onChange: function(_, dateStr){
         selectedDate = dateStr;
         loadSlots(dateStr);
     }
 });
 
-/* Načíst sloty */
-async function loadSlots(date) {
+async function loadSlots(date){
     const res = await fetch(API_URL + "?action=slots&date=" + date);
     const data = await res.json();
 
@@ -105,25 +100,21 @@ async function loadSlots(date) {
 
     data.forEach(d => {
         out.innerHTML += `<h4>Dráha ${d.draha}</h4>`;
-
-        if (d.casy.length === 0) {
+        if(d.casy.length === 0){
             out.innerHTML += `<div style="color:red;">Žádné volné časy</div>`;
             return;
         }
-
         d.casy.forEach(cas => {
             out.innerHTML += `
-                <button onclick="selectSlot(${d.draha}, '${cas}')" 
-                        style="margin:4px; padding:8px 12px;">
-                    ${cas}
-                </button>
-            `;
+              <button onclick="selectSlot(${d.draha}, '${cas}')"
+                style="margin:4px; padding:8px 12px;">
+                ${cas}
+              </button>`;
         });
     });
 }
 
-/* Výběr času */
-function selectSlot(draha, cas) {
+function selectSlot(draha, cas){
     selectedLane = draha;
     selectedTime = cas;
     document.getElementById("formArea").style.display = "block";
@@ -131,34 +122,33 @@ function selectSlot(draha, cas) {
         `Vybráno: dráha <b>${draha}</b>, čas <b>${cas}</b>`;
 }
 
-/* Odeslání rezervace */
-async function sendReservation() {
+async function sendReservation(){
     const data = {
-        action: "reserve",
-        datum: selectedDate,
-        cas: selectedTime,
-        draha: selectedLane,
-        delka: document.getElementById("delka").value,
-        jmeno: document.getElementById("jmeno").value,
-        email: document.getElementById("email").value,
-        tel: document.getElementById("tel").value,
-        poznamka: document.getElementById("poznamka").value
+        action:"reserve",
+        datum:selectedDate,
+        cas:selectedTime,
+        draha:selectedLane,
+        delka:document.getElementById("delka").value,
+        jmeno:document.getElementById("jmeno").value,
+        email:document.getElementById("email").value,
+        tel:document.getElementById("tel").value,
+        poznamka:document.getElementById("poznamka").value
     };
 
     const res = await fetch(API_URL, {
-        method: "POST",
-        body: JSON.stringify(data)
+        method:"POST",
+        body:JSON.stringify(data)
     });
 
     const txt = await res.text();
 
-    if (txt.includes("OK|")) {
+    if(txt.includes("OK|")){
         document.getElementById("slotsArea").style.display = "none";
         document.getElementById("formArea").style.display = "none";
         document.getElementById("result").innerHTML =
-            `<div style="font-size:26px; color:#00ff00; text-align:center; margin-top:30px;">
-                ✅ Rezervace byla úspěšně vytvořena
-            </div>`;
+        `<div style="font-size:26px; color:#00ff00; text-align:center; margin-top:30px;">
+            ✅ Rezervace byla úspěšně vytvořena
+        </div>`;
     } else {
         document.getElementById("result").innerHTML =
             `<span style="color:red;">❌ Chyba: ${txt}</span>`;
