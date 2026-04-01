@@ -1,47 +1,65 @@
-
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Rezervace drah – Kuželky Benešov</title>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 
   <!-- QR knihovna -->
   <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/dist/qrcode.min.js"></script>
 </head>
+
 <body>
 
 <header>
-  <div class="header-left"><img src="logo.jpg" class="logo" /></div>
+  <div class="header-left"><img src="logo.jpg" class="logo"></div>
   <div class="header-title">Kuželky Benešov – Rezervace</div>
   <div class="header-right"></div>
 </header>
 
 <nav>
   <ul>
-    <li><a href="index.html">Domů</a></li>
-    <li><a href="aktuality.html">Aktuality</a></li>
-    <li><a href="rezervace.html">Rezervace</a></li>
-    <li><a href="kontakty.html">Kontakty</a></li>
+      <li><a href="index.html">Domů</a></li>
+      <li><a href="aktuality.html">Aktuality</a></li>
+      <li><a href="rezervace.html">Rezervace</a></li>
+      <li><a href="kontakty.html">Kontakty</a></li>
   </ul>
 </nav>
 
 <main>
-  <div class="content-box">
-    <h2>Rezervace drah</h2>
-    <p>Vyberte datum, dráhu a časový slot.</p>
+<div class="content-box">
+  <h2>Rezervace drah</h2>
 
-    <label for="date"><strong>Datum rezervace:</strong></label>
-    <input type="date" id="date" />
+  <p>Vyberte datum, dráhu a časový slot.</p>
 
-    <hr />
+  <label><strong>Datum rezervace:</strong></label>
+  <input type="date" id="date">
 
-    <div id="lanes"></div>
+  <hr>
 
-    <div id="reservation-result" style="display:none;">
-      <!-- MODÁLNÍ FORMULÁŘ REZERVACE -->
+  <div id="lanes"></div>
+
+  <div id="reservation-result" style="display:none;">
+    <h3>✅ Rezervace potvrzena</h3>
+
+    <p><strong>Kód rezervace:</strong></p>
+    <div id="code" class="code-box"></div>
+
+    <h4>QR kód pro rychlé otevření storna:</h4>
+    <div id="qrcode"></div>
+
+    <p style="margin-top:20px;">
+        V případě technických problémů napište na:<br>
+        <strong>kuzelkybn@gmail.com</strong>
+    </p>
+  </div>
+</div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<!-- Modální formulář -->
 <div id="res-form" class="modal" hidden>
   <div class="modal-content">
     <h3>Vyplňte údaje k rezervaci</h3>
@@ -49,7 +67,7 @@
     <form id="reservation-form">
       <div class="row">
         <label for="f-name">Jméno</label>
-        <input id="f-name" type="text" required placeholder="Jan Novák" />
+        <input id="f-name" type="text" required placeholder="Jan Novák">
       </div>
 
       <div class="row">
@@ -63,7 +81,7 @@
 
       <div class="row">
         <label for="f-note">Poznámka (volitelné)</label>
-        <input id="f-note" type="text" placeholder="např. trénink A" />
+        <input id="f-note" type="text" placeholder="např. trénink">
       </div>
 
       <div class="actions">
@@ -73,24 +91,7 @@
     </form>
   </div>
 </div>
-      <h3>✅ Rezervace potvrzena</h3>
-      <p><strong>Kód rezervace:</strong></p>
-      <div id="code" class="code-box"></div>
 
-      <h4>QR kód pro rychlé otevření storna:</h4>
-      <div id="qrcode"></div>
-
-      <p style="margin-top:16px;">
-        V případě technických problémů napište na:<br>
-        <strong>kuzelkybn@gmail.com</strong>
-      </p>
-    </div>
-  </div>
-</main>
-
-<footer>© Kuželky Benešov – 2026</footer>
-
-<!-- JS moduly – NA KONCI TĚLA -->
 <script type="module" src="config.js"></script>
 <script type="module" src="firebase-config.js"></script>
 <script type="module" src="rezervace.js"></script>
