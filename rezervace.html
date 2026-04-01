@@ -41,6 +41,38 @@
     <div id="lanes"></div>
 
     <div id="reservation-result" style="display:none;">
+      <!-- MODÁLNÍ FORMULÁŘ REZERVACE -->
+<div id="res-form" class="modal" hidden>
+  <div class="modal-content">
+    <h3>Vyplňte údaje k rezervaci</h3>
+
+    <form id="reservation-form">
+      <div class="row">
+        <label for="f-name">Jméno</label>
+        <input id="f-name" type="text" required placeholder="Jan Novák" />
+      </div>
+
+      <div class="row">
+        <label for="f-hours">Počet hodin</label>
+        <select id="f-hours">
+          <option value="1">1 hodina</option>
+          <option value="2">2 hodiny</option>
+          <option value="3">3 hodiny</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="f-note">Poznámka (volitelné)</label>
+        <input id="f-note" type="text" placeholder="např. trénink A" />
+      </div>
+
+      <div class="actions">
+        <button type="button" id="f-cancel">Zpět</button>
+        <button type="submit" class="primary">Potvrdit rezervaci</button>
+      </div>
+    </form>
+  </div>
+</div>
       <h3>✅ Rezervace potvrzena</h3>
       <p><strong>Kód rezervace:</strong></p>
       <div id="code" class="code-box"></div>
