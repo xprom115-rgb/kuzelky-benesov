@@ -1,1 +1,84 @@
-<!DOCTYPE html><html lang='cs'><head><meta charset='UTF-8'><title>Rezervace</title><link rel='stylesheet' href='style.css'></head><body><header><div class='header-left'><img src='logo.jpg' class='logo'></div><div class='header-title'>Kuželky Benešov</div><div class='header-right'></div></header><nav><ul><li><a href='index.html'>Domů</a></li><li><a href='aktuality.html'>Aktuality</a></li><li><a href='historie.html'>Historie</a></li><li><a href='druzstva.html'>Družstva</a></li><li><a href='rezervace.html'>Rezervace</a></li><li><a href='habadura.html'>Habaďůra</a></li><li><a href='kontakty.html'>Kontakty</a></li><li><a href='admin.html'>Admin</a></li></ul></nav><main><div class='content-box'><h2>Rezervace drah</h2><form action='reservation_save.php' method='POST'><label>Datum:</label><input type='date' name='date' required><br><label>Dráha:</label><select name='lane'><option>1</option><option>2</option><option>3</option><option>4</option></select><br><label>Délka (hodiny):</label><select name='duration'><option>1</option><option>2</option><option>3</option></select><br><label>Email:</label><input type='email' name='email' required><br><button type='submit'>Odeslat rezervaci</button></form></div></main><footer>© Kuželky Benešov – 2026</footer></body></html>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <title>Rezervace drah – Kuželky Benešov</title>
+
+    <!-- CSS -->
+    style.css
+
+    <!-- QR knihovna (malá + lokální verze lze přidat později) -->
+    https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/dist/qrcode.min.js
+</head>
+
+<body>
+
+<header>
+    <div class="header-left">
+        logo.jpg
+    </div>
+    <div class="header-title">Kuželky Benešov – Rezervace</div>
+    <div class="header-right"></div>
+</header>
+
+<nav>
+    <ul>
+        <li>index.html</li>
+        <li>aktuality.htmlAktuality</a></li>
+        <li>rezervace.htmlRezervace</a></li>
+        <li>kontakty.htmlKontakty</a></li>
+    </ul>
+</nav>
+
+<main>
+<div class="content-box">
+    <h2>Rezervace drah</h2>
+
+    <p>Vyberte datum, dráhu a časový slot.</p>
+
+    <!-- Výběr data -->
+    <label for="date"><strong>Datum rezervace:</strong></label>
+    <input type="date" id="date" min="2024-01-01" />
+
+    <hr style="margin:20px 0;">
+
+    <!-- Zde se doplní dráhy + časy -->
+    <div id="lanes" class="lanes-container"></div>
+
+    <!-- Okno po úspěšné rezervaci -->
+    <div id="reservation-result" class="result-box" style="display:none;">
+        <h3>✅ Rezervace potvrzena</h3>
+
+        <p><strong>Kód rezervace:</strong></p>
+        <div class="code-box" id="code"></div>
+
+        <h4>QR kód pro rychlé otevření storna:</h4>
+        <div id="qrcode" style="margin: 15px 0;"></div>
+
+        <p>
+            Pro zrušení rezervace použijte odkaz nebo QR kód.<br>
+            <small>Kód zadejte na stránce <strong>Storno rezervace</strong>.</small>
+        </p>
+
+        <p style="margin-top:20px;">
+            <strong>V případě technických problémů napište na:</strong><br>
+            kuzelkybn@gmail.com
+        </p>
+    </div>
+
+</div>
+</main>
+
+<footer>
+    © Kuželky Benešov – 2026
+</footer>
+
+<!-- Firebase + config -->
+config.jsscript>
+firebase-config.js
+
+<!-- Hlavní logika -->
+rezervace.js
+
+</body>
+</html>

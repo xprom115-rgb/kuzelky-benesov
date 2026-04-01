@@ -1,0 +1,20 @@
+/kuzelky-benesov/
+│
+├─ index.html
+├─ kontakty.html
+├─ aktuality.html
+├─ rezervace.html
+├─ rezervace-storno.html
+├─ admin-rezervace.html
+│
+├─ config.js               ← sem dáme BASE_URL
+├─ firebase-config.js      ← tvoje Firebase údaje
+├─ rezervace.js            ← hlavní logika rezervací
+├─ storno.js               ← storno rezervací
+├─ admin.js                ← logika adminu
+├─ admin-config.js         ← SHA-256 hash hesla
+├─ aktuality.js            ← načítání rezervací pro veřejnost
+│
+├─ qr.min.js               ← knihovna pro QR kódy
+│
+└─ style.css
