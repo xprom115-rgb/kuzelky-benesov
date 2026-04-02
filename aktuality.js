@@ -37,6 +37,22 @@ function sortKey(r){
 }
 
 function render(reservations){
+  const now = new Date();
+  const today = todayIso();
+  const nowMin = now.getHours() * 60 + now.getMinutes();
+
+  // ✅ Zobrazujeme jen dnešní (které ještě neskončily) a budoucí
+  reservations = reservations.filter(r => {
+    if (!r.date) return false;
+
+    if (r.date > today) return true;      // budoucí dny
+
+    if (r.date < today) return false;     // minulost pryč
+
+    // r.date === today
+    if (!r.end) return true;              // když chybí end, necháme raději viditelné
+    return toMinutes(r.end) > nowMin;     // dnešní jen pokud ještě neskončila
+  });
   if (!reservations.length){
     listEl.innerHTML = "<p><em>Zatím nejsou žádné rezervace.</em></p>";
     return;
