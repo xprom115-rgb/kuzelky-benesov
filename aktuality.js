@@ -32,7 +32,9 @@ function render(reservations){
   reservations.sort((a,b) => sortKey(a).localeCompare(sortKey(b)));
 
   listEl.innerHTML = reservations.map(r => {
-   const stornoLink = `${BASE_URL}rezervace-storno.html`;
+    // ✅ Storno bez předávání kódu – zákazník ho musí zadat ručně
+    const stornoHref = `${BASE_URL}rezervace-storno.html`;
+
     return `
       <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.15);">
         <div>
@@ -42,7 +44,7 @@ function render(reservations){
           ${r.name || ""}
         </div>
         <div>
-          <a href="${stornoLink}">Storno</a>
+          <a href="${stornoHref}" style="color:#ffd700; font-weight:bold;">Storno</a>
         </div>
       </div>
     `;
@@ -57,4 +59,3 @@ onSnapshot(collection(db, "reservations"), (snap) => {
   console.error("Chyba onSnapshot:", err);
   listEl.innerHTML = "<p><strong>Chyba načítání rezervací.</strong></p>";
 });
-``
