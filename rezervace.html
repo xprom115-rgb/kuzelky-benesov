@@ -5,12 +5,7 @@
   <title>Rezervace drah – Kuželky Benešov</title>
 
   <!-- CSS -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- QR knihovna -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/dist/qrcode.min.js"></script>
-
-  <!-- Varování box (jen pro tuto stránku) -->
+  <link rel="stylesheet" href="style.csscript src="https://cdn.jsdelivr.net/npm/qrcode-svg@1.1.0/dist/qrcode.min.js<!-- Varování box (jen pro tuto stránku) -->
   <style>
     .warning-box{
       margin: 12px 0 16px 0;
@@ -30,10 +25,6 @@
 
 <body>
 
-<script type="module" src="config.js?v=10"></script>
-<script type="module" src="firebase-config.js?v=10"></script>
-<script type="module" src="rezervace.js?v=10"></script>
-</body>
 <header>
   <div class="header-left">
     <img src="logo.jpg" class="logo" alt="Logo">
@@ -54,7 +45,6 @@
 <main>
   <div class="content-box">
     <h2>Rezervace drah</h2>
-
     <p>Vyberte datum, dráhu a časový slot.</p>
 
     <label for="date"><strong>Datum rezervace:</strong></label>
@@ -96,3 +86,41 @@
 
 <!-- MODÁLNÍ FORMULÁŘ REZERVACE -->
 <div id="res-form" class="modal" hidden>
+  <div class="modal-content">
+    <h3>Vyplňte údaje k rezervaci</h3>
+
+    <form id="reservation-form">
+      <div class="row">
+        <label for="f-name">Jméno</label>
+        <input id="f-name" type="text" required placeholder="Jan Novák">
+      </div>
+
+      <div class="row">
+        <label for="f-hours">Počet hodin</label>
+        <select id="f-hours">
+          <option value="1">1 hodina</option>
+          <option value="2">2 hodiny</option>
+          <option value="3">3 hodiny</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label for="f-note">Poznámka (volitelné)</label>
+        <input id="f-note" type="text" placeholder="např. trénink">
+      </div>
+
+      <div class="actions">
+        <button type="button" id="f-cancel">Zpět</button>
+        <button type="submit" class="primary">Potvrdit rezervaci</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ✅ JS moduly patří až na konec body -->
+<script type="module" src="config.js?v=10"></script>
+<script type="module" src="firebase-config.js?v=10"></script>
+<script type="module" src="rezervace.js?v=10"></script>
+
+</body>
+</html>
