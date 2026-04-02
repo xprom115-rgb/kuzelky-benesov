@@ -9,7 +9,20 @@ import {
 console.log("aktuality.js načten");
 
 const listEl = document.getElementById("reservations-list");
+function toMinutes(t) {
+  // "HH:MM" -> minuty od 00:00
+  const [h, m] = (t || "00:00").split(":").map(Number);
+  return (h * 60) + (m || 0);
+}
 
+function todayIso() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+``
 function formatDate(isoDate){
   if (!isoDate || isoDate.length < 10) return isoDate || "";
   const [y,m,d] = isoDate.split("-");
