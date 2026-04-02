@@ -3,50 +3,68 @@
 <head>
   <meta charset="UTF-8">
   <title>Storno rezervace – Kuželky Benešov</title>
-  <link rel="stylesheet" href="style.css">
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="./style.css?v=20">
 </head>
 
 <body>
 
 <header>
-    <div class="header-left"><img src="logo.jpg" class="logo"></div>
-    <div class="header-title">Kuželky Benešov – Storno rezervace</div>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo">
+  </div>
+  <div class="header-title">Kuželky Benešov – Storno rezervace</div>
+  <div class="header-right"></div>
 </header>
 
 <nav>
- <ul>
-        <li><a href="index.html">Domů</a></li>
-        <li><a href="aktuality.html">Aktuality</a></li>
-        <li><a href="historie.html">Historie</a></li>
-        <li><a href="druzstva.html">Družstva</a></li>
-        <li><a href="rezervace.html">Rezervace</a></li>
-        <li><a href="habadura.html">Habaďůra</a></li>
-        <li><a href="kontakty.html">Kontakty</a></li>
-        <li><a href="admin.html">Admin</a></li>
-    </ul>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+  </ul>
 </nav>
 
 <main>
-<div class="content-box">
-  <h2>Zrušení rezervace</h2>
+  <div class="content-box">
+    <h2>Zrušení rezervace</h2>
 
-  <p>Zadejte kód rezervace:</p>
+    <p><strong>Zadejte kód rezervace:</strong> (kód jste dostali při potvrzení rezervace)</p>
 
-  <input type="text" id="code" placeholder="Např. AB39KQ">
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <input
+        type="text"
+        id="code"
+        placeholder="Např. U7X9VW"
+        autocomplete="off"
+        style="min-width:200px;"
+      >
+      <button
+        id="btn-cancel"
+        style="padding:10px 14px; border-radius:10px; border:0; background:#1e235c; color:#ffd700; font-weight:bold; cursor:pointer;"
+      >
+        Zrušit rezervaci
+      </button>
+    </div>
 
-  <button id="btn-cancel">Zrušit rezervaci</button>
+    <!-- Výsledek -->
+    <div id="result-box" style="display:none; margin-top:18px; padding:14px; border-radius:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);">
+      <h3 id="result-title" style="margin:0 0 8px 0;"></h3>
+      <p id="result-text" style="margin:0;"></p>
+    </div>
 
-  <div id="result-box" style="display:none;margin-top:20px;">
-    <h3 id="result-title"></h3>
-    <p id="result-text"></p>
+    <p style="margin-top:18px; font-size:14px; opacity:0.9;">
+      V případě technických problémů napište na <strong>kuzelkybn@gmail.com</strong>
+    </p>
   </div>
-</div>
 </main>
 
 <footer>© Kuželky Benešov – 2026</footer>
 
+<!-- ✅ DŮLEŽITÉ: načítej jen storno.js, nic dalšího -->
 <script type="module" src="./storno.js?v=20"></script>
 
 </body>
 </html>
-``
