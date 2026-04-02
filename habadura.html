@@ -1,1 +1,80 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Habaďůra</title><link rel='stylesheet' href='style.css'></head><body><header><div class='header-left'><img src='logo.jpg' class='logo'></div><div class='header-title'>Kuželky Benešov</div><div class='header-right'></div></header><nav><ul><li><a href='index.html'>Domů</a></li><li><a href='aktuality.html'>Aktuality</a></li><li><a href='historie.html'>Historie</a></li><li><a href='druzstva.html'>Družstva</a></li><li><a href='rezervace.html'>Rezervace</a></li><li><a href='habadura.html'>Habaďůra</a></li><li><a href='kontakty.html'>Kontakty</a></li><li><a href='admin.html'>Admin</a></li></ul></nav><main><div class='content-box'><h2>Habaďůra</h2><p>Obsah doplním později…</p></div></main><footer>© Kuželky Benešov – 2026</footer></body></html>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Memoriál Vavříka a Košaře – Habaďůra</title>
+
+  <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    /* Přepínače lig */
+    .liga-switch { display:flex; gap:10px; margin:20px 0 30px 0; }
+    .liga-btn {
+      padding:10px 18px; background:#1e235c; color:#ffd700;
+      border-radius:10px; cursor:pointer; font-weight:bold;
+      border:1px solid #ffd700;
+    }
+    .liga-btn.active { background:#ffd700; color:#1e235c; }
+
+    /* Sekce */
+    .section-title { color:#ffd700; font-size:26px; margin-top:30px; }
+
+    /* Formulář */
+    .form-block {
+      background:rgba(255,255,255,0.08);
+      padding:20px; border-radius:14px; margin-bottom:40px;
+      border:1px solid rgba(255,255,255,0.15);
+    }
+
+    .team-row, .player-row {
+      margin:10px 0; display:flex; gap:10px; flex-wrap:wrap;
+    }
+
+    .player-row input, .player-row select,
+    .team-row select {
+      padding:8px 10px; border-radius:8px; border:1px solid #bbb;
+      font-size:15px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-left"><img src="logo.jpg" class="logo"></div>
+  <div class="header-title">Memoriál Vavříka a Košaře – Habaďůra</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+
+    <h2>Memoriál Vavříka a Košaře – výsledky</h2>
+
+    <!-- Přepnutí lig -->
+    <div class="liga-switch">
+      <button id="btn-liga1" class="liga-btn active">1. liga</button>
+      <button id="btn-liga2" class="liga-btn">2. liga</button>
+    </div>
+
+    <!-- Formulář pro zadání zápasu hráčem -->
+    <h3 class="section-title">Zadání výsledku zápasu</h3>
+
+    <div id="form-zapas" class="form-block">
+
+      <!-- Liga -->
+      <div class="team-row">
+        <label><strong>Liga:</strong></label>
