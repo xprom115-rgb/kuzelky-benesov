@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Rezervace</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo">
+  </div>
+  <div class="header-title">Kuželky Benešov – Admin</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+
+    <!-- LOGIN -->
+    <div id="admin-login">
+      <h2>Admin – přihlášení</h2>
+      <p>Zadejte heslo pro vstup do administrace rezervací.</p>
+
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <input id="admin-pass" type="password" placeholder="Heslo" style="padding:10px 12px; border-radius:10px; border:1px solid #bbb; min-width:220px;">
+        <button id="admin-login-btn" style="padding:10px 14px; border-radius:10px; border:0; background:#1e235c; color:#ffd700; font-weight:bold; cursor:pointer;">
+          Přihlásit
+        </button>
+      </div>
+
+      <p id="admin-login-msg" style="margin-top:10px;"></p>
+    </div>
+
+    <!-- PANEL -->
+    <div id="admin-panel" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Admin – Rezervace</h2>
+        <button id="admin-logout-btn" style="padding:8px 12px; border-radius:10px; border:0; background:#ececec; cursor:pointer;">
+          Odhlásit
+        </button>
+      </div>
+
+      <hr style="margin:14px 0;">
+
+      <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+        <label for="filter-date"><strong>Filtr data:</strong></label>
+        <input id="filter-date" type="date" style="padding:8px 10px; border-radius:10px; border:1px solid #bbb;">
+        <button id="filter-clear" style="padding:8px 12px; border-radius:10px; border:0; background:#ececec; cursor:pointer;">Zrušit filtr</button>
+      </div>
+
+      <div id="admin-list" style="margin-top:16px;"></div>
+    </div>
+
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<!-- JS moduly -->
+<script type="module" src="config.js"></script>
+<script type="module" src="firebase-config.js"></script>
+<script type="module" src="admin-config.js"></script>
+<script type="module" src="admin.js"></script>
+
+</body>
+</html>
