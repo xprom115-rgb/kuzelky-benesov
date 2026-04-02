@@ -201,8 +201,9 @@ function showReservationResult(r) {
   };
 
   // QR
-  const stornoUrl = `${BASE_URL}rezervace-storno.html?id=${encodeURIComponent(r.id)}`;
-  renderQR(qrDiv, stornoUrl);
+ const stornoUrl = `${BASE_URL}rezervace-storno.html`;
+renderQR(qrDiv, stornoUrl);
+``
 
   // zobraz box
   box.style.display = "block";
