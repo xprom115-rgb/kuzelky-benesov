@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Admin – Rezervace</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./style.css?v=1">
 </head>
 
 <body>
@@ -18,15 +18,12 @@
 
 <nav>
   <ul>
-         <li><a href="index.html">Domů</a></li>
-        <li><a href="aktuality.html">Aktuality</a></li>
-        <li><a href="historie.html">Historie</a></li>
-        <li><a href="druzstva.html">Družstva</a></li>
-        <li><a href="rezervace.html">Rezervace</a></li>
-        <li><a href="habadura.html">Habaďůra</a></li>
-        <li><a href="kontakty.html">Kontakty</a></li>
-        <li><a href="admin.html">Admin</a></li>
-    </ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
 </nav>
 
 <main>
@@ -38,8 +35,10 @@
       <p>Zadejte heslo pro vstup do administrace rezervací.</p>
 
       <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <input id="admin-pass" type="password" placeholder="Heslo" style="padding:10px 12px; border-radius:10px; border:1px solid #bbb; min-width:220px;">
-        <button id="admin-login-btn" style="padding:10px 14px; border-radius:10px; border:0; background:#1e235c; color:#ffd700; font-weight:bold; cursor:pointer;">
+        <input id="admin-pass" type="password" placeholder="Heslo"
+               style="padding:10px 12px; border-radius:10px; border:1px solid #bbb; min-width:220px;">
+        <button id="admin-login-btn"
+                style="padding:10px 14px; border-radius:10px; border:0; background:#1e235c; color:#ffd700; font-weight:bold; cursor:pointer;">
           Přihlásit
         </button>
       </div>
@@ -51,7 +50,8 @@
     <div id="admin-panel" style="display:none;">
       <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
         <h2 style="margin:0;">Admin – Rezervace</h2>
-        <button id="admin-logout-btn" style="padding:8px 12px; border-radius:10px; border:0; background:#ececec; cursor:pointer;">
+        <button id="admin-logout-btn"
+                style="padding:8px 12px; border-radius:10px; border:0; background:#ececec; cursor:pointer;">
           Odhlásit
         </button>
       </div>
@@ -60,8 +60,23 @@
 
       <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
         <label for="filter-date"><strong>Filtr data:</strong></label>
-        <input id="filter-date" type="date" style="padding:8px 10px; border-radius:10px; border:1px solid #bbb;">
-        <button id="filter-clear" style="padding:8px 12px; border-radius:10px; border:0; background:#ececec; cursor:pointer;">Zrušit filtr</button>
+        <input id="filter-date" type="date"
+               style="padding:8px 10px; border-radius:10px; border:1px solid #bbb;">
+        <button id="filter-clear"
+                style="padding:8px 12px; border-radius:10px; border:0; background:#ececec; cursor:pointer;">
+          Zrušit filtr
+        </button>
+      </div>
+
+      <!-- ✅ ÚKLID DO VČEREJŠKA -->
+      <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+        <button id="cleanup-old"
+                style="padding:10px 14px; border-radius:10px; border:0; background:#ffdddd; cursor:pointer; font-weight:bold;">
+          Smazat rezervace do včerejška
+        </button>
+        <span style="opacity:0.85; font-size:14px;">
+          (smaže všechny rezervace se dnem menším než dnešní datum)
+        </span>
       </div>
 
       <div id="admin-list" style="margin-top:16px;"></div>
@@ -72,11 +87,11 @@
 
 <footer>© Kuželky Benešov – 2026</footer>
 
-<!-- JS moduly -->
-<script type="module" src="config.js"></script>
-<script type="module" src="firebase-config.js"></script>
-<script type="module" src="admin-config.js"></script>
-<script type="module" src="admin.js"></script>
+<!-- JS moduly (jen jednou, na konci body) -->
+<script type="module" src="./config.js?v=1"></script>
+<script type="module" src="./firebase-config.js?v=1"></script>
+<script type="module" src="./admin-config.js?v=1"></script>
+<script type="module" src="./admin.js?v=1"></script>
 
 </body>
 </html>
