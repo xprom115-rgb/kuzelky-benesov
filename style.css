@@ -1,1 +1,329 @@
-body {margin:0;font-family:Arial;background:url('benesov_kuzelky2.jpg') no-repeat center center fixed;background-size:cover;}header{display:flex;align-items:center;justify-content:space-between;background:#1e235c;color:yellow;padding:10px 20px;border-bottom:3px solid yellow;}.logo{height:70px;}.header-title{font-size:32px;font-weight:bold;}nav{background:#1e235c;border-bottom:2px solid yellow;}nav ul{list-style:none;display:flex;margin:0;padding:10px;gap:25px;justify-content:center;}nav a{color:yellow;text-decoration:none;font-weight:bold;}nav a:hover{text-decoration:underline;}main{padding:40px;}.content-box{background:rgba(30,30,30,0.60);padding:30px;border-radius:20px;color:white;max-width:900px;margin:80px auto;min-height:200px;box-shadow:0 0 25px rgba(0,0,0,0.3);backdrop-filter:blur(4px);}footer{text-align:left;padding:20px;color:white;font-size:14px;text-shadow:1px 1px 3px black;}@media(max-width:768px){header{flex-direction:column;text-align:center;padding:15px;}.logo{height:50px;margin-bottom:10px;}.header-title{font-size:24px;}nav ul{flex-direction:column;gap:10px;padding:15px 0;}nav a{font-size:18px;display:block;padding:6px 0;}main{padding:20px;}.content-box{padding:20px;margin:20px;border-radius:18px;background:rgba(30,30,30,0.75);} }@media(max-width:480px){.header-title{font-size:20px;}nav a{font-size:16px;}.content-box{padding:15px;}.content-box h2{font-size:20px;}}
+/* ============================= */
+/* ZÁKLADNÍ NASTAVENÍ */
+/* ============================= */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: url("benesov_kuzelky2.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+}
+
+/* ============================= */
+/* HLAVIČKA */
+/* ============================= */
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1e235c;
+    color: yellow;
+    padding: 10px 20px;
+    border-bottom: 3px solid yellow;
+}
+
+.logo {
+    height: 70px;
+}
+
+.header-title {
+    font-size: 32px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* ============================= */
+/* NAVIGACE */
+/* ============================= */
+
+nav {
+    background-color: #1e235c;
+    border-bottom: 2px solid yellow;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 10px;
+    gap: 25px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+nav a {
+    color: yellow;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+/* ============================= */
+/* HLAVNÍ OBSAH */
+/* ============================= */
+
+main {
+    padding: 40px;
+}
+
+.content-box {
+    background: rgba(30, 30, 30, 0.60);
+    padding: 30px;
+    border-radius: 20px;
+    color: white;
+    max-width: 980px;
+    margin: 40px auto;
+    box-shadow: 0 0 25px rgba(0,0,0,0.35);
+    backdrop-filter: blur(4px);
+}
+
+/* nadpisy uvnitř panelu */
+.content-box h2, .content-box h3, .content-box h4 {
+    margin-top: 0;
+    color: #ffd700;
+}
+
+/* ============================= */
+/* FORM PRVKY (date, inputy, selecty) */
+/* ============================= */
+
+input[type="date"],
+input[type="text"],
+input[type="password"],
+select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #bbb;
+    font-size: 16px;
+    outline: none;
+}
+
+input[type="date"] {
+    margin-top: 8px;
+}
+
+/* ============================= */
+/* REZERVACE – DRAHY a SLOTY */
+/* ============================= */
+
+#lanes {
+    display: grid;
+    gap: 18px;
+    margin-top: 10px;
+}
+
+.lane-box {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.lane-box h3 {
+    margin: 0 0 10px 0;
+    color: #ffd700;
+}
+
+.slot-btn {
+    margin: 4px 6px 4px 0;
+    padding: 7px 10px;
+    border-radius: 10px;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    min-width: 58px;
+}
+
+.slot-btn.free {
+    background: rgba(255, 215, 0, 0.92);
+    color: #1e235c;
+}
+
+.slot-btn.free:hover {
+    filter: brightness(0.95);
+}
+
+.slot-btn.busy {
+    background: rgba(220, 220, 220, 0.28);
+    color: rgba(255,255,255,0.65);
+    cursor: not-allowed;
+}
+
+/* ============================= */
+/* POTVRZENÍ REZERVACE (kód + QR) */
+/* ============================= */
+
+#reservation-result {
+    margin-top: 22px;
+    padding: 18px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+}
+
+.code-box {
+    margin: 8px 0 14px 0;
+}
+
+/* QR box trochu “vycentrovat” */
+#qrcode svg {
+    display: block;
+    margin: 10px 0;
+    background: white;
+    padding: 10px;
+    border-radius: 12px;
+}
+
+/* ============================= */
+/* MODÁLNÍ FORMULÁŘ REZERVACE */
+/* ============================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: grid;
+    place-items: center;
+    z-index: 9999;
+}
+
+.modal[hidden] {
+    display: none;
+}
+
+.modal-content {
+    width: min(520px, 92vw);
+    background: rgba(255,255,255,0.95);
+    color: #111;
+    border-radius: 14px;
+    padding: 20px 22px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+}
+
+.modal-content h3 {
+    margin: 0 0 12px 0;
+    color: #1e235c;
+}
+
+.modal-content .row {
+    display: grid;
+    gap: 6px;
+    margin: 10px 0;
+}
+
+.modal-content label {
+    font-weight: 600;
+}
+
+.modal-content input,
+.modal-content select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #bbb;
+    font-size: 16px;
+}
+
+.modal-content .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+.modal-content .actions .primary {
+    background: #1e235c;
+    color: #ffd700;
+    border: 0;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-content .actions button {
+    background: #ececec;
+    border: 0;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* ============================= */
+/* PATIČKA */
+/* ============================= */
+
+footer {
+    text-align: left;
+    padding: 20px;
+    color: white;
+    font-size: 14px;
+    text-shadow: 1px 1px 3px black;
+}
+
+/* ============================= */
+/* MOBILNÍ VERZE */
+/* ============================= */
+
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .logo {
+        height: 50px;
+        margin-bottom: 10px;
+    }
+
+    .header-title {
+        font-size: 24px;
+    }
+
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+        padding: 15px 0;
+    }
+
+    nav a {
+        font-size: 18px;
+        display: block;
+        padding: 6px 0;
+    }
+
+    main {
+        padding: 20px;
+    }
+
+    .content-box {
+        padding: 20px;
+        margin: 20px;
+        border-radius: 18px;
+        background: rgba(30,30,30,0.75);
+    }
+
+    .slot-btn {
+        min-width: 64px;
+        padding: 9px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-title {
+        font-size: 20px;
+    }
+
+    nav a {
+        font-size: 16px;
+    }
+
+    .content-box {
+        padding: 15px;
+    }
+}
