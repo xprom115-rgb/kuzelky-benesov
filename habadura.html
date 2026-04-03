@@ -4,22 +4,14 @@
   <meta charset="UTF-8">
   <title>Memoriál Vavříka a Košaře – Habaďůra</title>
 
-  <!-- CSS (cache-buster) -->
-  <link rel="stylesheet" href="./style.css?v=20yly jen pro tuto stránku -->
-  <style>
-    .liga-switch { display:flex; gap:10px; margin:18px 0 18px 0; flex-wrap:wrap; }
+  <!-- CSS -->
+  <link rel="stylesheet" href="./style.css?v=30{ display:flex; gap:10px; margin:18px 0; flex-wrap:wrap; }
     .liga-btn{
-      padding:10px 16px;
-      border-radius:10px;
-      border:1px solid #ffd700;
-      background:#1e235c;
-      color:#ffd700;
-      cursor:pointer;
-      font-weight:bold;
+      padding:10px 16px; border-radius:10px;
+      border:1px solid #ffd700; background:#1e235c; color:#ffd700;
+      cursor:pointer; font-weight:bold;
     }
     .liga-btn.active{ background:#ffd700; color:#1e235c; }
-
-    .section-title{ color:#ffd700; margin-top:26px; }
 
     .form-block{
       background: rgba(255,255,255,0.08);
@@ -35,58 +27,23 @@
     }
 
     .player-row{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-      margin:8px 0;
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:8px 0;
     }
     .player-row select, .player-row input{
       padding:9px 10px; border-radius:10px; border:1px solid #bbb; font-size:15px;
     }
-    .player-row .kuz, .player-row .bod { width:120px; }
-
     .save-btn{
-      margin-top:12px;
-      padding:12px 18px;
-      border-radius:10px;
-      border:0;
-      background:#ffd700;
-      color:#1e235c;
-      font-weight:bold;
-      cursor:pointer;
+      margin-top:12px; padding:12px 18px;
+      border-radius:10px; border:0;
+      background:#ffd700; color:#1e235c; font-weight:bold; cursor:pointer;
     }
-
     .summary{
-      margin-top:14px;
-      padding:12px 14px;
-      border-radius:12px;
+      margin-top:14px; padding:12px 14px; border-radius:12px;
       background: rgba(255,255,255,0.08);
       border: 1px solid rgba(255,255,255,0.12);
       font-size: 16px;
     }
-    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
-
-    /* jednoduchá tabulka (pokud ještě nemáš v CSS) */
-    table.tabulka{
-      width:100%;
-      border-collapse:collapse;
-      margin-top:10px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 12px;
-      overflow:hidden;
-    }
-    table.tabulka th, table.tabulka td{
-      padding:8px 10px;
-      border-bottom:1px solid rgba(255,255,255,0.12);
-      text-align:left;
-      vertical-align:middle;
-    }
-    table.tabulka th{
-      background: rgba(30,35,92,0.95);
-      color:#ffd700;
-    }
-    table.tabulka tr:last-child td{ border-bottom:none; }
-
-    .hint{ font-size:13px; opacity:0.85; margin-top:10px; }
+    .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; }
   </style>
 </head>
 
@@ -113,28 +70,22 @@
 
 <main>
   <div class="content-box">
-
     <h2>Memoriál Vavříka a Košaře – výsledky</h2>
 
-    <!-- Přepínače lig -->
     <div class="liga-switch">
       <button type="button" id="btn-liga1" class="liga-btn active">1. liga</button>
       <button type="button" id="btn-liga2" class="liga-btn">2. liga</button>
     </div>
 
-    <!-- Zadání výsledku -->
-    <h3 class="section-title">Zadání výsledku zápasu</h3>
+    <h3 style="color:#ffd700;">Zadání výsledku zápasu</h3>
 
-    <div id="form-zapas" class="form-block">
-
+    <div class="form-block">
       <div class="toolrow">
         <label><strong>Liga:</strong></label>
         <select id="liga-select">
           <option value="1">1. liga</option>
           <option value="2">2. liga</option>
         </select>
-
-        <span class="hint">Hráči zadávají výsledky sami. Opravy jen v adminu.</span>
       </div>
 
       <div class="toolrow">
@@ -148,38 +99,38 @@
       <h4 style="color:#ffd700; margin-top:16px;">Domácí hráči</h4>
       <div id="home-players">
         <div class="player-row">
-          <select class="player-name home-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+          <select class="home-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="home-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="home-body">
         </div>
         <div class="player-row">
-          <select class="player-name home-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+          <select class="home-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="home-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="home-body">
         </div>
         <div class="player-row">
-          <select class="player-name home-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+          <select class="home-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="home-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="home-body">
         </div>
       </div>
 
       <h4 style="color:#ffd700; margin-top:16px;">Hosté hráči</h4>
       <div id="away-players">
         <div class="player-row">
-          <select class="player-name away-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
+          <select class="away-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="away-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="away-body">
         </div>
         <div class="player-row">
-          <select class="player-name away-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
+          <select class="away-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="away-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="away-body">
         </div>
         <div class="player-row">
-          <select class="player-name away-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
+          <select class="away-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="away-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="away-body">
         </div>
       </div>
 
@@ -195,22 +146,15 @@
       </div>
 
       <button type="button" id="submit-match" class="save-btn">Uložit zápas</button>
-
-      <div class="hint">
-        Tip: Body u každého hráče zadávej jako <strong>0 / 1 / 2</strong>.
-      </div>
     </div>
 
-    <!-- Tabulka družstev -->
-    <h3 class="section-title">Tabulka družstev</h3>
+    <h3 style="color:#ffd700;">Tabulka družstev</h3>
     <div id="tab-druzstva"></div>
 
-    <!-- Tabulka hráčů -->
-    <h3 class="section-title">Tabulka hráčů</h3>
+    <h3 style="color:#ffd700;">Tabulka hráčů</h3>
     <div id="tab-hracu"></div>
 
-    <!-- Matice zápasů -->
-    <h3 class="section-title">Tabulka zápasů (matice)</h3>
+    <h3 style="color:#ffd700;">Tabulka zápasů (matice)</h3>
     <div id="tab-matice"></div>
 
   </div>
@@ -218,8 +162,5 @@
 
 <footer>© Kuželky Benešov – 2026</footer>
 
-<!-- JS moduly (vždy až na konci BODY, cache-buster) -->
-<script type="module" src="./habadura.js?v=21
-
-</body>
-</html>
+<!-- ✅ Načítáme jen jeden modul, který si importuje db -->
+<script type="module" src="./habadura.js?v=21``
