@@ -98,15 +98,20 @@ function computeSums(){
   const sumAK = sumArray(ak);
   const sumAB = sumArray(ab);
 
-  // ✅ bonus +2 pro tým s více kuželkami
+  // ✅ bonus za více kuželek: +2, při remíze +1:+1
   let bonusHome = 0, bonusAway = 0;
-  if (sumHK > sumAK) bonusHome = 2;
-  else if (sumHK < sumAK) bonusAway = 2;
+  if (sumHK > sumAK) {
+    bonusHome = 2; bonusAway = 0;
+  } else if (sumHK < sumAK) {
+    bonusHome = 0; bonusAway = 2;
+  } else {
+    bonusHome = 1; bonusAway = 1; // ✅ remíza kuželek
+  }
 
   const totalHB = sumHB + bonusHome;
   const totalAB = sumAB + bonusAway;
 
-  // aktualizace UI
+  // UI souhrn
   sumBodyEl.textContent = `${totalHB} : ${totalAB}`;
   sumKuzEl.textContent  = `${sumHK} : ${sumAK}`;
 
