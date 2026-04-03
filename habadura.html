@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <title>Memoriál Vavříka a Košaře – Habaďůra</title>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="./style.css?v=30{ display:flex; gap:10px; margin:18px 0; flex-wrap:wrap; }
+  <!-- CSS (cache-buster) -->
+  <link rel="stylesheet" href="./style.css?v=30y (patří do <style>, ne do href) -->
+  <style>
+    .liga-switch { display:flex; gap:10px; margin:18px 0; flex-wrap:wrap; }
     .liga-btn{
       padding:10px 16px; border-radius:10px;
       border:1px solid #ffd700; background:#1e235c; color:#ffd700;
@@ -25,25 +27,10 @@
     .toolrow input, .toolrow select{
       padding:10px 12px; border-radius:10px; border:1px solid #bbb; font-size:15px;
     }
-
-    .player-row{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:8px 0;
-    }
+    .player-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:8px 0; }
     .player-row select, .player-row input{
       padding:9px 10px; border-radius:10px; border:1px solid #bbb; font-size:15px;
     }
-    .save-btn{
-      margin-top:12px; padding:12px 18px;
-      border-radius:10px; border:0;
-      background:#ffd700; color:#1e235c; font-weight:bold; cursor:pointer;
-    }
-    .summary{
-      margin-top:14px; padding:12px 14px; border-radius:12px;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      font-size: 16px;
-    }
-    .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; }
   </style>
 </head>
 
