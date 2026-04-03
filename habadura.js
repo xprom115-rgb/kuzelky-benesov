@@ -209,3 +209,71 @@ submitMatchBtn.addEventListener("click", saveMatch);
 
 // Default datum = dnes
 dateInput.valueAsDate = new Date();
+// ===============================================
+//  HABAĎŮRA – ČÁST 3/5
+//  Výpočet tabulky DRUŽSTEV (průběžné pořadí)
+// ===============================================
+
+import {
+  onSnapshot,
+  collection,
+  query,
+  where
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+const tabDruzstva = document.getElementById("tab-druzstva");
+
+// ------------------------------------------------
+// VÝPOČET TABULKY TÝMŮ PRO DANOU LIGU
+// ------------------------------------------------
+function computeTeamsTable(matches, liga) {
+  // seznam týmů jen z této ligy
+  const ligaTeams = teams.filter(t => t.liga === Number(liga));
+
+  // výchozí struktura statistik
+  const stats = {};
+  ligaTeams.forEach(t => {
+    stats[t.id] = {
+      teamId: t.id,
+      name: t.name,
+      zapasy: 0,
+      kuzelky: 0,
+      body: 0,
+      scoreBodyFor: 0,
+      scoreBodyAgainst: 0,
+      scoreKuzFor: 0,
+      scoreKuzAgainst: 0,
+      nv: 0 // nejlepší výkon hráče v týmu
+    };
+  });
+
+  // projít všechny zápasy
+  matches.forEach(m => {
+    const home = stats[m.homeTeam];
+    const away = stats[m.awayTeam];
+
+    if (!home || !away) return; // pro jistotu
+
+    // domácí
+    home.zapasy++;
+    home.kuzelky += m.sumHome;
+    home.body += m.bodyHome;
+
+    home.scoreBodyFor += m.bodyHome;
+    home.scoreBodyAgainst += m.bodyAway;
+    home.scoreKuzFor += m.sumHome;
+    home.scoreKuzAgainst += m.sumAway;
+
+    // NV domácí
+    m.homePlayers.forEach(p => {
+      if (p.kuzelky > home.nv) home.nv = p.kuzelky;
+    });
+
+    // hosté
+    away.zapasy++;
+    away.kuzelky += m.sumAway;
+    away.body += m.bodyAway;
+
+    away.scoreBodyFor += m.bodyAway;
+    away.scoreBodyAgainst += m.bodyHome;
+    away.scoreKuzFor += m.sumAway;
