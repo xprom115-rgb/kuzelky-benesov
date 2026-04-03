@@ -277,3 +277,79 @@ function computeTeamsTable(matches, liga) {
     away.scoreBodyFor += m.bodyAway;
     away.scoreBodyAgainst += m.bodyHome;
     away.scoreKuzFor += m.sumAway;
+// ===============================================
+//  HABAĎŮRA – ČÁST 4/5
+//  Tabulka HRÁČŮ – průběžné pořadí
+// ===============================================
+
+const tabHracu = document.getElementById("tab-hracu");
+
+// ------------------------------------------------
+// Výpočet tabulky hráčů pro danou ligu
+// ------------------------------------------------
+function computePlayersTable(matches, liga) {
+  const playerStats = {};
+
+  // projdeme všechny zápasy v lize
+  matches.forEach(m => {
+    // domácí hráči
+    m.homePlayers.forEach(p => {
+      const key = p.playerId;
+      if (!playerStats[key]) {
+        const pl = players.find(x => x.id === key);
+        if (!pl) return;
+        playerStats[key] = {
+          id: key,
+          name: pl.name,
+          teamId: pl.teamId,
+          zapasy: 0,
+          kuzelky: 0,
+          body: 0,
+          nv: 0
+        };
+      }
+
+      const s = playerStats[key];
+      s.zapasy++;
+      s.kuzelky += p.kuzelky;
+      s.body += p.body;
+      if (p.kuzelky > s.nv) s.nv = p.kuzelky;
+    });
+
+    // hosté hráči
+    m.awayPlayers.forEach(p => {
+      const key = p.playerId;
+      if (!playerStats[key]) {
+        const pl = players.find(x => x.id === key);
+        if (!pl) return;
+        playerStats[key] = {
+          id: key,
+          name: pl.name,
+          teamId: pl.teamId,
+          zapasy: 0,
+          kuzelky: 0,
+          body: 0,
+          nv: 0
+        };
+      }
+
+      const s = playerStats[key];
+      s.zapasy++;
+      s.kuzelky += p.kuzelky;
+      s.body += p.body;
+      if (p.kuzelky > s.nv) s.nv = p.kuzelky;
+    });
+  });
+
+  // spočítat průměry
+  const rows = Object.values(playerStats).map(s => {
+    s.prumer = s.zapasy > 0 ? (s.kuzelky / s.zapasy).toFixed(2) : "0.00";
+    // přidáme název týmu
+    const team = teams.find(t => t.id === s.teamId);
+    s.teamName = team ? team.name : "";
+    return s;
+  });
+
+  // řazení:
+  return rows.sort((a, b) => {
+    // 1. průměr
