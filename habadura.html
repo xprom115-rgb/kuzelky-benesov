@@ -4,58 +4,110 @@
   <meta charset="UTF-8">
   <title>Memoriál Vavříka a Košaře – Habaďůra</title>
 
-  <link rel="stylesheet" href="./style.css?v=1">
-
+  <!-- CSS (cache-buster) -->
+  <link rel="stylesheet" href="./style.css?v=20yly jen pro tuto stránku -->
   <style>
-    /* Přepínače lig */
-    .liga-switch { display:flex; gap:10px; margin:20px 0 30px 0; }
-    .liga-btn {
-      padding:10px 18px; background:#1e235c; color:#ffd700;
-      border-radius:10px; cursor:pointer; font-weight:bold;
+    .liga-switch { display:flex; gap:10px; margin:18px 0 18px 0; flex-wrap:wrap; }
+    .liga-btn{
+      padding:10px 16px;
+      border-radius:10px;
       border:1px solid #ffd700;
+      background:#1e235c;
+      color:#ffd700;
+      cursor:pointer;
+      font-weight:bold;
     }
-    .liga-btn.active { background:#ffd700; color:#1e235c; }
+    .liga-btn.active{ background:#ffd700; color:#1e235c; }
 
-    /* Sekce */
-    .section-title { color:#ffd700; font-size:26px; margin-top:30px; }
+    .section-title{ color:#ffd700; margin-top:26px; }
 
-    /* Formulář */
-    .form-block {
-      background:rgba(255,255,255,0.08);
-      padding:20px; border-radius:14px; margin-bottom:40px;
-      border:1px solid rgba(255,255,255,0.15);
+    .form-block{
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 10px;
     }
 
-    .team-row, .player-row {
-      margin:10px 0; display:flex; gap:10px; flex-wrap:wrap;
+    .toolrow{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:10px 0; }
+    .toolrow input, .toolrow select{
+      padding:10px 12px; border-radius:10px; border:1px solid #bbb; font-size:15px;
     }
 
-    .player-row input, .player-row select,
-    .team-row select {
-      padding:8px 10px; border-radius:8px; border:1px solid #bbb;
-      font-size:15px;
+    .player-row{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin:8px 0;
     }
+    .player-row select, .player-row input{
+      padding:9px 10px; border-radius:10px; border:1px solid #bbb; font-size:15px;
+    }
+    .player-row .kuz, .player-row .bod { width:120px; }
+
+    .save-btn{
+      margin-top:12px;
+      padding:12px 18px;
+      border-radius:10px;
+      border:0;
+      background:#ffd700;
+      color:#1e235c;
+      font-weight:bold;
+      cursor:pointer;
+    }
+
+    .summary{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 16px;
+    }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+
+    /* jednoduchá tabulka (pokud ještě nemáš v CSS) */
+    table.tabulka{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:10px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      overflow:hidden;
+    }
+    table.tabulka th, table.tabulka td{
+      padding:8px 10px;
+      border-bottom:1px solid rgba(255,255,255,0.12);
+      text-align:left;
+      vertical-align:middle;
+    }
+    table.tabulka th{
+      background: rgba(30,35,92,0.95);
+      color:#ffd700;
+    }
+    table.tabulka tr:last-child td{ border-bottom:none; }
+
+    .hint{ font-size:13px; opacity:0.85; margin-top:10px; }
   </style>
 </head>
 
 <body>
 
 <header>
-  <div class="header-left"><img src="logo.jpg" class="logo"></div>
-  <div class="header-title">Memoriál Vavříka a Košaře – Habaďůra</div>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logole">Memoriál Vavříka a Košaře – Habaďůra</div>
   <div class="header-right"></div>
 </header>
 
 <nav>
   <ul>
-    <li><a href="index.html">Domů</a></li>
-    <li><a href="aktuality.html">Aktuality</a></li>
-    <li><a href="historie.html">Historie</a></li>
-    <li><a href="druzstva.html">Družstva</a></li>
-    <li><a href="rezervace.html">Rezervace</a></li>
-    <li><a href="habadura.html">Habaďůra</a></li>
-    <li><a href="kontakty.html">Kontakty</a></li>
-    <li><a href="admin.html">Admin</a></li>
+    <li><a href="index.html/li>
+    <li><a href="aktuality.html</a></li>
+    <li><a href="historie.html/a></li>
+    <li><a href="druzstva.html/a></li>
+    <li><a href="rezervace.html</a></li>
+    <li><a href="habadura.html/a></li>
+    <li><a href="kontakty.html/a></li>
+    <li><a href="admin.html</li>
   </ul>
 </nav>
 
@@ -64,17 +116,75 @@
 
     <h2>Memoriál Vavříka a Košaře – výsledky</h2>
 
-    <!-- Přepnutí lig -->
+    <!-- Přepínače lig -->
     <div class="liga-switch">
-     <button type="button" id="btn-liga1" class="liga-btn active">1. liga</button>
-<button type="button" id="btn-liga2" class="liga-btn">2. liga</button>
+      <button type="button" id="btn-liga1" class="liga-btn active">1. liga</button>
+      <button type="button" id="btn-liga2" class="liga-btn">2. liga</button>
     </div>
 
-    <!-- Formulář pro zadání zápasu hráčem -->
+    <!-- Zadání výsledku -->
     <h3 class="section-title">Zadání výsledku zápasu</h3>
 
     <div id="form-zapas" class="form-block">
 
-      <!-- Liga -->
-      <div class="team-row">
+      <div class="toolrow">
         <label><strong>Liga:</strong></label>
+        <select id="liga-select">
+          <option value="1">1. liga</option>
+          <option value="2">2. liga</option>
+        </select>
+
+        <span class="hint">Hráči zadávají výsledky sami. Opravy jen v adminu.</span>
+      </div>
+
+      <div class="toolrow">
+        <label><strong>Domácí:</strong></label>
+        <select id="team-home"></select>
+
+        <label><strong>Hosté:</strong></label>
+        <select id="team-away"></select>
+      </div>
+
+      <h4 style="color:#ffd700; margin-top:16px;">Domácí hráči</h4>
+      <div id="home-players">
+        <div class="player-row">
+          <select class="player-name home-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+        </div>
+        <div class="player-row">
+          <select class="player-name home-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+        </div>
+        <div class="player-row">
+          <select class="player-name home-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+        </div>
+      </div>
+
+      <h4 style="color:#ffd700; margin-top:16px;">Hosté hráči</h4>
+      <div id="away-players">
+        <div class="player-row">
+          <select class="player-name away-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
+        </div>
+        <div class="player-row">
+          <select class="player-name away-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
+        </div>
+        <div class="player-row">
+          <select class="player-name away-player"></select>
+          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
+        </div>
+      </div>
+
+      <div class="toolrow" style="margin-top:14px;">
+        <label><strong>Datum zápasu:</strong></label>
+        <input type="date" id="match-date">
+      </div>
+
