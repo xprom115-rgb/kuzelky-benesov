@@ -70,3 +70,142 @@ function fillTeams(liga) {
 }
 
 // ===============================================
+// ===============================================
+//  HABAĎŮRA – ČÁST 2/5
+//  Uložení zápasu do Firestore + výpočty
+// ===============================================
+
+import {
+  addDoc,
+  Timestamp
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+// HTML prvky pro souhrny a tlačítko
+const sumBodyEl = document.getElementById("sum-body");
+const sumKuzEl = document.getElementById("sum-kuz");
+const dateInput = document.getElementById("match-date");
+const submitMatchBtn = document.getElementById("submit-match");
+
+// ------------------------------------------------
+// Funkce: výpočet součtů z polí formuláře
+// ------------------------------------------------
+function computeSums() {
+  // domácí
+  const homeKuz = [...document.querySelectorAll(".home-kuz")]
+    .map(i => Number(i.value) || 0);
+  const homeBody = [...document.querySelectorAll(".home-body")]
+    .map(i => Number(i.value) || 0);
+  
+  // hosté
+  const awayKuz = [...document.querySelectorAll(".away-kuz")]
+    .map(i => Number(i.value) || 0);
+  const awayBody = [...document.querySelectorAll(".away-body")]
+    .map(i => Number(i.value) || 0);
+
+  // součty
+  const sumHK = homeKuz.reduce((a,b)=>a+b,0);
+  const sumHB = homeBody.reduce((a,b)=>a+b,0);
+  const sumAK = awayKuz.reduce((a,b)=>a+b,0);
+  const sumAB = awayBody.reduce((a,b)=>a+b,0);
+
+  // aktualizace UI
+  sumBodyEl.textContent = `${sumHB} : ${sumAB}`;
+  sumKuzEl.textContent = `${sumHK} : ${sumAK}`;
+
+  return {
+    sumHK, sumHB, sumAK, sumAB
+  };
+}
+
+// Počítat při jakékoli změně
+["input","change"].forEach(ev=>{
+  document.addEventListener(ev, computeSums);
+});
+
+// ------------------------------------------------
+// Funkce: sejmutí hráčů (3 domácí / 3 hosté)
+// ------------------------------------------------
+function readPlayers(selectorName, selectorKuz, selectorBody) {
+  const names = [...document.querySelectorAll(selectorName)];
+  const kuzelky = [...document.querySelectorAll(selectorKuz)];
+  const body = [...document.querySelectorAll(selectorBody)];
+
+  return names.map((sel, i) => ({
+    playerId: sel.value,
+    kuzelky: Number(kuzelky[i].value) || 0,
+    body: Number(body[i].value) || 0
+  }));
+}
+
+// ------------------------------------------------
+// Kontrola formuláře
+// ------------------------------------------------
+function validateForm(homePlayers, awayPlayers) {
+  for (let p of [...homePlayers, ...awayPlayers]) {
+    if (!p.playerId) return "Nevybral jsi hráče.";
+    if (p.kuzelky < 0) return "Kuželky musí být kladné číslo.";
+    if (![0,1,2].includes(p.body)) return "Body musí být 0, 1, nebo 2.";
+  }
+
+  return null;
+}
+
+// ------------------------------------------------
+// Uložení zápasu
+// ------------------------------------------------
+async function saveMatch() {
+  const liga = Number(ligaSelect.value);
+  const homeTeam = teamHome.value;
+  const awayTeam = teamAway.value;
+  const date = dateInput.value;
+
+  // hráči
+  const homePlayers = readPlayers(".home-player", ".home-kuz", ".home-body");
+  const awayPlayers = readPlayers(".away-player", ".away-kuz", ".away-body");
+
+  const error = validateForm(homePlayers, awayPlayers);
+  if (error) {
+    alert(error);
+    return;
+  }
+
+  const { sumHK, sumHB, sumAK, sumAB } = computeSums();
+
+  if (!date) {
+    alert("Vyber datum zápasu.");
+    return;
+  }
+
+  const data = {
+    liga,
+    date,
+    homeTeam,
+    awayTeam,
+    homePlayers,
+    awayPlayers,
+    sumHome: sumHK,
+    sumAway: sumAK,
+    bodyHome: sumHB,
+    bodyAway: sumAB,
+    createdAt: Timestamp.now()
+  };
+
+  try {
+    await addDoc(collection(db, "matches"), data);
+    alert("✅ Zápas byl úspěšně uložen!");
+
+    // Vyčistit formulář
+    document.querySelectorAll("input[type=number]").forEach(el => el.value = "");
+    computeSums();
+
+  } catch (e) {
+    console.error(e);
+    alert("❌ Nepodařilo se uložit zápas. Podívej se do konzole.");
+  }
+}
+
+// Kliknutí na uložit
+submitMatchBtn.addEventListener("click", saveMatch);
+
+// Default datum = dnes
+dateInput.valueAsDate = new Date();
