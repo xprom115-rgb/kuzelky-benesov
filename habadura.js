@@ -1,4 +1,4 @@
-
+console.log("✅ habadura.js běží");
 import { db } from "./firebase-config.js";
 import {
   collection,
