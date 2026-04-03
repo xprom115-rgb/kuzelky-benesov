@@ -98,12 +98,20 @@ function computeSums(){
   const sumAK = sumArray(ak);
   const sumAB = sumArray(ab);
 
-  sumBodyEl.textContent = `${sumHB} : ${sumAB}`;
+  // ✅ bonus +2 pro tým s více kuželkami
+  let bonusHome = 0, bonusAway = 0;
+  if (sumHK > sumAK) bonusHome = 2;
+  else if (sumHK < sumAK) bonusAway = 2;
+
+  const totalHB = sumHB + bonusHome;
+  const totalAB = sumAB + bonusAway;
+
+  // aktualizace UI
+  sumBodyEl.textContent = `${totalHB} : ${totalAB}`;
   sumKuzEl.textContent  = `${sumHK} : ${sumAK}`;
 
-  return { sumHK, sumHB, sumAK, sumAB };
+  return { sumHK, sumHB, sumAK, sumAB, bonusHome, bonusAway, totalHB, totalAB };
 }
-
 function validatePlayers(list){
   for (const p of list){
     if (!p.playerId) return "Nevybral jsi hráče ve všech řádcích.";
