@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Habaďůra (Memoriál Vavříka a Košaře)</title>
+  <link rel="stylesheet" href="./style.css?v=1">
+  <style>
+    .tabs { display:flex; gap:10px; flex-wrap:wrap; margin:14px 0; }
+    .tabbtn {
+      padding:10px 14px; border-radius:10px; border:1px solid rgba(255,255,255,0.25);
+      background: rgba(255,255,255,0.08); color: #fff; cursor:pointer; font-weight:bold;
+    }
+    .tabbtn.active { background:#ffd700; color:#1e235c; border-color:#ffd700; }
+    .panel { display:none; margin-top:14px; }
+    .panel.active { display:block; }
+
+    .toolrow { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:12px 0; }
+    .toolrow input, .toolrow select {
+      padding:10px 12px; border-radius:10px; border:1px solid #bbb; font-size:15px;
+    }
+    .btn-primary{
+      padding:10px 14px; border-radius:10px; border:0; background:#1e235c; color:#ffd700;
+      font-weight:bold; cursor:pointer;
+    }
+    .btn-soft{
+      padding:10px 14px; border-radius:10px; border:0; background:#ececec; cursor:pointer;
+      font-weight:bold;
+    }
+    .btn-danger{
+      padding:8px 12px; border-radius:10px; border:0; background:#ffdddd; cursor:pointer;
+      font-weight:bold;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 12px 0;
+    }
+
+    .listrow{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.15);
+    }
+    .listrow:last-child{ border-bottom:none; }
+
+    .small { font-size: 13px; opacity: 0.85; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; }
+    .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+    @media (max-width: 820px){ .grid2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo">
+  </div>
+  <div class="header-title">Admin – Habaďůra</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+
+    <!-- LOGIN -->
+    <div id="admin-login">
+      <h2>Administrace Habaďůry</h2>
+      <p>Zadejte heslo pro vstup (stejné jako admin rezervací).</p>
+
+      <div class="toolrow">
+        <input id="admin-pass" type="password" placeholder="Heslo">
+        <button id="admin-login-btn" class="btn-primary">Přihlásit</button>
+      </div>
+
+      <p id="admin-login-msg" class="small"></p>
+    </div>
+
+    <!-- PANEL -->
+    <div id="admin-panel" style="display:none;">
+      <div class="toolrow" style="justify-content:space-between;">
+        <div>
+          <h2 style="margin:0;">Memoriál Vavříka a Košaře – Admin</h2>
+          <div class="small">Zde opravíš špatně zadané zápasy a spravuješ týmy/hráče.</div>
+        </div>
+        <button id="admin-logout-btn" class="btn-soft">Odhlásit</button>
+      </div>
+
+      <hr style="margin:14px 0;">
+
+      <div class="toolrow">
+        <label><strong>Liga:</strong></label>
+        <select id="liga-admin">
+          <option value="1">1. liga</option>
+          <option value="2">2. liga</option>
+        </select>
+
+        <span class="small">Přepíná data v Zápasech/Týmech/Hráčích.</span>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tabbtn active" data-tab="matches">Zápasy</button>
+        <button class="tabbtn" data-tab="teams">Týmy</button>
+        <button class="tabbtn" data-tab="players">Hráči</button>
+      </div>
+
+      <!-- MATCHES -->
+      <div id="panel-matches" class="panel active">
+        <div class="card">
+          <h3 style="margin:0 0 10px 0;">Zápasy (opravy / mazání)</h3>
+
+          <div class="toolrow">
+            <label><strong>Filtr datum:</strong></label>
+            <input id="match-filter-date" type="date">
+            <button id="match-filter-clear" class="btn-soft">Zrušit filtr</button>
+          </div>
+
+          <div id="matches-list"></div>
+        </div>
+
+        <div class="card" id="edit-box" style="display:none;">
+          <h3 style="margin:0 0 10px 0;">Upravit zápas</h3>
+          <div class="small">Uprav hodnoty a ulož. Součty se přepočítají.</div>
+
+          <div class="toolrow">
+            <label><strong>Datum:</strong></label>
+            <input id="edit-date" type="date">
+          </div>
+
+          <div class="grid2">
+            <div>
+              <h4 style="margin:10px 0; color:#ffd700;">Domácí</h4>
+              <div class="toolrow">
+                <label>Team:</label>
+                <select id="edit-home-team"></select>
+              </div>
+
+              <div id="edit-home-players"></div>
+
+              <div class="small">
+                Součet kuželek: <span id="edit-sum-home-kuz" class="mono">0</span> |
+                Body: <span id="edit-sum-home-body" class="mono">0</span>
+              </div>
+            </div>
+
+            <div>
+              <h4 style="margin:10px 0; color:#ffd700;">Hosté</h4>
+              <div class="toolrow">
+                <label>Team:</label>
+                <select id="edit-away-team"></select>
+              </div>
+
+              <div id="edit-away-players"></div>
+
+              <div class="small">
+                Součet kuželek: <span id="edit-sum-away-kuz" class="mono">0</span> |
+                Body: <span id="edit-sum-away-body" class="mono">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="toolrow" style="margin-top:12px;">
+            <button id="edit-cancel" class="btn-soft">Zavřít</button>
+            <button id="edit-save" class="btn-primary">Uložit změny</button>
