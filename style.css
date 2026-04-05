@@ -343,3 +343,16 @@ a:hover, a:focus {
 a:active {
     text-decoration: none;
 }
+/* ============================= */
+/* ODKAZY + PODTRŽENÍ – vypnout na celém webu */
+/* ============================= */
+
+a, a:visited, a:hover, a:focus, a:active {
+  color: inherit;
+  text-decoration: none !important;
+}
+
+/* Pokud někde používáš <u>, vypneme i to */
+u {
+  text-decoration: none !important;
+}
