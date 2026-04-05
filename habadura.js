@@ -185,6 +185,19 @@ function fillPlayers(){
     sel.disabled = false;
     awayPlayers.forEach(p => sel.appendChild(makeOption(p.id, p.name)));
   });
+  // Pokud chybí hráči v některém týmu, nedovol ukládat zápas
+const homeOk = homePlayers.length >= 3;
+const awayOk = awayPlayers.length >= 3;
+
+submitBtn.disabled = !(homeOk && awayOk);
+submitBtn.style.opacity = submitBtn.disabled ? "0.5" : "1";
+submitBtn.style.cursor = submitBtn.disabled ? "not-allowed" : "pointer";
+
+if (submitBtn.disabled) {
+  submitBtn.title = "Nejdřív přidej alespoň 3 hráče do domácího i hostujícího týmu (Firestore: players).";
+} else {
+  submitBtn.title = "";
+}
 }
 
 // --------------- Switch liga ---------------
