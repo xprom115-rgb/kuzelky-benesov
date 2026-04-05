@@ -204,3 +204,317 @@ function switchLiga(liga){
 
 btnLiga1.addEventListener("click", (e)=>{ e.preventDefault(); switchLiga("1"); });
 btnLiga2.addEventListener("click", (e)=>{ e.preventDefault(); switchLiga("2"); });
+ligaSelect.addEventListener("change", ()=> switchLiga(ligaSelect.value));
+teamHome.addEventListener("change", fillPlayers);
+teamAway.addEventListener("change", fillPlayers);
+
+// --------------- Read players from form ---------------
+function readPlayers(side){
+  const sels = side === "home" ? [...homePlayerSelects] : [...awayPlayerSelects];
+  const kuzs = side === "home" ? [...homeKuzInputs] : [...awayKuzInputs];
+  const bods = side === "home" ? [...homeBodyInputs] : [...awayBodyInputs];
+
+  return sels.map((sel, i) => ({
+    playerId: sel.value,
+    kuzelky: Number(kuzs[i].value) || 0,
+    body: Number(bods[i].value) || 0
+  }));
+}
+
+function validatePlayers(list){
+  for (const p of list){
+    if (!p.playerId) return "Nevybral jsi hráče ve všech řádcích.";
+    if (p.kuzelky < 0) return "Kuželky musí být kladné číslo.";
+    if (![0,1,2].includes(p.body)) return "Body musí být 0, 1 nebo 2.";
+  }
+  return null;
+}
+
+// --------------- Save match (create only) ---------------
+async function saveMatch(){
+  const liga = Number(ligaSelect.value);
+  const homeTeam = teamHome.value;
+  const awayTeam = teamAway.value;
+  const date = dateInput.value;
+
+  if (!date) return alert("Vyber datum zápasu.");
+  if (!homeTeam || !awayTeam) return alert("Vyber oba týmy.");
+  if (homeTeam === awayTeam) return alert("Domácí a hosté musí být různé týmy.");
+
+  const homePlayers = readPlayers("home");
+  const awayPlayers = readPlayers("away");
+
+  const err1 = validatePlayers(homePlayers);
+  if (err1) return alert(err1);
+  const err2 = validatePlayers(awayPlayers);
+  if (err2) return alert(err2);
+
+  const { sumHK, sumHB, sumAK, sumAB, bonusHome, bonusAway, totalHB, totalAB } = computeSums();
+
+  const data = {
+    liga,
+    date,
+    homeTeam,
+    awayTeam,
+    homePlayers,
+    awayPlayers,
+
+    sumHome: sumHK,
+    sumAway: sumAK,
+
+    // ✅ týmové body už včetně bonusu
+    bodyHome: totalHB,
+    bodyAway: totalAB,
+
+    // bonus ukládáme pro kontrolu
+    bonusHome,
+    bonusAway,
+
+    createdAt: Timestamp.now()
+  };
+
+  try{
+    await addDoc(collection(db, "matches"), data);
+    alert("✅ Zápas byl uložen.");
+
+    // vyčistit čísla (hráče necháme vybrané)
+    [...homeKuzInputs, ...homeBodyInputs, ...awayKuzInputs, ...awayBodyInputs].forEach(i => i.value = "");
+    computeSums();
+  } catch(e){
+    console.error(e);
+    alert("❌ Nepodařilo se uložit zápas (zřejmě práva). Podívej se do konzole.");
+  }
+}
+
+submitBtn.addEventListener("click", saveMatch);
+
+// --------------- Teams table ---------------
+function computeTeamsTable(matches, liga){
+  const ligaTeams = teams.filter(t => Number(t.liga) === Number(liga));
+  const stats = {};
+  ligaTeams.forEach(t => {
+    stats[t.id] = {
+      teamId: t.id,
+      name: t.name,
+      zapasy: 0,
+      kuzelky: 0,
+      body: 0,
+      scoreFor: 0,
+      scoreAgainst: 0,
+      nv: 0
+    };
+  });
+
+  matches.forEach(m => {
+    const home = stats[m.homeTeam];
+    const away = stats[m.awayTeam];
+    if (!home || !away) return;
+
+    home.zapasy++;
+    home.kuzelky += m.sumHome;
+    home.body += m.bodyHome;             // ✅ už včetně bonusu
+    home.scoreFor += m.bodyHome;
+    home.scoreAgainst += m.bodyAway;
+    (m.homePlayers||[]).forEach(p => { if ((p.kuzelky||0) > home.nv) home.nv = p.kuzelky||0; });
+
+    away.zapasy++;
+    away.kuzelky += m.sumAway;
+    away.body += m.bodyAway;             // ✅ už včetně bonusu
+    away.scoreFor += m.bodyAway;
+    away.scoreAgainst += m.bodyHome;
+    (m.awayPlayers||[]).forEach(p => { if ((p.kuzelky||0) > away.nv) away.nv = p.kuzelky||0; });
+  });
+
+  const rows = Object.values(stats).map(s => ({
+    ...s,
+    prumer: s.zapasy ? (s.kuzelky / s.zapasy).toFixed(2) : "0.00"
+  }));
+
+  rows.sort((a,b)=>{
+    if (b.body !== a.body) return b.body - a.body;
+    const diff = (b.scoreFor - b.scoreAgainst) - (a.scoreFor - a.scoreAgainst);
+    if (diff !== 0) return diff;
+    return b.kuzelky - a.kuzelky;
+  });
+
+  return rows;
+}
+
+function renderTeamsTable(liga, matches){
+  const rows = computeTeamsTable(matches, liga);
+  let html = `<table class="tabulka">
+    <tr>
+      <th>Poř</th><th>Družstvo</th><th>Celkem</th><th>Zápasy</th><th>Průměr</th><th>Skóre</th><th>Body</th><th>NV</th>
+    </tr>`;
+
+  rows.forEach((r,i)=>{
+    html += `<tr>
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.kuzelky}</td>
+      <td>${r.zapasy}</td>
+      <td>${r.prumer}</td>
+      <td>${r.scoreFor}:${r.scoreAgainst}</td>
+      <td>${r.body}</td>
+      <td>${r.nv}</td>
+    </tr>`;
+  });
+
+  html += `</table>`;
+  tabDruzstva.innerHTML = html;
+}
+
+// --------------- Players table ---------------
+function computePlayersTable(matches, liga){
+  const ps = {};
+
+  function addLine(playerId, kuzelky, body){
+    const pl = players.find(x => x.id === playerId);
+    if (!pl) return;
+    if (Number(pl.liga) !== Number(liga)) return;
+
+    if (!ps[playerId]){
+      ps[playerId] = { id: playerId, name: pl.name, teamId: pl.teamId, zapasy: 0, kuzelky: 0, body: 0, nv: 0 };
+    }
+    ps[playerId].zapasy++;
+    ps[playerId].kuzelky += (kuzelky||0);
+    ps[playerId].body += (body||0); // individuální body (bez bonusu)
+    if ((kuzelky||0) > ps[playerId].nv) ps[playerId].nv = kuzelky||0;
+  }
+
+  matches.forEach(m=>{
+    (m.homePlayers||[]).forEach(p => addLine(p.playerId, p.kuzelky, p.body));
+    (m.awayPlayers||[]).forEach(p => addLine(p.playerId, p.kuzelky, p.body));
+  });
+
+  const rows = Object.values(ps).map(r => ({
+    ...r,
+    teamName: teamName(r.teamId),
+    prumer: r.zapasy ? (r.kuzelky / r.zapasy).toFixed(2) : "0.00"
+  }));
+
+  rows.sort((a,b)=>{
+    if (Number(b.prumer) !== Number(a.prumer)) return Number(b.prumer) - Number(a.prumer);
+    if (b.nv !== a.nv) return b.nv - a.nv;
+    return b.kuzelky - a.kuzelky;
+  });
+
+  return rows;
+}
+
+function renderPlayersTable(liga, matches){
+  const rows = computePlayersTable(matches, liga);
+  let html = `<table class="tabulka">
+    <tr>
+      <th>Poř</th><th>Hráč</th><th>Družstvo</th><th>Celkem</th><th>Zápasy</th><th>Průměr</th><th>Body</th><th>NV</th>
+    </tr>`;
+
+  rows.forEach((r,i)=>{
+    html += `<tr>
+      <td>${i+1}</td>
+      <td>${r.name}</td>
+      <td>${r.teamName}</td>
+      <td>${r.kuzelky}</td>
+      <td>${r.zapasy}</td>
+      <td>${r.prumer}</td>
+      <td>${r.body}</td>
+      <td>${r.nv}</td>
+    </tr>`;
+  });
+
+  html += `</table>`;
+  tabHracu.innerHTML = html;
+}
+
+// --------------- Matrix ---------------
+function buildMatchMap(matches){
+  const map = new Map();
+  matches.forEach(m=>{
+    if (m.homeTeam && m.awayTeam){
+      map.set(`${m.homeTeam}-${m.awayTeam}`, m);
+    }
+  });
+  return map;
+}
+
+function renderMatrix(liga, matches){
+  const ligaTeams = teams
+    .filter(t => Number(t.liga) === Number(liga))
+    .sort((a,b)=>csCompare(a.name,b.name));
+
+  const map = buildMatchMap(matches);
+
+  let html = `<div style="overflow:auto;">
+    <table class="tabulka" style="min-width:900px;">
+      <tr>
+        <th style="position:sticky;left:0;z-index:2;">Družstvo</th>
+        ${ligaTeams.map(t=>`<th>${t.name}</th>`).join("")}
+      </tr>`;
+
+  ligaTeams.forEach(rowT=>{
+    html += `<tr>
+      <th style="position:sticky;left:0;z-index:1;">${rowT.name}</th>`;
+
+    ligaTeams.forEach(colT=>{
+      if (rowT.id === colT.id){
+        html += `<td style="background:rgba(255,255,255,0.12); text-align:center; font-weight:bold;">—</td>`;
+        return;
+      }
+
+      const direct = map.get(`${rowT.id}-${colT.id}`);
+      const reverse = map.get(`${colT.id}-${rowT.id}`);
+
+      const m = direct || reverse;
+      if (!m){
+        html += `<td></td>`;
+        return;
+      }
+
+      const reversed = !direct && !!reverse;
+      const bodyA = reversed ? m.bodyAway : m.bodyHome;
+      const bodyB = reversed ? m.bodyHome : m.bodyAway;
+      const kuzA  = reversed ? m.sumAway  : m.sumHome;
+      const kuzB  = reversed ? m.sumHome  : m.sumAway;
+
+      html += `<td style="text-align:center;">
+        <div style="font-weight:bold;color:#ffd700;">${bodyA} : ${bodyB}</div>
+        <div style="font-size:12px;opacity:0.9;">${kuzA} : ${kuzB}</div>
+      </td>`;
+    });
+
+    html += `</tr>`;
+  });
+
+  html += `</table></div>`;
+  tabMatice.innerHTML = html;
+}
+
+// --------------- Listen matches (both leagues) ---------------
+function listenMatches(liga){
+  const q = query(collection(db, "matches"), where("liga", "==", Number(liga)));
+  onSnapshot(q, (snap)=>{
+    matchesCache[liga] = snap.docs.map(d => d.data());
+    if (Number(ligaSelect.value) === Number(liga)){
+      renderAllFromCache(Number(liga));
+    }
+  });
+}
+
+// --------------- Init ---------------
+window.addEventListener("DOMContentLoaded", async ()=>{
+  try{
+    if (!dateInput.value) dateInput.value = todayISO();
+
+    await loadTeams();
+    await loadPlayers();
+
+    listenMatches(1);
+    listenMatches(2);
+
+    switchLiga("1");
+    computeSums();
+  } catch(e){
+    console.error(e);
+    alert("Nepodařilo se načíst data Habaďůry (týmy/hráči). Podívej se do konzole.");
+  }
+});
