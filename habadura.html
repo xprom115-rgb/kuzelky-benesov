@@ -1,28 +1,77 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-
-<head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Memoriál Vavříka a Košaře – Habaďůra</title>
 
-  <!-- CSS (cache-buster) -->
-  <link rel="stylesheet" href="./style.css?v=13">
+  <!-- Globální CSS webu -->
+  <link rel="stylesheet" href="./style.css?v=520">
+
+  <!-- Lokální styly pouze pro Habaďůru -->
+  <style>
+    .liga-switch { display:flex; gap:10px; margin:18px 0; flex-wrap:wrap; }
+    .liga-btn{
+      padding:10px 16px; border-radius:10px;
+      border:1px solid #ffd700; background:#1e235c; color:#ffd700;
+      cursor:pointer; font-weight:bold;
+    }
+    .liga-btn.active{ background:#ffd700; color:#1e235c; }
+
+    .form-block{
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 10px;
+    }
+
+    .toolrow{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:10px 0; }
+    .toolrow input, .toolrow select{
+      padding:10px 12px; border-radius:10px; border:1px solid #bbb; font-size:15px;
+    }
+
+    .player-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:8px 0; }
+    .player-row select, .player-row input{
+      padding:9px 10px; border-radius:10px; border:1px solid #bbb; font-size:15px;
+    }
+    .player-row .kuz, .player-row .bod{ width:120px; }
+
+    .save-btn{
+      margin-top:12px; padding:12px 18px;
+      border-radius:10px; border:0;
+      background:#ffd700; color:#1e235c; font-weight:bold; cursor:pointer;
+    }
+
+    .summary{
+      margin-top:14px; padding:12px 14px; border-radius:12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 16px;
+    }
+    .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; }
+  </style>
 </head>
 
+<body>
 
-</head>
+<header>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo">
+  </div>
+  <div class="header-title">Kuželky Benešov</div>
+  <div class="header-right"></div>
+</header>
 
 <nav>
   <ul>
-    <li><a href="index.html/li>
-    <li><a href="aktuality.html</a></li>
-    <li><a href="historie.html/a></li>
-    <li><a href="druzstva.html/a></li>
-    <li><a href="rezervace.html</a></li>
-    <li><a href="habadura.html/a></li>
-    <li><a href="kontakty.html/a></li>
-    <li><a href="admin.html</li>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
   </ul>
 </nav>
 
@@ -58,18 +107,18 @@
       <div id="home-players">
         <div class="player-row">
           <select class="home-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="home-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="home-body">
+          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
         </div>
         <div class="player-row">
           <select class="home-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="home-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="home-body">
+          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
         </div>
         <div class="player-row">
           <select class="home-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="home-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="home-body">
+          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
         </div>
       </div>
 
@@ -77,18 +126,18 @@
       <div id="away-players">
         <div class="player-row">
           <select class="away-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="away-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="away-body">
+          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
         </div>
         <div class="player-row">
           <select class="away-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="away-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="away-body">
+          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
         </div>
         <div class="player-row">
           <select class="away-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="away-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="away-body">
+          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
+          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
         </div>
       </div>
 
@@ -114,15 +163,13 @@
 
     <h3 style="color:#ffd700;">Tabulka zápasů (matice)</h3>
     <div id="tab-matice"></div>
-
   </div>
 </main>
 
 <footer>© Kuželky Benešov – 2026</footer>
 
-<!-- ✅ Načítáme jen jeden modul, který si importuje db -->
+<!-- Jen jeden modul -->
+<script type="module" src="./habadura.js?v=520"></script>
 
-<script type="module" src="./habadura.js?v=300"></script>
 </body>
 </html>
-
