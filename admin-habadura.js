@@ -13,6 +13,7 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
+
 import {
   collection,
   getDocs,
@@ -21,7 +22,9 @@ import {
   where,
   updateDoc,
   deleteDoc,
-  doc
+  doc,
+  setDoc,
+  Timestamp
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 console.log("✅ admin-habadura.js načten");
