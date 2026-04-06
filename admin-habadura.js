@@ -52,12 +52,15 @@ let unsubscribe = null;
 const csCompare = (a,b)=> (a||"").localeCompare(b||"","cs");
 const sum = arr => arr.reduce((a,b)=>a+b,0);
 
+
+
 function computeBonus(sumHome, sumAway){
-  // +2 za více kuželek, remíza 1:1
-  if (sumHome > sumAway) return { bonusHome:2, bonusAway:0 };
-  if (sumHome < sumAway) return { bonusHome:0, bonusAway:2 };
-  return { bonusHome:1, bonusAway:1 };
+  // bonus do SKÓRE: +2 vítězi kuželek, remíza 1:1
+  if (sumHome > sumAway) return { bonusScoreHome: 2, bonusScoreAway: 0 };
+  if (sumHome < sumAway) return { bonusScoreHome: 0, bonusScoreAway: 2 };
+  return { bonusScoreHome: 1, bonusScoreAway: 1 };
 }
+
 
 async function loadBase(){
   const ts = await getDocs(collection(db,"teams"));
@@ -118,19 +121,38 @@ function recompute(){
   const sumHome = sum(hk);
   const sumAway = sum(ak);
 
-  const baseBodyHome = sum(hb);
-  const baseBodyAway = sum(ab);
+  // základní body hráčů (musí dát celkem 6)
+  const scoreHomeBase = sum(hb);
+  const scoreAwayBase = sum(ab);
 
-  const { bonusHome, bonusAway } = computeBonus(sumHome, sumAway);
-  const totalBodyHome = baseBodyHome + bonusHome;
-  const totalBodyAway = baseBodyAway + bonusAway;
+  // bonus do skóre za kuželky (+2 / 1:1)
+  const { bonusScoreHome, bonusScoreAway } = computeBonus(sumHome, sumAway);
 
+  // výsledné skóre (musí dát celkem 8)
+  const scoreHome = scoreHomeBase + bonusScoreHome;
+  const scoreAway = scoreAwayBase + bonusScoreAway;
+
+  // 2/1/0 do tabulky "Body" podle výsledného skóre
+  let leaguePointsHome = 0, leaguePointsAway = 0;
+  if (scoreHome > scoreAway) { leaguePointsHome = 2; leaguePointsAway = 0; }
+  else if (scoreHome < scoreAway) { leaguePointsHome = 0; leaguePointsAway = 2; }
+  else { leaguePointsHome = 1; leaguePointsAway = 1; }
+
+  // UI v admin editoru:
   sumHomeEl.textContent = sumHome;
   sumAwayEl.textContent = sumAway;
-  bodyHomeEl.textContent = totalBodyHome;
-  bodyAwayEl.textContent = totalBodyAway;
 
-  return { sumHome, sumAway, totalBodyHome, totalBodyAway, bonusHome, bonusAway };
+  // v těchto polích je lepší ukazovat SKÓRE (8 bodů), ne "bodyHome"
+  bodyHomeEl.textContent = scoreHome;
+  bodyAwayEl.textContent = scoreAway;
+
+  return {
+    sumHome, sumAway,
+    scoreHomeBase, scoreAwayBase,
+    bonusScoreHome, bonusScoreAway,
+    scoreHome, scoreAway,
+    leaguePointsHome, leaguePointsAway
+  };
 }
 
 function openEdit(docId, match, liga){
@@ -306,23 +328,49 @@ btnSaveEdit.addEventListener("click", async ()=>{
     if (p.kuzelky < 0){ editMsg.textContent="Kuželky musí být kladné."; return; }
   }
 
-  const { sumHome, sumAway, totalBodyHome, totalBodyAway, bonusHome, bonusAway } = recompute();
+  const calc = recompute();
 
-  try{
-    await updateDoc(doc(db,"matches", currentDocId), {
-      liga,
-      date: editDate.value,
-      homeTeam: editHomeTeam.value,
-      awayTeam: editAwayTeam.value,
-      homePlayers,
-      awayPlayers,
-      sumHome,
-      sumAway,
-      bodyHome: totalBodyHome,
-      bodyAway: totalBodyAway,
-      bonusHome,
-      bonusAway
-    });
+// Validace "6 + 2 = 8"
+const baseTotal = calc.scoreHomeBase + calc.scoreAwayBase;
+const totalScore = calc.scoreHome + calc.scoreAway;
+
+if (baseTotal !== 6) {
+  editMsg.textContent = `⚠️ Součet bodů hráčů musí být 6 (je ${baseTotal}).`;
+  return;
+}
+if (totalScore !== 8) {
+  editMsg.textContent = `⚠️ Celkové Skóre musí být 8 (je ${totalScore}).`;
+  return;
+}
+
+await updateDoc(doc(db,"matches", currentDocId), {
+  liga,
+  date: editDate.value,
+
+  // Doporučení: týmy raději NEMĚNIT (viz poznámka níže),
+  // ale když chceš, můžeš ponechat:
+  homeTeam: editHomeTeam.value,
+  awayTeam: editAwayTeam.value,
+
+  homePlayers,
+  awayPlayers,
+
+  // kuželky
+  sumHome: calc.sumHome,
+  sumAway: calc.sumAway,
+
+  // skóre (6 bodů hráčů + 2 bonus kuželky = 8)
+  scoreHomeBase: calc.scoreHomeBase,
+  scoreAwayBase: calc.scoreAwayBase,
+  bonusScoreHome: calc.bonusScoreHome,
+  bonusScoreAway: calc.bonusScoreAway,
+  scoreHome: calc.scoreHome,
+  scoreAway: calc.scoreAway,
+
+  // body do tabulky (2/1/0)
+  leaguePointsHome: calc.leaguePointsHome,
+  leaguePointsAway: calc.leaguePointsAway
+});
 
     editMsg.textContent = "✅ Uloženo.";
   }catch(e){
