@@ -113,6 +113,102 @@ function syncPhaseSelect() {
 // listener na změnu výběru sezóny
 if (seasonSelect) {
   seasonSelect.addEventListener("change", syncPhaseSelect);
+  // ===== KROK 4.4: tlačítka sezóny (publish podzim/jaro + nová sezóna) =====
+
+function nowTs(){
+  return Timestamp.now();
+}
+
+// (volitelné) fázi v selectu necháme jen jako ukazatel, aby se ručně nepřepisovala
+if (phaseSelect) phaseSelect.disabled = true;
+
+// Uzavřít PODZIM: uložit do historie + přepnout aktivní fázi na JARO
+if (btnPublishAutumn) {
+  btnPublishAutumn.addEventListener("click", async () => {
+    const id = seasonSelect?.value;
+    const s = seasons.find(x => x.id === id);
+    if (!s) return seasonMessage("⚠️ Nevybraná sezóna.");
+
+    if (!confirm(`Uzavřít PODZIM do historie pro sezónu ${s.label || id}?\n(Přepne se aktivní fáze na JARO)`)) return;
+
+    try {
+      await updateDoc(doc(db, "seasons", id), {
+        autumnPublished: true,
+        activePhase: "spring",
+        updatedAt: nowTs()
+      });
+      seasonMessage("✅ PODZIM uložen do historie. Aktivní fáze přepnuta na JARO.");
+    } catch (e) {
+      console.error(e);
+      seasonMessage("❌ Nepodařilo se uzavřít podzim (zkontroluj Rules/Auth).");
+    }
+  });
+}
+
+// Uzavřít JARO: uložit do historie + ukončit sezónu
+if (btnPublishSpring) {
+  btnPublishSpring.addEventListener("click", async () => {
+    const id = seasonSelect?.value;
+    const s = seasons.find(x => x.id === id);
+    if (!s) return seasonMessage("⚠️ Nevybraná sezóna.");
+
+    if (!confirm(`Uzavřít JARO do historie pro sezónu ${s.label || id}?\n(Sezóna bude ukončena)`)) return;
+
+    try {
+      await updateDoc(doc(db, "seasons", id), {
+        springPublished: true,
+        isActive: false,
+        updatedAt: nowTs()
+      });
+      seasonMessage("✅ JARO uloženo do historie. Sezóna ukončena (není aktivní).");
+    } catch (e) {
+      console.error(e);
+      seasonMessage("❌ Nepodařilo se uzavřít jaro (zkontroluj Rules/Auth).");
+    }
+  });
+}
+
+// Start nové sezóny: vytvoří nový dokument seasons/{id} jako aktivní (autumn)
+if (btnStartNewSeason) {
+  btnStartNewSeason.addEventListener("click", async () => {
+    const id = (newSeasonId?.value || "").trim();      // např. 2026-2027
+    const label = (newSeasonLabel?.value || "").trim();// např. 2026/2027
+
+    if (!id) return seasonMessage("⚠️ Zadej ID nové sezóny (např. 2026-2027).");
+
+    if (!confirm(`Opravdu založit novou sezónu ${label || id}?\n(Aktivní bude PODZIM.)`)) return;
+
+    try {
+      // vypnout případnou aktivní sezónu, aby nebyly dvě aktivní
+      const active = seasons.find(s => s.isActive);
+      if (active) {
+        await updateDoc(doc(db, "seasons", active.id), {
+          isActive: false,
+          updatedAt: nowTs()
+        });
+      }
+
+      await setDoc(doc(db, "seasons", id), {
+        label: label || id,
+        isActive: true,
+        activePhase: "autumn",
+        autumnPublished: false,
+        springPublished: false,
+        createdAt: nowTs(),
+        updatedAt: nowTs()
+      });
+
+      if (newSeasonId) newSeasonId.value = "";
+      if (newSeasonLabel) newSeasonLabel.value = "";
+
+      seasonMessage("✅ Nová sezóna založena (aktivní PODZIM).");
+    } catch (e) {
+      console.error(e);
+      seasonMessage("❌ Nepodařilo se založit novou sezónu (zkontroluj Rules/Auth).");
+    }
+  });
+}
+``
 }
 
 
