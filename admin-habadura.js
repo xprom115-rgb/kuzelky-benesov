@@ -294,3 +294,126 @@ btnLogin.addEventListener("click", async () => {
   try {
     await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
   } catch (e) {
+    console.error(e);
+    loginMsg.textContent = "Nepodařilo se přihlásit (zkontroluj email/heslo).";
+  }
+});
+
+btnLogout.addEventListener("click", () => signOut(auth));
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    console.log("✅ admin přihlášen UID:", user.uid);
+    loginBox.style.display = "none";
+    appBox.style.display = "block";
+    await loadBase();
+    listenMatches();
+  } else {
+    loginBox.style.display = "block";
+    appBox.style.display = "none";
+    editBox.style.display = "none";
+    currentDocId = null;
+    if (unsubscribe) unsubscribe();
+    unsubscribe = null;
+  }
+});
+
+// UI events
+ligaEl.addEventListener("change", () => {
+  editBox.style.display = "none";
+  currentDocId = null;
+  listenMatches();
+});
+
+clearFilter.addEventListener("click", () => {
+  filterDateEl.value = "";
+  listenMatches();
+});
+filterDateEl.addEventListener("change", listenMatches);
+
+btnCloseEdit.addEventListener("click", () => {
+  editBox.style.display = "none";
+  currentDocId = null;
+});
+
+// SAVE EDIT
+btnSaveEdit.addEventListener("click", async () => {
+  if (!currentDocId) return;
+
+  const liga = Number(ligaEl.value);
+
+  const homePlayers = [...document.querySelectorAll(".home-pl")].map((sel, i) => ({
+    playerId: sel.value,
+    kuzelky: Number(document.querySelectorAll(".home-kuz")[i].value) || 0,
+    body: Number(document.querySelectorAll(".home-bod")[i].value) || 0
+  }));
+
+  const awayPlayers = [...document.querySelectorAll(".away-pl")].map((sel, i) => ({
+    playerId: sel.value,
+    kuzelky: Number(document.querySelectorAll(".away-kuz")[i].value) || 0,
+    body: Number(document.querySelectorAll(".away-bod")[i].value) || 0
+  }));
+
+  // validace vstupů
+  for (const p of [...homePlayers, ...awayPlayers]) {
+    if (!p.playerId) { editMsg.textContent = "Vyber hráče ve všech řádcích."; return; }
+    if (![0, 1, 2].includes(p.body)) { editMsg.textContent = "Body musí být 0/1/2."; return; }
+    if (p.kuzelky < 0) { editMsg.textContent = "Kuželky musí být kladné."; return; }
+  }
+
+  const calc = recompute();
+
+  // validace 6 + 2 = 8
+  const baseTotal = calc.scoreHomeBase + calc.scoreAwayBase;
+  const totalScore = calc.scoreHome + calc.scoreAway;
+  if (baseTotal !== 6) { editMsg.textContent = `⚠️ Součet bodů hráčů musí být 6 (je ${baseTotal}).`; return; }
+  if (totalScore !== 8) { editMsg.textContent = `⚠️ Celkové Skóre musí být 8 (je ${totalScore}).`; return; }
+
+  try {
+    await updateDoc(doc(db, "matches", currentDocId), {
+      liga,
+      date: editDate.value,
+
+      // týmy jsou zamknuté (neměníme)
+      homeTeam: editHomeTeam.value,
+      awayTeam: editAwayTeam.value,
+
+      homePlayers,
+      awayPlayers,
+
+      sumHome: calc.sumHome,
+      sumAway: calc.sumAway,
+
+      scoreHomeBase: calc.scoreHomeBase,
+      scoreAwayBase: calc.scoreAwayBase,
+      bonusScoreHome: calc.bonusScoreHome,
+      bonusScoreAway: calc.bonusScoreAway,
+      scoreHome: calc.scoreHome,
+      scoreAway: calc.scoreAway,
+
+      leaguePointsHome: calc.leaguePointsHome,
+      leaguePointsAway: calc.leaguePointsAway
+    });
+
+    editMsg.textContent = "✅ Uloženo.";
+  } catch (e) {
+    console.error(e);
+    editMsg.textContent = "❌ Uložení selhalo (zkontroluj Rules/UID admina).";
+  }
+});
+
+// DELETE
+btnDeleteMatch.addEventListener("click", async () => {
+  if (!currentDocId) return;
+  if (!confirm("Opravdu smazat zápas?")) return;
+
+  try {
+    await deleteDoc(doc(db, "matches", currentDocId));
+    editBox.style.display = "none";
+    currentDocId = null;
+  } catch (e) {
+    console.error(e);
+    editMsg.textContent = "❌ Smazání selhalo (zkontroluj Rules/UID admina).";
+  }
+});
+``
