@@ -91,27 +91,38 @@ function computeSums(){
   const ak = [...awayKuzInputs].map(i => Number(i.value)||0);
   const ab = [...awayBodyInputs].map(i => Number(i.value)||0);
 
-  const sumHK = sumArray(hk);
-  const sumHB = sumArray(hb);
-  const sumAK = sumArray(ak);
-  const sumAB = sumArray(ab);
+  const sumHome = sumArray(hk);
+  const sumAway = sumArray(ak);
 
-  // ✅ bonus za kuželky: vítěz +2, remíza +1:+1
+  const scoreHomeBase = sumArray(hb);
+  const scoreAwayBase = sumArray(ab);
+
+  // ✅ Bonus za kuželky do Skóre: +2 pro vítěze, při remíze 1:1
   let bonusHome = 0, bonusAway = 0;
-  if (sumHK > sumAK) { bonusHome = 2; bonusAway = 0; }
-  else if (sumHK < sumAK) { bonusHome = 0; bonusAway = 2; }
-  else { bonusHome = 1; bonusAway = 1; } // remíza kuželek
+  if (sumHome > sumAway) { bonusHome = 2; bonusAway = 0; }
+  else if (sumHome < sumAway) { bonusHome = 0; bonusAway = 2; }
+  else { bonusHome = 1; bonusAway = 1; } // ✅ remíza kuželek
 
-  const totalHB = sumHB + bonusHome;
-  const totalAB = sumAB + bonusAway;
+  const scoreHome = scoreHomeBase + bonusHome;
+  const scoreAway = scoreAwayBase + bonusAway;
 
-  // UI souhrn (už včetně bonusu)
-  sumBodyEl.textContent = `${totalHB} : ${totalAB}`;
-  sumKuzEl.textContent  = `${sumHK} : ${sumAK}`;
+  // UI souhrn
+  sumBodyEl.textContent = `${scoreHome} : ${scoreAway}`;
+  sumKuzEl.textContent  = `${sumHome} : ${sumAway}`;
 
-  return { sumHK, sumHB, sumAK, sumAB, bonusHome, bonusAway, totalHB, totalAB };
+  // Kontrolní součty (pomůžou validaci)
+  const baseTotal = scoreHomeBase + scoreAwayBase;   // má být 6
+  const totalScore = scoreHome + scoreAway;          // má být 8
+
+  return {
+    sumHome, sumAway,
+    scoreHomeBase, scoreAwayBase,
+    bonusHome, bonusAway,
+    scoreHome, scoreAway,
+    baseTotal, totalScore
+  };
 }
-
+``
 // přepočítávat souhrn při změně inputů
 [...homeKuzInputs, ...homeBodyInputs, ...awayKuzInputs, ...awayBodyInputs].forEach(inp=>{
   inp.addEventListener("input", computeSums);
