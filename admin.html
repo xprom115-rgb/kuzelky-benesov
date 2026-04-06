@@ -17,7 +17,7 @@
 </header>
 
 <nav>
- <ul>
+  <ul>
     <li><a href="index.html">Domů</a></li>
     <li><a href="aktuality.html">Aktuality</a></li>
     <li><a href="historie.html">Historie</a></li>
@@ -31,19 +31,65 @@
 
 <main>
   <div class="content-box">
-    <h2>Administrace rezervací</h2>
-    <p>Vstup do správy rezervací je chráněn heslem.</p>
+    <h2>Administrace</h2>
+    <p>Vyberte, co chcete spravovat:</p>
 
-    <p>
-      <a href="admin-rezervace.html" style="color:#ffd700; font-weight:bold;">
-        Otevřít admin panel - rezervace
-      </a>
-    </p>
-<p>
-  <a href="admin-habadura.html"><strong>Admin Habaďůra</strong>
-     Otevřít admin panel - Habaďůra
-    </a>
-</p>
+    <!-- DLAŽDICE: Admin rezervace -->
+    <div style="
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    ">
+      <div>
+        <h3 style="margin:0; color:#ffd700;">Admin rezervace</h3>
+        <div style="font-size:13px; opacity:0.9; margin-top:6px;">
+          Storno rezervací, úklid do včerejška, přehled všech rezervací.
+        </div>
+      </div>
+
+      <div>
+        <a href="admin-rezervace.html"
+           style="display:inline-block; padding:10px 14px; border-radius:10px; background:#1e235c; color:#ffd700; font-weight:bold;">
+          Otevřít
+        </a>
+      </div>
+    </div>
+
+    <!-- DLAŽDICE: Admin Habaďůra (pod rezervacemi) -->
+    <div style="
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    ">
+      <div>
+        <h3 style="margin:0; color:#ffd700;">Admin Habaďůra</h3>
+        <div style="font-size:13px; opacity:0.9; margin-top:6px;">
+          Editace zápasů (admin), správa týmů a hráčů (Memoriál Vavříka a Košaře).
+        </div>
+      </div>
+
+      <div>
+        <a href="admin-habadura.html"
+           style="display:inline-block; padding:10px 14px; border-radius:10px; background:#1e235c; color:#ffd700; font-weight:bold;">
+          Otevřít
+        </a>
+      </div>
+    </div>
+
   </div>
 </main>
 
