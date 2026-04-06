@@ -75,7 +75,8 @@ let teams = [];
 let players = [];
 let currentDocId = null;
 let unsubscribe = null;
-// ===== SEZÓNY (KROK 4.2) =====
+
+// ===== SEZÓNY (stabilní blok) =====
 let seasons = []; // [{id,label,isActive,activePhase,autumnPublished,springPublished,...}]
 
 function seasonMessage(text) {
@@ -104,13 +105,15 @@ function syncPhaseSelect() {
 
   const selectedId = seasonSelect.value;
   const s = seasons.find(x => x.id === selectedId);
-
   if (!s) return;
 
   phaseSelect.value = s.activePhase || "autumn";
 }
 
-seasonSelect?.addEventListener("change", syncPhaseSelect);
+// listener na změnu výběru sezóny
+if (seasonSelect) {
+  seasonSelect.addEventListener("change", syncPhaseSelect);
+}
 
 
 const csCompare = (a, b) => (a || "").localeCompare(b || "", "cs");
