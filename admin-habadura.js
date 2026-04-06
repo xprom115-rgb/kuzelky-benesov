@@ -60,6 +60,17 @@ const btnSaveEdit = document.getElementById("btnSaveEdit");
 const btnDeleteMatch = document.getElementById("btnDeleteMatch");
 const editMsg = document.getElementById("editMsg");
 
+// ===== SEZÓNA UI (KROK 4.2) =====
+const seasonSelect = document.getElementById("seasonSelect");
+const phaseSelect = document.getElementById("phaseSelect");
+const btnPublishAutumn = document.getElementById("btnPublishAutumn");
+const btnPublishSpring = document.getElementById("btnPublishSpring");
+const newSeasonId = document.getElementById("newSeasonId");
+const newSeasonLabel = document.getElementById("newSeasonLabel");
+const btnStartNewSeason = document.getElementById("btnStartNewSeason");
+const seasonMsg = document.getElementById("seasonMsg");
+
+
 let teams = [];
 let players = [];
 let currentDocId = null;
