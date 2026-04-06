@@ -267,6 +267,19 @@ async function saveMatch(){
 
   const homePlayers = readPlayers("home");
   const awayPlayers = readPlayers("away");
+  const s = computeSums();
+
+// ✅ kontrola: hráčské body musí dát dohromady 6
+if (s.baseTotal !== 6) {
+  alert(`⚠️ Chyba bodů: součet bodů hráčů musí být 6 (je ${s.baseTotal}).\nZkontrolujte body 0/1/2 u hráčů.`);
+  return;
+}
+
+// ✅ kontrola: celkové Skóre musí být 8
+if (s.totalScore !== 8) {
+  alert(`⚠️ Chyba: celkové Skóre musí být 8 (je ${s.totalScore}).`);
+  return;
+}
 
   const err1 = validatePlayers(homePlayers);
   if (err1) return alert(err1);
