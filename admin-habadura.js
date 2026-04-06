@@ -75,6 +75,36 @@ let teams = [];
 let players = [];
 let currentDocId = null;
 let unsubscribe = null;
+// ===== SEZÓNY (KROK 4.2) =====
+let seasons = []; // [{id,label,isActive,activePhase,autumnPublished,springPublished,...}]
+
+function seasonMessage(text) {
+  if (seasonMsg) seasonMsg.textContent = text || "";
+}
+
+function renderSeasons() {
+  if (!seasonSelect) return;
+
+  // seřadit od nejnovější sezóny
+  const sorted = seasons.slice().sort((a, b) => (b.id || "").localeCompare(a.id || ""));
+
+  seasonSelect.innerHTML = sorted.map(s => {
+    const tag = s.isActive ? " (aktivní)" : "";
+    const label = s.label || s.id;
+    return `<option value="${s.id}">${label}${tag}</option>`;
+  }).join("");
+
+  // vybrat aktivní sezónu, pokud existuje
+  const active = sorted.find(s => s.isActive);
+  if (active) seasonSelect.value = active.id;
+
+  syncPhaseSelect();
+}
+
+function syncPhaseSelect() {
+  if (!phaseSelect || !seasonSelect) return;
+  const s = seasons.find(x => x.id === seasonSelect
+    seasonSelect?.addEventListener("change", syncPhaseSelect);
 
 const csCompare = (a, b) => (a || "").localeCompare(b || "", "cs");
 const sum = (arr) => arr.reduce((a, b) => a + b, 0);
