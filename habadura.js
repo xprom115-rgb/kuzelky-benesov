@@ -37,12 +37,14 @@ import {
 
 console.log("✅ habadura.js načten (finální)");
 
-// -------------------------
-// URL parametry sezóny a fáze
-// -------------------------
-const params = new URLSearchParams(location.search);
-const SEASON_ID = params.get("season") || "2025-2026";     // např. 2025-2026
-const PHASE = params.get("phase") || "autumn";            // autumn | spring
+
+// ===== AUTO sezóna/fáze z Firestore (seasons) =====
+let SEASON_ID = null;
+let PHASE = null;
+
+// pro jistotu: dokud nevíme sezónu/fázi, nenecháme ukládat zápas
+let seasonReady = false;
+
 
 // -------------------------
 // DOM
@@ -83,6 +85,62 @@ let players = [];   // [{id,name,teamId,liga}]
 // - phaseCache:  jen aktuální fáze (podzim/jaro) => matice zápasů
 const totalsCache = { 1: [], 2: [] }; // seasonId across both phases
 const phaseCache  = { 1: [], 2: [] }; // seasonId + current PHASE only
+// ===== unsubscribe references =====
+let unsubTotals1 = null, unsubTotals2 = null;
+let unsubPhase1  = null, unsubPhase2  = null;
+
+function stopMatchListeners(){
+  unsubTotals1?.(); unsubTotals2?.();
+  unsubPhase1?.();  unsubPhase2?.();
+  unsubTotals1 = unsubTotals2 = unsubPhase1 = unsubPhase2 = null;
+}
+
+function startMatchListeners(){
+  stopMatchListeners();
+
+  // totals: celá sezóna (podzim + jaro) => tabulka družstev + hráčů
+  const qT1 = query(collection(db, "matches"),
+    where("liga","==",1),
+    where("seasonId","==", SEASON_ID)
+  );
+  const qT2 = query(collection(db, "matches"),
+    where("liga","==",2),
+    where("seasonId","==", SEASON_ID)
+  );
+
+  unsubTotals1 = onSnapshot(qT1, snap=>{
+    totalsCache[1] = snap.docs.map(d=>d.data());
+    if (Number(ligaSelect.value) === 1) renderAll(1);
+  });
+
+  unsubTotals2 = onSnapshot(qT2, snap=>{
+    totalsCache[2] = snap.docs.map(d=>d.data());
+    if (Number(ligaSelect.value) === 2) renderAll(2);
+  });
+
+  // phase: pouze aktivní fáze => matice
+  const qP1 = query(collection(db, "matches"),
+    where("liga","==",1),
+    where("seasonId","==", SEASON_ID),
+    where("phase","==", PHASE)
+  );
+  const qP2 = query(collection(db, "matches"),
+    where("liga","==",2),
+    where("seasonId","==", SEASON_ID),
+    where("phase","==", PHASE)
+  );
+
+  unsubPhase1 = onSnapshot(qP1, snap=>{
+    phaseCache[1] = snap.docs.map(d=>d.data());
+    if (Number(ligaSelect.value) === 1) renderAll(1);
+  });
+
+  unsubPhase2 = onSnapshot(qP2, snap=>{
+    phaseCache[2] = snap.docs.map(d=>d.data());
+    if (Number(ligaSelect.value) === 2) renderAll(2);
+  });
+}
+``
 
 // -------------------------
 // Helpers
@@ -282,6 +340,12 @@ function validatePlayers(list){
 // 6) Uložení zápasu (zákaz duplicit podzim/jaro)
 // ----------------------------------------------------
 async function saveMatch(){
+  
+if (!seasonReady || !SEASON_ID || !PHASE) {
+  alert("Sezóna ještě není načtena. Zkuste to prosím za chvíli znovu.");
+  return;
+}
+
   const liga = Number(ligaSelect.value);
   const homeTeam = teamHome.value;
   const awayTeam = teamAway.value;
@@ -620,6 +684,53 @@ function renderMatrix(liga, matches){
 // - totals: celá sezóna (autumn + spring) => tabulky
 // - phase:  jen aktuální phase => matice
 // ----------------------------------------------------
+function listenActiveSeason(onReady){
+  const q = query(
+    collection(db, "seasons"),
+    where("isActive", "==", true),
+    limit(1)
+  );
+
+  onSnapshot(q, (snap)=>{
+    if (snap.empty){
+      console.warn("⚠️ Nenalezena aktivní sezóna v seasons (isActive=true).");
+      seasonReady = false;
+      submitBtn.disabled = true;
+      return;
+    }
+
+    const d = snap.docs[0];
+    const s = { id: d.id, ...d.data() };
+
+    const newSeason = s.id;
+    const newPhase  = s.activePhase || "autumn";
+
+    const changed = (SEASON_ID !== newSeason) || (PHASE !== newPhase);
+
+    SEASON_ID = newSeason;
+    PHASE = newPhase;
+
+    seasonReady = true;
+    submitBtn.disabled = false;
+
+    console.log("✅ Aktivní sezóna/fáze:", SEASON_ID, PHASE);
+
+    // pokud se změnila sezóna nebo fáze, restartuj listenery
+    if (changed){
+      startMatchListeners();
+      // překreslit aktuální ligu
+      renderAll(Number(ligaSelect.value || 1));
+    }
+
+    onReady?.();
+  }, (err)=>{
+    console.error("❌ Chyba načítání seasons:", err);
+    seasonReady = false;
+    submitBtn.disabled = true;
+  });
+}
+
+
 function listenTotals(liga){
   const q = query(
     collection(db, "matches"),
@@ -658,22 +769,24 @@ window.addEventListener("DOMContentLoaded", async ()=>{
   try{
     if (!dateInput.value) dateInput.value = todayISO();
 
+    // zatím zakážeme uložení, dokud nevíme season/phase
+    submitBtn.disabled = true;
+
     await loadTeams();
     await loadPlayers();
 
-    // posluchače pro obě ligy
-    listenTotals(1);
-    listenTotals(2);
-    listenPhase(1);
-    listenPhase(2);
-
-    switchLiga("1");
-    computeSums();
-
-    console.log(`ℹ️ Sezóna: ${SEASON_ID}, fáze: ${PHASE}`);
+    // ✅ sezóna/fáze automaticky ze seasons
+    listenActiveSeason(() => {
+      // po prvním načtení sezóny/fáze startneme listenery a inicializujeme UI
+      if (seasonReady){
+        startMatchListeners();
+        switchLiga("1");
+        computeSums();
+      }
+    });
 
   } catch(e){
     console.error(e);
-    alert("Nepodařilo se načíst data Habaďůry (týmy/hráči). Podívej se do konzole.");
+    alert("Nepodařilo se načíst data Habaďůry. Podívej se do konzole.");
   }
 });
