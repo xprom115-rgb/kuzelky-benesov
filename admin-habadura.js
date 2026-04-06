@@ -85,7 +85,6 @@ function seasonMessage(text) {
 function renderSeasons() {
   if (!seasonSelect) return;
 
-  // seřadit od nejnovější sezóny
   const sorted = seasons.slice().sort((a, b) => (b.id || "").localeCompare(a.id || ""));
 
   seasonSelect.innerHTML = sorted.map(s => {
@@ -94,7 +93,6 @@ function renderSeasons() {
     return `<option value="${s.id}">${label}${tag}</option>`;
   }).join("");
 
-  // vybrat aktivní sezónu, pokud existuje
   const active = sorted.find(s => s.isActive);
   if (active) seasonSelect.value = active.id;
 
@@ -103,8 +101,17 @@ function renderSeasons() {
 
 function syncPhaseSelect() {
   if (!phaseSelect || !seasonSelect) return;
-  const s = seasons.find(x => x.id === seasonSelect
-    seasonSelect?.addEventListener("change", syncPhaseSelect);
+
+  const selectedId = seasonSelect.value;
+  const s = seasons.find(x => x.id === selectedId);
+
+  if (!s) return;
+
+  phaseSelect.value = s.activePhase || "autumn";
+}
+
+seasonSelect?.addEventListener("change", syncPhaseSelect);
+
 
 const csCompare = (a, b) => (a || "").localeCompare(b || "", "cs");
 const sum = (arr) => arr.reduce((a, b) => a + b, 0);
