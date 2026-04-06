@@ -1,31 +1,51 @@
-// habadura.js (PLNÁ VERZE – bonus za kuželky +2, remíza +1:+1)
-// ============================================================
-// Firestore Rules B:
-// - teams/players/matches: read
-// - matches: create
-// - matches update/delete: false
+// habadura.js — FINÁLNÍ VERZE (Memoriál Vavříka a Košaře)
+// =====================================================
+// LOGIKA:
+// 1) "Skóre" zápasu = (součet bodů hráčů 0/1/2) + (bonus za kuželky: +2 nebo 1:1 při remíze)
+//    => musí vždy platit: (scoreHomeBase + scoreAwayBase) = 6 a (scoreHome + scoreAway) = 8
+// 2) "Body" v tabulce družstev (2/1/0) se určuje podle výsledného Skóre (po bonusu kuželek)
+// 3) NV týmu = nejlepší týmový výkon kuželek (max součet kuželek týmu v zápase)
+// 4) DUPLICITY: stejná dvojice týmů se v rámci ligy+sezóny+fáze uloží jen 1×
+//    - sezóna má fáze autumn/spring (podzim/jaro)
+//    - bez úprav HTML lze přepnout přes URL parametry:
+//        habadura.html?season=2025-2026&phase=autumn
+//        habadura.html?season=2025-2026&phase=spring
 //
-// Kolekce:
+// Firestore:
 // - teams:   { name: string, liga: number }
 // - players: { name: string, teamId: string, liga: number }
-// - matches: ukládáme zápasy (create)
+// - matches: ukládáme: seasonId, phase, liga, date, home/away, players, sumHome/sumAway,
+//            scoreHomeBase/scoreAwayBase, bonusScoreHome/bonusScoreAway, scoreHome/scoreAway,
+//            leaguePointsHome/leaguePointsAway, createdAt
+//
+// Pozn.: Tato verze je kompatibilní s vašimi rules: read pro teams/players/matches, create pro matches,
+// update/delete pro admin (přes Auth + UID).
 
-// --------------- Imports ---------------
 import { db } from "./firebase-config.js";
 
 import {
   collection,
   getDocs,
-  addDoc,
+  setDoc,
+  doc,
   Timestamp,
   query,
   where,
   onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-console.log("✅ habadura.js načten (aktuální)");
+console.log("✅ habadura.js načten (finální)");
 
-// --------------- DOM ---------------
+// -------------------------
+// URL parametry sezóny a fáze
+// -------------------------
+const params = new URLSearchParams(location.search);
+const SEASON_ID = params.get("season") || "2025-2026";     // např. 2025-2026
+const PHASE = params.get("phase") || "autumn";            // autumn | spring
+
+// -------------------------
+// DOM
+// -------------------------
 const btnLiga1   = document.getElementById("btn-liga1");
 const btnLiga2   = document.getElementById("btn-liga2");
 const ligaSelect = document.getElementById("liga-select");
@@ -41,8 +61,9 @@ const homeBodyInputs = document.querySelectorAll(".home-body");
 const awayKuzInputs  = document.querySelectorAll(".away-kuz");
 const awayBodyInputs = document.querySelectorAll(".away-body");
 
-const sumBodyEl = document.getElementById("sum-body");
-const sumKuzEl  = document.getElementById("sum-kuz");
+const sumBodyEl = document.getElementById("sum-body");  // zobrazuje SKÓRE
+const sumKuzEl  = document.getElementById("sum-kuz");   // zobrazuje KUŽELKY
+
 const dateInput = document.getElementById("match-date");
 const submitBtn = document.getElementById("submit-match");
 
@@ -50,13 +71,23 @@ const tabDruzstva = document.getElementById("tab-druzstva");
 const tabHracu    = document.getElementById("tab-hracu");
 const tabMatice   = document.getElementById("tab-matice");
 
-// --------------- Data ---------------
-let teams = [];    // [{id,name,liga}]
-let players = [];  // [{id,name,teamId,liga}]
-const matchesCache = { 1: [], 2: [] };
+// -------------------------
+// Data
+// -------------------------
+let teams = [];     // [{id,name,liga}]
+let players = [];   // [{id,name,teamId,liga}]
 
-// --------------- Helpers ---------------
+// cache zápasů:
+// - totalsCache: sčítá celou sezónu (podzim + jaro) => tabulka družstev + hráčů
+// - phaseCache:  jen aktuální fáze (podzim/jaro) => matice zápasů
+const totalsCache = { 1: [], 2: [] }; // seasonId across both phases
+const phaseCache  = { 1: [], 2: [] }; // seasonId + current PHASE only
+
+// -------------------------
+// Helpers
+// -------------------------
 function csCompare(a, b) { return (a || "").localeCompare(b || "", "cs"); }
+function sumArray(arr){ return arr.reduce((a,b)=>a+b,0); }
 
 function makeOption(value, text) {
   const opt = document.createElement("option");
@@ -79,12 +110,11 @@ function todayISO(){
   return `${y}-${m}-${day}`;
 }
 
-function sumArray(arr){ return arr.reduce((a,b)=>a+b,0); }
-
 function teamName(id){ return teams.find(t => t.id === id)?.name || "(tým?)"; }
-function playerName(id){ return players.find(p => p.id === id)?.name || "(hráč?)"; }
 
-// --------------- Compute sums (+ bonus) ---------------
+// ----------------------------------------------------
+// 1) Výpočet: kuželky + skóre (6+2=8), bonus 2/0 nebo 1:1
+// ----------------------------------------------------
 function computeSums(){
   const hk = [...homeKuzInputs].map(i => Number(i.value)||0);
   const hb = [...homeBodyInputs].map(i => Number(i.value)||0);
@@ -97,38 +127,39 @@ function computeSums(){
   const scoreHomeBase = sumArray(hb);
   const scoreAwayBase = sumArray(ab);
 
-  // ✅ Bonus za kuželky do Skóre: +2 pro vítěze, při remíze 1:1
-  let bonusHome = 0, bonusAway = 0;
-  if (sumHome > sumAway) { bonusHome = 2; bonusAway = 0; }
-  else if (sumHome < sumAway) { bonusHome = 0; bonusAway = 2; }
-  else { bonusHome = 1; bonusAway = 1; } // ✅ remíza kuželek
+  // bonus do SKÓRE za kuželky: +2 vítězi, při remíze 1:1
+  let bonusScoreHome = 0, bonusScoreAway = 0;
+  if (sumHome > sumAway) { bonusScoreHome = 2; bonusScoreAway = 0; }
+  else if (sumHome < sumAway) { bonusScoreHome = 0; bonusScoreAway = 2; }
+  else { bonusScoreHome = 1; bonusScoreAway = 1; } // ✅ remíza kuželek
 
-  const scoreHome = scoreHomeBase + bonusHome;
-  const scoreAway = scoreAwayBase + bonusAway;
+  const scoreHome = scoreHomeBase + bonusScoreHome;
+  const scoreAway = scoreAwayBase + bonusScoreAway;
 
-  // UI souhrn
+  // UI
   sumBodyEl.textContent = `${scoreHome} : ${scoreAway}`;
   sumKuzEl.textContent  = `${sumHome} : ${sumAway}`;
 
-  // Kontrolní součty (pomůžou validaci)
-  const baseTotal = scoreHomeBase + scoreAwayBase;   // má být 6
-  const totalScore = scoreHome + scoreAway;          // má být 8
+  const baseTotal = scoreHomeBase + scoreAwayBase; // musí být 6
+  const totalScore = scoreHome + scoreAway;        // musí být 8
 
   return {
     sumHome, sumAway,
     scoreHomeBase, scoreAwayBase,
-    bonusHome, bonusAway,
+    bonusScoreHome, bonusScoreAway,
     scoreHome, scoreAway,
     baseTotal, totalScore
   };
 }
-``
-// přepočítávat souhrn při změně inputů
+
+// počítat při změně inputů
 [...homeKuzInputs, ...homeBodyInputs, ...awayKuzInputs, ...awayBodyInputs].forEach(inp=>{
   inp.addEventListener("input", computeSums);
 });
 
-// --------------- Load teams & players ---------------
+// ----------------------------------------------------
+// 2) Načtení týmů a hráčů
+// ----------------------------------------------------
 async function loadTeams(){
   const snap = await getDocs(collection(db, "teams"));
   teams = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -141,7 +172,9 @@ async function loadPlayers(){
   console.log("✅ Hráči načteni:", players.length);
 }
 
-// --------------- Fill selects ---------------
+// ----------------------------------------------------
+// 3) Naplnění selectů
+// ----------------------------------------------------
 function fillTeams(liga){
   const ligaNum = Number(liga);
   const ligaTeams = teams
@@ -196,34 +229,22 @@ function fillPlayers(){
     sel.disabled = false;
     awayPlayers.forEach(p => sel.appendChild(makeOption(p.id, p.name)));
   });
-  // Pokud chybí hráči v některém týmu, nedovol ukládat zápas
-const homeOk = homePlayers.length >= 3;
-const awayOk = awayPlayers.length >= 3;
-
-submitBtn.disabled = !(homeOk && awayOk);
-submitBtn.style.opacity = submitBtn.disabled ? "0.5" : "1";
-submitBtn.style.cursor = submitBtn.disabled ? "not-allowed" : "pointer";
-
-if (submitBtn.disabled) {
-  submitBtn.title = "Nejdřív přidej alespoň 3 hráče do domácího i hostujícího týmu (Firestore: players).";
-} else {
-  submitBtn.title = "";
-}
 }
 
-// --------------- Switch liga ---------------
-function renderAllFromCache(liga){
-  const matches = matchesCache[liga] || [];
-  renderTeamsTable(liga, matches);
-  renderPlayersTable(liga, matches);
-  renderMatrix(liga, matches);
+// ----------------------------------------------------
+// 4) Přepínání lig
+// ----------------------------------------------------
+function renderAll(liga){
+  renderTeamsTable(liga, totalsCache[liga] || []);
+  renderPlayersTable(liga, totalsCache[liga] || []);
+  renderMatrix(liga, phaseCache[liga] || []);
 }
 
 function switchLiga(liga){
   console.log("➡️ Přepínám ligu na:", liga);
   setLigaUI(liga);
   fillTeams(liga);
-  renderAllFromCache(Number(liga));
+  renderAll(Number(liga));
 }
 
 btnLiga1.addEventListener("click", (e)=>{ e.preventDefault(); switchLiga("1"); });
@@ -232,7 +253,9 @@ ligaSelect.addEventListener("change", ()=> switchLiga(ligaSelect.value));
 teamHome.addEventListener("change", fillPlayers);
 teamAway.addEventListener("change", fillPlayers);
 
-// --------------- Read players from form ---------------
+// ----------------------------------------------------
+// 5) Čtení hráčů z formuláře + validace
+// ----------------------------------------------------
 function readPlayers(side){
   const sels = side === "home" ? [...homePlayerSelects] : [...awayPlayerSelects];
   const kuzs = side === "home" ? [...homeKuzInputs] : [...awayKuzInputs];
@@ -254,7 +277,9 @@ function validatePlayers(list){
   return null;
 }
 
-// --------------- Save match (create only) ---------------
+// ----------------------------------------------------
+// 6) Uložení zápasu (zákaz duplicit podzim/jaro)
+// ----------------------------------------------------
 async function saveMatch(){
   const liga = Number(ligaSelect.value);
   const homeTeam = teamHome.value;
@@ -267,77 +292,113 @@ async function saveMatch(){
 
   const homePlayers = readPlayers("home");
   const awayPlayers = readPlayers("away");
-  const s = computeSums();
-
-// ✅ kontrola: hráčské body musí dát dohromady 6
-if (s.baseTotal !== 6) {
-  alert(`⚠️ Chyba bodů: součet bodů hráčů musí být 6 (je ${s.baseTotal}).\nZkontrolujte body 0/1/2 u hráčů.`);
-  return;
-}
-
-// ✅ kontrola: celkové Skóre musí být 8
-if (s.totalScore !== 8) {
-  alert(`⚠️ Chyba: celkové Skóre musí být 8 (je ${s.totalScore}).`);
-  return;
-}
 
   const err1 = validatePlayers(homePlayers);
   if (err1) return alert(err1);
   const err2 = validatePlayers(awayPlayers);
   if (err2) return alert(err2);
 
-  const { sumHK, sumHB, sumAK, sumAB, bonusHome, bonusAway, totalHB, totalAB } = computeSums();
+  const s = computeSums();
+
+  // Kontrola: hráčské body musí dát dohromady 6, celkové skóre 8
+  if (s.baseTotal !== 6) {
+    alert(`⚠️ Součet bodů hráčů musí být 6 (je ${s.baseTotal}). Zkontroluj 0/1/2 u hráčů.`);
+    return;
+  }
+  if (s.totalScore !== 8) {
+    alert(`⚠️ Celkové Skóre musí být 8 (je ${s.totalScore}).`);
+    return;
+  }
+
+  // 2/1/0 body do tabulky podle finálního skóre (po bonusu kuželek)
+  let leaguePointsHome = 0, leaguePointsAway = 0;
+  if (s.scoreHome > s.scoreAway) { leaguePointsHome = 2; leaguePointsAway = 0; }
+  else if (s.scoreHome < s.scoreAway) { leaguePointsHome = 0; leaguePointsAway = 2; }
+  else { leaguePointsHome = 1; leaguePointsAway = 1; }
+
+  // DUPLICITA: stejná dvojice týmů v rámci liga+season+phase jen jednou
+  const [a, b] = [homeTeam, awayTeam].sort();
+  const pairKey = `${a}_${b}`;
+  const matchId = `m_${liga}_${SEASON_ID}_${PHASE}_${pairKey}`;
 
   const data = {
     liga,
+    seasonId: SEASON_ID,
+    phase: PHASE,
+    pairKey,
+
     date,
     homeTeam,
     awayTeam,
     homePlayers,
     awayPlayers,
 
-    sumHome: sumHK,
-    sumAway: sumAK,
+    sumHome: s.sumHome,
+    sumAway: s.sumAway,
 
-    // ✅ týmové body už včetně bonusu
-    bodyHome: totalHB,
-    bodyAway: totalAB,
+    scoreHomeBase: s.scoreHomeBase,
+    scoreAwayBase: s.scoreAwayBase,
 
-    // bonus ukládáme pro kontrolu
-    bonusHome,
-    bonusAway,
+    bonusScoreHome: s.bonusScoreHome,
+    bonusScoreAway: s.bonusScoreAway,
+
+    scoreHome: s.scoreHome,
+    scoreAway: s.scoreAway,
+
+    leaguePointsHome,
+    leaguePointsAway,
 
     createdAt: Timestamp.now()
   };
 
   try{
-    await addDoc(collection(db, "matches"), data);
+    // setDoc na deterministické ID:
+    // - první uložení = CREATE (povoleno)
+    // - druhé uložení = UPDATE stejného docu (zakázáno hráčům) => permission-denied
+    await setDoc(doc(db, "matches", matchId), data);
+
     alert("✅ Zápas byl uložen.");
 
     // vyčistit čísla (hráče necháme vybrané)
     [...homeKuzInputs, ...homeBodyInputs, ...awayKuzInputs, ...awayBodyInputs].forEach(i => i.value = "");
     computeSums();
+
   } catch(e){
     console.error(e);
-    alert("❌ Nepodařilo se uložit zápas (zřejmě práva). Podívej se do konzole.");
+    if (e?.code === "permission-denied") {
+      alert("⚠️ Tento zápas už je v této části sezóny uložen (nelze uložit znovu).");
+    } else {
+      alert("❌ Nepodařilo se uložit zápas. Podívej se do konzole.");
+    }
   }
 }
 
 submitBtn.addEventListener("click", saveMatch);
 
-// --------------- Teams table ---------------
+// ----------------------------------------------------
+// 7) Tabulka družstev (Skóre, Body, NV týmový výkon)
+// ----------------------------------------------------
 function computeTeamsTable(matches, liga){
   const ligaTeams = teams.filter(t => Number(t.liga) === Number(liga));
+
   const stats = {};
   ligaTeams.forEach(t => {
     stats[t.id] = {
       teamId: t.id,
       name: t.name,
       zapasy: 0,
+
+      // kuželky celkem (součet)
       kuzelky: 0,
-      body: 0,
+
+      // Body do tabulky (2/1/0)
+      points: 0,
+
+      // Skóre (vyhrané:prohrané) — s bonusem kuželek
       scoreFor: 0,
       scoreAgainst: 0,
+
+      // NV — max týmový výkon kuželek v jednom zápase
       nv: 0
     };
   });
@@ -347,19 +408,21 @@ function computeTeamsTable(matches, liga){
     const away = stats[m.awayTeam];
     if (!home || !away) return;
 
+    // domácí
     home.zapasy++;
-    home.kuzelky += m.sumHome;
-    home.body += m.bodyHome;             // ✅ už včetně bonusu
-    home.scoreFor += m.bodyHome;
-    home.scoreAgainst += m.bodyAway;
-    (m.homePlayers||[]).forEach(p => { if ((p.kuzelky||0) > home.nv) home.nv = p.kuzelky||0; });
+    home.kuzelky += (m.sumHome || 0);
+    home.points += (m.leaguePointsHome || 0);
+    home.scoreFor += (m.scoreHome || 0);
+    home.scoreAgainst += (m.scoreAway || 0);
+    home.nv = Math.max(home.nv, (m.sumHome || 0));
 
+    // hosté
     away.zapasy++;
-    away.kuzelky += m.sumAway;
-    away.body += m.bodyAway;             // ✅ už včetně bonusu
-    away.scoreFor += m.bodyAway;
-    away.scoreAgainst += m.bodyHome;
-    (m.awayPlayers||[]).forEach(p => { if ((p.kuzelky||0) > away.nv) away.nv = p.kuzelky||0; });
+    away.kuzelky += (m.sumAway || 0);
+    away.points += (m.leaguePointsAway || 0);
+    away.scoreFor += (m.scoreAway || 0);
+    away.scoreAgainst += (m.scoreHome || 0);
+    away.nv = Math.max(away.nv, (m.sumAway || 0));
   });
 
   const rows = Object.values(stats).map(s => ({
@@ -367,8 +430,9 @@ function computeTeamsTable(matches, liga){
     prumer: s.zapasy ? (s.kuzelky / s.zapasy).toFixed(2) : "0.00"
   }));
 
+  // řazení: Body (2/1/0) -> rozdíl skóre -> kuželky
   rows.sort((a,b)=>{
-    if (b.body !== a.body) return b.body - a.body;
+    if (b.points !== a.points) return b.points - a.points;
     const diff = (b.scoreFor - b.scoreAgainst) - (a.scoreFor - a.scoreAgainst);
     if (diff !== 0) return diff;
     return b.kuzelky - a.kuzelky;
@@ -379,9 +443,17 @@ function computeTeamsTable(matches, liga){
 
 function renderTeamsTable(liga, matches){
   const rows = computeTeamsTable(matches, liga);
+
   let html = `<table class="tabulka">
     <tr>
-      <th>Poř</th><th>Družstvo</th><th>Celkem</th><th>Zápasy</th><th>Průměr</th><th>Skóre</th><th>Body</th><th>NV</th>
+      <th>Poř</th>
+      <th>Družstvo</th>
+      <th>Celkem</th>
+      <th>Zápasy</th>
+      <th>Průměr</th>
+      <th>Skóre</th>
+      <th>Body</th>
+      <th>NV</th>
     </tr>`;
 
   rows.forEach((r,i)=>{
@@ -392,7 +464,7 @@ function renderTeamsTable(liga, matches){
       <td>${r.zapasy}</td>
       <td>${r.prumer}</td>
       <td>${r.scoreFor}:${r.scoreAgainst}</td>
-      <td>${r.body}</td>
+      <td>${r.points}</td>
       <td>${r.nv}</td>
     </tr>`;
   });
@@ -401,7 +473,9 @@ function renderTeamsTable(liga, matches){
   tabDruzstva.innerHTML = html;
 }
 
-// --------------- Players table ---------------
+// ----------------------------------------------------
+// 8) Tabulka hráčů (individuální body bez bonusu kuželek)
+// ----------------------------------------------------
 function computePlayersTable(matches, liga){
   const ps = {};
 
@@ -415,8 +489,8 @@ function computePlayersTable(matches, liga){
     }
     ps[playerId].zapasy++;
     ps[playerId].kuzelky += (kuzelky||0);
-    ps[playerId].body += (body||0); // individuální body (bez bonusu)
-    if ((kuzelky||0) > ps[playerId].nv) ps[playerId].nv = kuzelky||0;
+    ps[playerId].body += (body||0);
+    ps[playerId].nv = Math.max(ps[playerId].nv, (kuzelky||0));
   }
 
   matches.forEach(m=>{
@@ -441,9 +515,17 @@ function computePlayersTable(matches, liga){
 
 function renderPlayersTable(liga, matches){
   const rows = computePlayersTable(matches, liga);
+
   let html = `<table class="tabulka">
     <tr>
-      <th>Poř</th><th>Hráč</th><th>Družstvo</th><th>Celkem</th><th>Zápasy</th><th>Průměr</th><th>Body</th><th>NV</th>
+      <th>Poř</th>
+      <th>Hráč</th>
+      <th>Družstvo</th>
+      <th>Celkem</th>
+      <th>Zápasy</th>
+      <th>Průměr</th>
+      <th>Body</th>
+      <th>NV</th>
     </tr>`;
 
   rows.forEach((r,i)=>{
@@ -463,7 +545,9 @@ function renderPlayersTable(liga, matches){
   tabHracu.innerHTML = html;
 }
 
-// --------------- Matrix ---------------
+// ----------------------------------------------------
+// 9) Matice zápasů (jen aktuální fáze PHASE)
+// ----------------------------------------------------
 function buildMatchMap(matches){
   const map = new Map();
   matches.forEach(m=>{
@@ -508,13 +592,17 @@ function renderMatrix(liga, matches){
       }
 
       const reversed = !direct && !!reverse;
-      const bodyA = reversed ? m.bodyAway : m.bodyHome;
-      const bodyB = reversed ? m.bodyHome : m.bodyAway;
-      const kuzA  = reversed ? m.sumAway  : m.sumHome;
-      const kuzB  = reversed ? m.sumHome  : m.sumAway;
+
+      // Skóre (po bonusu kuželek)
+      const scoreA = reversed ? (m.scoreAway||0) : (m.scoreHome||0);
+      const scoreB = reversed ? (m.scoreHome||0) : (m.scoreAway||0);
+
+      // Kuželky
+      const kuzA = reversed ? (m.sumAway||0) : (m.sumHome||0);
+      const kuzB = reversed ? (m.sumHome||0) : (m.sumAway||0);
 
       html += `<td style="text-align:center;">
-        <div style="font-weight:bold;color:#ffd700;">${bodyA} : ${bodyB}</div>
+        <div style="font-weight:bold;color:#ffd700;">${scoreA} : ${scoreB}</div>
         <div style="font-size:12px;opacity:0.9;">${kuzA} : ${kuzB}</div>
       </td>`;
     });
@@ -526,18 +614,45 @@ function renderMatrix(liga, matches){
   tabMatice.innerHTML = html;
 }
 
-// --------------- Listen matches (both leagues) ---------------
-function listenMatches(liga){
-  const q = query(collection(db, "matches"), where("liga", "==", Number(liga)));
-  onSnapshot(q, (snap)=>{
-    matchesCache[liga] = snap.docs.map(d => d.data());
+// ----------------------------------------------------
+// 10) Listenery na matches
+// - totals: celá sezóna (autumn + spring) => tabulky
+// - phase:  jen aktuální phase => matice
+// ----------------------------------------------------
+function listenTotals(liga){
+  const q = query(
+    collection(db, "matches"),
+    where("liga", "==", Number(liga)),
+    where("seasonId", "==", SEASON_ID)
+  );
+
+  onSnapshot(q, snap=>{
+    totalsCache[liga] = snap.docs.map(d => d.data());
     if (Number(ligaSelect.value) === Number(liga)){
-      renderAllFromCache(Number(liga));
+      renderAll(Number(liga));
     }
   });
 }
 
-// --------------- Init ---------------
+function listenPhase(liga){
+  const q = query(
+    collection(db, "matches"),
+    where("liga", "==", Number(liga)),
+    where("seasonId", "==", SEASON_ID),
+    where("phase", "==", PHASE)
+  );
+
+  onSnapshot(q, snap=>{
+    phaseCache[liga] = snap.docs.map(d => d.data());
+    if (Number(ligaSelect.value) === Number(liga)){
+      renderAll(Number(liga));
+    }
+  });
+}
+
+// ----------------------------------------------------
+// Init
+// ----------------------------------------------------
 window.addEventListener("DOMContentLoaded", async ()=>{
   try{
     if (!dateInput.value) dateInput.value = todayISO();
@@ -545,11 +660,17 @@ window.addEventListener("DOMContentLoaded", async ()=>{
     await loadTeams();
     await loadPlayers();
 
-    listenMatches(1);
-    listenMatches(2);
+    // posluchače pro obě ligy
+    listenTotals(1);
+    listenTotals(2);
+    listenPhase(1);
+    listenPhase(2);
 
     switchLiga("1");
     computeSums();
+
+    console.log(`ℹ️ Sezóna: ${SEASON_ID}, fáze: ${PHASE}`);
+
   } catch(e){
     console.error(e);
     alert("Nepodařilo se načíst data Habaďůry (týmy/hráči). Podívej se do konzole.");
