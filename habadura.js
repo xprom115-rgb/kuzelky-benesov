@@ -31,7 +31,8 @@ import {
   Timestamp,
   query,
   where,
-  onSnapshot
+  onSnapshot,
+  limit
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 console.log("✅ habadura.js načten (finální)");
