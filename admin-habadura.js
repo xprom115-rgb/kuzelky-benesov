@@ -24,7 +24,8 @@ import {
   deleteDoc,
   doc,
   setDoc,
-  Timestamp
+  Timestamp,
+  limit
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 console.log("✅ admin-habadura.js načten");
