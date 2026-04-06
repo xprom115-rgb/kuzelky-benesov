@@ -1,12 +1,30 @@
+// admin-habadura.js — FINÁLNÍ (editace zápasu dle nové logiky)
+// - Skóre = (součet bodů hráčů) + (bonus za kuželky: 2:0 / 0:2 / 1:1)
+// - Součet bodů hráčů musí být 6, celkové Skóre 8
+// - Body do tabulky (2/1/0) podle výsledného Skóre
+// - Ukládá přesně pole, která používá veřejná habadura.js
+
 import { app, db } from "./firebase-config.js";
 
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } 
-  from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
 import {
-  collection, getDocs, onSnapshot, query, where,
-  updateDoc, deleteDoc, doc
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+  where,
+  updateDoc,
+  deleteDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+console.log("✅ admin-habadura.js načten");
 
 const auth = getAuth(app);
 
@@ -34,8 +52,8 @@ const editAwayPlayers = document.getElementById("editAwayPlayers");
 
 const sumHomeEl = document.getElementById("sumHome");
 const sumAwayEl = document.getElementById("sumAway");
-const bodyHomeEl = document.getElementById("bodyHome");
-const bodyAwayEl = document.getElementById("bodyAway");
+const bodyHomeEl = document.getElementById("bodyHome"); // zde zobrazujeme Skóre
+const bodyAwayEl = document.getElementById("bodyAway"); // zde zobrazujeme Skóre
 
 const btnCloseEdit = document.getElementById("btnCloseEdit");
 const btnSaveEdit = document.getElementById("btnSaveEdit");
@@ -45,51 +63,57 @@ const editMsg = document.getElementById("editMsg");
 let teams = [];
 let players = [];
 let currentDocId = null;
-let currentMatch = null;
 let unsubscribe = null;
 
-// helpers
-const csCompare = (a,b)=> (a||"").localeCompare(b||"","cs");
-const sum = arr => arr.reduce((a,b)=>a+b,0);
+const csCompare = (a, b) => (a || "").localeCompare(b || "", "cs");
+const sum = (arr) => arr.reduce((a, b) => a + b, 0);
 
+function teamName(id) {
+  return teams.find(t => t.id === id)?.name || "(tým?)";
+}
 
-
-function computeBonus(sumHome, sumAway){
-  // bonus do SKÓRE: +2 vítězi kuželek, remíza 1:1
+// bonus do SKÓRE za kuželky
+function computeBonus(sumHome, sumAway) {
   if (sumHome > sumAway) return { bonusScoreHome: 2, bonusScoreAway: 0 };
   if (sumHome < sumAway) return { bonusScoreHome: 0, bonusScoreAway: 2 };
-  return { bonusScoreHome: 1, bonusScoreAway: 1 };
+  return { bonusScoreHome: 1, bonusScoreAway: 1 }; // remíza kuželek
 }
 
+// načti týmy a hráče pro editor
+async function loadBase() {
+  const ts = await getDocs(collection(db, "teams"));
+  teams = ts.docs.map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => csCompare(a.name, b.name));
 
-async function loadBase(){
-  const ts = await getDocs(collection(db,"teams"));
-  teams = ts.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=>csCompare(a.name,b.name));
-
-  const ps = await getDocs(collection(db,"players"));
-  players = ps.docs.map(d=>({id:d.id, ...d.data()})).sort((a,b)=>csCompare(a.name,b.name));
+  const ps = await getDocs(collection(db, "players"));
+  players = ps.docs.map(d => ({ id: d.id, ...d.data() }))
+    .sort((a, b) => csCompare(a.name, b.name));
 }
 
-function fillTeamSelects(liga){
-  const ligaTeams = teams.filter(t=>Number(t.liga)===Number(liga));
+function fillTeamSelects(liga) {
+  const ligaTeams = teams.filter(t => Number(t.liga) === Number(liga));
   editHomeTeam.innerHTML = "";
   editAwayTeam.innerHTML = "";
-  ligaTeams.forEach(t=>{
-    const o1=document.createElement("option"); o1.value=t.id; o1.textContent=t.name;
-    const o2=document.createElement("option"); o2.value=t.id; o2.textContent=t.name;
-    editHomeTeam.appendChild(o1); editAwayTeam.appendChild(o2);
+  ligaTeams.forEach(t => {
+    const o1 = document.createElement("option");
+    o1.value = t.id; o1.textContent = t.name;
+    const o2 = document.createElement("option");
+    o2.value = t.id; o2.textContent = t.name;
+    editHomeTeam.appendChild(o1);
+    editAwayTeam.appendChild(o2);
   });
 }
 
-function playersOfTeam(teamId){
-  return players.filter(p=>p.teamId===teamId).sort((a,b)=>csCompare(a.name,b.name));
+function playersOfTeam(teamId) {
+  return players.filter(p => p.teamId === teamId)
+    .sort((a, b) => csCompare(a.name, b.name));
 }
 
-function mkPlayerRow(side, idx){
+function mkPlayerRow(side, idx) {
   const row = document.createElement("div");
   row.className = "toolrow";
   row.innerHTML = `
-    <label class="small">Hráč ${idx+1}:</label>
+    <label class="small">Hráč ${idx + 1}:</label>
     <select class="${side}-pl"></select>
     <input type="number" class="${side}-kuz" placeholder="Kuželky" style="max-width:120px;">
     <input type="number" class="${side}-bod" placeholder="Body (0/1/2)" style="max-width:120px;">
@@ -97,52 +121,56 @@ function mkPlayerRow(side, idx){
   return row;
 }
 
-function fillPlayerRows(){
-  // naplní selecty hráčů podle zvolených týmů
+function fillPlayerRows() {
   const hp = playersOfTeam(editHomeTeam.value);
   const ap = playersOfTeam(editAwayTeam.value);
 
-  document.querySelectorAll(".home-pl").forEach(sel=>{
+  document.querySelectorAll(".home-pl").forEach(sel => {
     sel.innerHTML = "";
-    hp.forEach(p=>{ const o=document.createElement("option"); o.value=p.id; o.textContent=p.name; sel.appendChild(o); });
+    hp.forEach(p => {
+      const o = document.createElement("option");
+      o.value = p.id; o.textContent = p.name;
+      sel.appendChild(o);
+    });
   });
-  document.querySelectorAll(".away-pl").forEach(sel=>{
+
+  document.querySelectorAll(".away-pl").forEach(sel => {
     sel.innerHTML = "";
-    ap.forEach(p=>{ const o=document.createElement("option"); o.value=p.id; o.textContent=p.name; sel.appendChild(o); });
+    ap.forEach(p => {
+      const o = document.createElement("option");
+      o.value = p.id; o.textContent = p.name;
+      sel.appendChild(o);
+    });
   });
 }
 
-function recompute(){
-  const hk = [...document.querySelectorAll(".home-kuz")].map(x=>Number(x.value)||0);
-  const hb = [...document.querySelectorAll(".home-bod")].map(x=>Number(x.value)||0);
-  const ak = [...document.querySelectorAll(".away-kuz")].map(x=>Number(x.value)||0);
-  const ab = [...document.querySelectorAll(".away-bod")].map(x=>Number(x.value)||0);
+// přepočet: kuželky + skóre 8 + body 2/1/0
+function recompute() {
+  const hk = [...document.querySelectorAll(".home-kuz")].map(x => Number(x.value) || 0);
+  const hb = [...document.querySelectorAll(".home-bod")].map(x => Number(x.value) || 0);
+  const ak = [...document.querySelectorAll(".away-kuz")].map(x => Number(x.value) || 0);
+  const ab = [...document.querySelectorAll(".away-bod")].map(x => Number(x.value) || 0);
 
   const sumHome = sum(hk);
   const sumAway = sum(ak);
 
-  // základní body hráčů (musí dát celkem 6)
-  const scoreHomeBase = sum(hb);
+  const scoreHomeBase = sum(hb); // musí dát dohromady 6
   const scoreAwayBase = sum(ab);
 
-  // bonus do skóre za kuželky (+2 / 1:1)
   const { bonusScoreHome, bonusScoreAway } = computeBonus(sumHome, sumAway);
 
-  // výsledné skóre (musí dát celkem 8)
-  const scoreHome = scoreHomeBase + bonusScoreHome;
+  const scoreHome = scoreHomeBase + bonusScoreHome; // musí dát dohromady 8
   const scoreAway = scoreAwayBase + bonusScoreAway;
 
-  // 2/1/0 do tabulky "Body" podle výsledného skóre
+  // body 2/1/0 do tabulky podle výsledného SkÓRE
   let leaguePointsHome = 0, leaguePointsAway = 0;
   if (scoreHome > scoreAway) { leaguePointsHome = 2; leaguePointsAway = 0; }
   else if (scoreHome < scoreAway) { leaguePointsHome = 0; leaguePointsAway = 2; }
   else { leaguePointsHome = 1; leaguePointsAway = 1; }
 
-  // UI v admin editoru:
+  // UI (tady ukazujeme kuželky a Skóre)
   sumHomeEl.textContent = sumHome;
   sumAwayEl.textContent = sumAway;
-
-  // v těchto polích je lepší ukazovat SKÓRE (8 bodů), ne "bodyHome"
   bodyHomeEl.textContent = scoreHome;
   bodyAwayEl.textContent = scoreAway;
 
@@ -155,24 +183,25 @@ function recompute(){
   };
 }
 
-function openEdit(docId, match, liga){
+function openEdit(docId, match, liga) {
   currentDocId = docId;
-  currentMatch = match;
   editMsg.textContent = "";
-
   editBox.style.display = "block";
 
   fillTeamSelects(liga);
 
   editDate.value = match.date || "";
-
   editHomeTeam.value = match.homeTeam;
   editAwayTeam.value = match.awayTeam;
+
+  // Doporučení: neměnit týmy (kvůli deterministickému matchId)
+  editHomeTeam.disabled = true;
+  editAwayTeam.disabled = true;
 
   // vytvoř 3+3 řádky
   editHomePlayers.innerHTML = "";
   editAwayPlayers.innerHTML = "";
-  for (let i=0;i<3;i++){
+  for (let i = 0; i < 3; i++) {
     editHomePlayers.appendChild(mkPlayerRow("home", i));
     editAwayPlayers.appendChild(mkPlayerRow("away", i));
   }
@@ -180,7 +209,7 @@ function openEdit(docId, match, liga){
   fillPlayerRows();
 
   // doplň hodnoty
-  (match.homePlayers||[]).forEach((p,i)=>{
+  (match.homePlayers || []).forEach((p, i) => {
     const sel = document.querySelectorAll(".home-pl")[i];
     const kuz = document.querySelectorAll(".home-kuz")[i];
     const bod = document.querySelectorAll(".home-bod")[i];
@@ -189,7 +218,7 @@ function openEdit(docId, match, liga){
     if (bod) bod.value = p.body ?? "";
   });
 
-  (match.awayPlayers||[]).forEach((p,i)=>{
+  (match.awayPlayers || []).forEach((p, i) => {
     const sel = document.querySelectorAll(".away-pl")[i];
     const kuz = document.querySelectorAll(".away-kuz")[i];
     const bod = document.querySelectorAll(".away-bod")[i];
@@ -202,27 +231,29 @@ function openEdit(docId, match, liga){
 
   // listeners pro přepočet
   [...document.querySelectorAll(".home-kuz,.home-bod,.away-kuz,.away-bod")]
-    .forEach(inp=>inp.addEventListener("input", recompute));
-
-  editHomeTeam.onchange = () => { fillPlayerRows(); };
-  editAwayTeam.onchange = () => { fillPlayerRows(); };
+    .forEach(inp => inp.addEventListener("input", recompute));
 }
 
-function renderMatches(list){
-  if (!list.length){
+function renderMatches(list) {
+  if (!list.length) {
     matchesList.innerHTML = "<p><em>Žádné zápasy.</em></p>";
     return;
   }
 
-  matchesList.innerHTML = list.map(x=>{
+  matchesList.innerHTML = list.map(x => {
     const m = x.data;
-    const home = teams.find(t=>t.id===m.homeTeam)?.name || "(tým?)";
-    const away = teams.find(t=>t.id===m.awayTeam)?.name || "(tým?)";
+    const home = teamName(m.homeTeam);
+    const away = teamName(m.awayTeam);
+
+    const score = `${m.scoreHome ?? "?"}:${m.scoreAway ?? "?"}`;
+    const pts = `${m.leaguePointsHome ?? "?"}:${m.leaguePointsAway ?? "?"}`;
+    const kuz = `${m.sumHome ?? "?"}:${m.sumAway ?? "?"}`;
+
     return `
       <div class="listrow">
         <div>
           <strong>${m.date || ""}</strong> — ${home} vs ${away}
-          <span class="small"> | Body ${m.bodyHome}:${m.bodyAway} | Kuželky ${m.sumHome}:${m.sumAway}</span>
+          <span class="small"> | Skóre ${score} | Body ${pts} | Kuželky ${kuz}</span>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
           <button class="btn-primary" data-edit="${x.docId}">Upravit</button>
@@ -231,164 +262,35 @@ function renderMatches(list){
     `;
   }).join("");
 
-  matchesList.querySelectorAll("button[data-edit]").forEach(btn=>{
-    btn.addEventListener("click", ()=>{
+  matchesList.querySelectorAll("button[data-edit]").forEach(btn => {
+    btn.addEventListener("click", () => {
       const id = btn.dataset.edit;
-      const found = list.find(x=>x.docId===id);
+      const found = list.find(x => x.docId === id);
       if (found) openEdit(id, found.data, Number(ligaEl.value));
     });
   });
 }
 
-function listenMatches(){
+function listenMatches() {
   if (unsubscribe) unsubscribe();
 
   const liga = Number(ligaEl.value);
-  const q = query(collection(db,"matches"), where("liga","==", liga));
+  const q = query(collection(db, "matches"), where("liga", "==", liga));
 
-  unsubscribe = onSnapshot(q, snap=>{
-    let list = snap.docs.map(d=>({docId:d.id, data:d.data()}));
+  unsubscribe = onSnapshot(q, snap => {
+    let list = snap.docs.map(d => ({ docId: d.id, data: d.data() }));
 
     const fd = filterDateEl.value;
-    if (fd) list = list.filter(x=>x.data.date === fd);
+    if (fd) list = list.filter(x => x.data.date === fd);
 
-    list.sort((a,b)=>(b.data.date||"").localeCompare(a.data.date||""));
+    list.sort((a, b) => (b.data.date || "").localeCompare(a.data.date || ""));
     renderMatches(list);
   });
 }
 
-// Auth UI
-btnLogin.addEventListener("click", async ()=>{
+// ---------- Auth ----------
+btnLogin.addEventListener("click", async () => {
   loginMsg.textContent = "";
-  try{
+  try {
     await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
-  }catch(e){
-    console.error(e);
-    loginMsg.textContent = "Nepodařilo se přihlásit (zkontroluj email/heslo).";
-  }
-});
-
-btnLogout.addEventListener("click", ()=> signOut(auth));
-
-onAuthStateChanged(auth, async (user)=>{
-  if (user){
-    loginBox.style.display = "none";
-    appBox.style.display = "block";
-    await loadBase();
-    listenMatches();
-  } else {
-    loginBox.style.display = "block";
-    appBox.style.display = "none";
-    editBox.style.display = "none";
-    currentDocId = null;
-    currentMatch = null;
-    if (unsubscribe) unsubscribe();
-    unsubscribe = null;
-  }
-});
-
-ligaEl.addEventListener("change", ()=>{
-  editBox.style.display="none";
-  currentDocId=null;
-  listenMatches();
-});
-
-clearFilter.addEventListener("click", ()=>{
-  filterDateEl.value = "";
-  listenMatches();
-});
-filterDateEl.addEventListener("change", listenMatches);
-
-btnCloseEdit.addEventListener("click", ()=>{
-  editBox.style.display="none";
-  currentDocId=null;
-});
-
-btnSaveEdit.addEventListener("click", async ()=>{
-  if (!currentDocId) return;
-
-  const liga = Number(ligaEl.value);
-
-  const homePlayers = [...document.querySelectorAll(".home-pl")].map((sel,i)=>({
-    playerId: sel.value,
-    kuzelky: Number(document.querySelectorAll(".home-kuz")[i].value)||0,
-    body: Number(document.querySelectorAll(".home-bod")[i].value)||0
-  }));
-
-  const awayPlayers = [...document.querySelectorAll(".away-pl")].map((sel,i)=>({
-    playerId: sel.value,
-    kuzelky: Number(document.querySelectorAll(".away-kuz")[i].value)||0,
-    body: Number(document.querySelectorAll(".away-bod")[i].value)||0
-  }));
-
-  // validace bodů
-  for (const p of [...homePlayers, ...awayPlayers]){
-    if (!p.playerId){ editMsg.textContent="Vyber hráče ve všech řádcích."; return; }
-    if (![0,1,2].includes(p.body)){ editMsg.textContent="Body musí být 0/1/2."; return; }
-    if (p.kuzelky < 0){ editMsg.textContent="Kuželky musí být kladné."; return; }
-  }
-
-  const calc = recompute();
-
-// Validace "6 + 2 = 8"
-const baseTotal = calc.scoreHomeBase + calc.scoreAwayBase;
-const totalScore = calc.scoreHome + calc.scoreAway;
-
-if (baseTotal !== 6) {
-  editMsg.textContent = `⚠️ Součet bodů hráčů musí být 6 (je ${baseTotal}).`;
-  return;
-}
-if (totalScore !== 8) {
-  editMsg.textContent = `⚠️ Celkové Skóre musí být 8 (je ${totalScore}).`;
-  return;
-}
-
-await updateDoc(doc(db,"matches", currentDocId), {
-  liga,
-  date: editDate.value,
-
-  // Doporučení: týmy raději NEMĚNIT (viz poznámka níže),
-  // ale když chceš, můžeš ponechat:
-  homeTeam: editHomeTeam.value,
-  awayTeam: editAwayTeam.value,
-
-  homePlayers,
-  awayPlayers,
-
-  // kuželky
-  sumHome: calc.sumHome,
-  sumAway: calc.sumAway,
-
-  // skóre (6 bodů hráčů + 2 bonus kuželky = 8)
-  scoreHomeBase: calc.scoreHomeBase,
-  scoreAwayBase: calc.scoreAwayBase,
-  bonusScoreHome: calc.bonusScoreHome,
-  bonusScoreAway: calc.bonusScoreAway,
-  scoreHome: calc.scoreHome,
-  scoreAway: calc.scoreAway,
-
-  // body do tabulky (2/1/0)
-  leaguePointsHome: calc.leaguePointsHome,
-  leaguePointsAway: calc.leaguePointsAway
-});
-
-    editMsg.textContent = "✅ Uloženo.";
-  }catch(e){
-    console.error(e);
-    editMsg.textContent = "❌ Uložení selhalo (zkontroluj Rules/UID admina).";
-  }
-});
-
-btnDeleteMatch.addEventListener("click", async ()=>{
-  if (!currentDocId) return;
-  if (!confirm("Opravdu smazat zápas?")) return;
-
-  try{
-    await deleteDoc(doc(db,"matches", currentDocId));
-    editBox.style.display="none";
-    currentDocId=null;
-  }catch(e){
-    console.error(e);
-    editMsg.textContent = "❌ Smazání selhalo (zkontroluj Rules/UID admina).";
-  }
-});
+  } catch (e) {
