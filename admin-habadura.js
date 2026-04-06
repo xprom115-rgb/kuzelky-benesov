@@ -348,6 +348,15 @@ onAuthStateChanged(auth, async (user) => {
     loginBox.style.display = "none";
     appBox.style.display = "block";
     await loadBase();
+    // ✅ KROK 4.3 – realtime načítání sezón do adminu
+onSnapshot(collection(db, "seasons"), (snap) => {
+  seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  console.log("✅ seasons loaded:", seasons.length, seasons);
+  renderSeasons();      // naplní select
+  syncPhaseSelect();    // nastaví Podzim/Jaro podle activePhase
+}, (err) => {
+  console.error("❌ seasons snapshot error:", err);
+});
     listenMatches();
   } else {
     loginBox.style.display = "block";
