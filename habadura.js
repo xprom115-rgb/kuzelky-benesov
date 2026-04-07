@@ -686,43 +686,45 @@ function listenActiveSeason(onReady){
     limit(1)
   );
 
-  onSnapshot(q, (snap)=>{
-    if (snap.empty){
-      console.warn("⚠️ Nenalezena aktivní sezóna v seasons (isActive=true).");
+  onSnapshot(
+    q,
+    (snap) => {
+      if (snap.empty) {
+        console.warn("⚠️ Nenalezena aktivní sezóna v seasons (isActive=true).");
+        seasonReady = false;
+        submitBtn.disabled = true;
+        return;
+      }
+
+      const d = snap.docs[0];
+      const s = { id: d.id, ...d.data() };
+
+      const newSeason = s.id;
+      const newPhase  = s.activePhase || "autumn";
+
+      const changed = (SEASON_ID !== newSeason) || (PHASE !== newPhase);
+
+      SEASON_ID = newSeason;
+      PHASE = newPhase;
+
+      seasonReady = true;
+      submitBtn.disabled = false;
+
+      console.log("✅ Aktivní sezóna/fáze:", SEASON_ID, PHASE);
+
+      if (changed) {
+        startMatchListeners();
+        renderAll(Number(ligaSelect.value || 1));
+      }
+
+      onReady?.();
+    },
+    (err) => {
+      console.error("❌ seasons read error:", err);
       seasonReady = false;
       submitBtn.disabled = true;
-      return;
     }
-
-    const d = snap.docs[0];
-    const s = { id: d.id, ...d.data() };
-
-    const newSeason = s.id;
-    const newPhase  = s.activePhase || "autumn";
-
-    const changed = (SEASON_ID !== newSeason) || (PHASE !== newPhase);
-
-    SEASON_ID = newSeason;
-    PHASE = newPhase;
-
-    seasonReady = true;
-    submitBtn.disabled = false;
-
-    console.log("✅ Aktivní sezóna/fáze:", SEASON_ID, PHASE);
-
-    // pokud se změnila sezóna nebo fáze, restartuj listenery
-    if (changed){
-      startMatchListeners();
-      // překreslit aktuální ligu
-      renderAll(Number(ligaSelect.value || 1));
-    }
-
-    onReady?.();
-  }, (err)=>{
-    console.error("❌ Chyba načítání seasons:", err);
-    seasonReady = false;
-    submitBtn.disabled = true;
-  });
+  );
 }
 
 
