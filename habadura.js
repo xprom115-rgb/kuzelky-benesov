@@ -742,8 +742,7 @@ function listenTotals(liga){
     }
   });
 }
-
-function listenPhase(liga){
+function listenPhase(liga) {
   const q = query(
     collection(db, "matches"),
     where("liga", "==", Number(liga)),
@@ -751,41 +750,20 @@ function listenPhase(liga){
     where("phase", "==", PHASE)
   );
 
-  onSnapshot(q, snap=>{
-    phaseCache[liga] = snap.docs.map(d => d.data());
-    if (Number(ligaSelect.value) === Number(liga)){
-      renderAll(Number(liga));
+  onSnapshot(
+    q,
+    (snap) => {
+      phaseCache[liga] = snap.docs.map(d => d.data());
+      if (Number(ligaSelect.value) === Number(liga)) {
+        renderAll(Number(liga));
+      }
+    },
+    (err) => {
+      console.error("❌ phase matches snapshot error:", err);
     }
-  });
+  );
 }
-    const d = snap.docs[0];
-    const s = { id: d.id, ...d.data() };
 
-    const newSeason = s.id;
-    const newPhase  = s.activePhase || "autumn";
-
-    const changed = (SEASON_ID !== newSeason) || (PHASE !== newPhase);
-
-    SEASON_ID = newSeason;
-    PHASE = newPhase;
-
-    seasonReady = true;
-    submitBtn.disabled = false;
-
-    console.log("✅ Aktivní sezóna/fáze:", SEASON_ID, PHASE);
-
-    if (changed){
-      startMatchListeners();
-      renderAll(Number(ligaSelect.value || 1));
-    }
-
-    onReady?.();
-   (err) => {
-    console.error("❌ seasons read error:", err);
-    seasonReady = false;
-    submitBtn.disabled = true;
-  });
-}
 // ----------------------------------------------------
 // Init
 // ----------------------------------------------------
