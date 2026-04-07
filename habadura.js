@@ -756,21 +756,6 @@ function listenPhase(liga){
     }
   });
 }
-function listenActiveSeason(onReady){
-  const q = query(
-    collection(db, "seasons"),
-    where("isActive", "==", true),
-    limit(1)
-  );
-
-  onSnapshot(q, (snap) => {
-    if (snap.empty) {
-      console.warn("⚠️ Nenalezena aktivní sezóna v seasons (isActive=true).");
-      seasonReady = false;
-      submitBtn.disabled = true;
-      return;
-    }
-
     const d = snap.docs[0];
     const s = { id: d.id, ...d.data() };
 
