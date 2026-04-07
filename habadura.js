@@ -41,9 +41,6 @@ let SEASON_ID = null;
 let PHASE = null;
 let seasonReady = false;
 
-// pro jistotu: dokud nevíme sezónu/fázi, nenecháme ukládat zápas
-let seasonReady = false;
-
 
 // -------------------------
 // DOM
