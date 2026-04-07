@@ -780,7 +780,7 @@ function listenPhase(liga){
     }
 
     onReady?.();
-  }, (err) => {
+   (err) => {
     console.error("❌ seasons read error:", err);
     seasonReady = false;
     submitBtn.disabled = true;
