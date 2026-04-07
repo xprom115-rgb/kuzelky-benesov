@@ -807,8 +807,4 @@ window.addEventListener("DOMContentLoaded", async ()=>{
   }
 });
 
-  } catch(e){
-    console.error(e);
-    alert("Nepodařilo se načíst data Habaďůry. Podívej se do konzole.");
-  }
-});
+
