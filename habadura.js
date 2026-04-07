@@ -41,11 +41,6 @@ let SEASON_ID = null;
 let PHASE = null;
 let seasonReady = false;
 
-
-// ===== AUTO sezóna/fáze z Firestore (seasons) =====
-let SEASON_ID = null;
-let PHASE = null;
-
 // pro jistotu: dokud nevíme sezónu/fázi, nenecháme ukládat zápas
 let seasonReady = false;
 
