@@ -37,6 +37,10 @@ import {
 
 console.log("✅ habadura.js načten (finální)");
 
+let SEASON_ID = null;
+let PHASE = null;
+let seasonReady = false;
+
 
 // ===== AUTO sezóna/fáze z Firestore (seasons) =====
 let SEASON_ID = null;
@@ -761,29 +765,71 @@ function listenPhase(liga){
     }
   });
 }
+function listenActiveSeason(onReady){
+  const q = query(
+    collection(db, "seasons"),
+    where("isActive", "==", true),
+    limit(1)
+  );
 
+  onSnapshot(q, (snap) => {
+    if (snap.empty) {
+      console.warn("⚠️ Nenalezena aktivní sezóna v seasons (isActive=true).");
+      seasonReady = false;
+      submitBtn.disabled = true;
+      return;
+    }
+
+    const d = snap.docs[0];
+    const s = { id: d.id, ...d.data() };
+
+    const newSeason = s.id;
+    const newPhase  = s.activePhase || "autumn";
+
+    const changed = (SEASON_ID !== newSeason) || (PHASE !== newPhase);
+
+    SEASON_ID = newSeason;
+    PHASE = newPhase;
+
+    seasonReady = true;
+    submitBtn.disabled = false;
+
+    console.log("✅ Aktivní sezóna/fáze:", SEASON_ID, PHASE);
+
+    if (changed){
+      startMatchListeners();
+      renderAll(Number(ligaSelect.value || 1));
+    }
+
+    onReady?.();
+  }, (err) => {
+    console.error("❌ seasons read error:", err);
+    seasonReady = false;
+    submitBtn.disabled = true;
+  });
+}
 // ----------------------------------------------------
 // Init
 // ----------------------------------------------------
 window.addEventListener("DOMContentLoaded", async ()=>{
   try{
-    if (!dateInput.value) dateInput.value = todayISO();
-
-    // zatím zakážeme uložení, dokud nevíme season/phase
     submitBtn.disabled = true;
 
     await loadTeams();
     await loadPlayers();
 
-    // ✅ sezóna/fáze automaticky ze seasons
     listenActiveSeason(() => {
-      // po prvním načtení sezóny/fáze startneme listenery a inicializujeme UI
       if (seasonReady){
         startMatchListeners();
         switchLiga("1");
         computeSums();
       }
     });
+  } catch(e){
+    console.error(e);
+    alert("Nepodařilo se načíst data Habaďůry. Podívej se do konzole.");
+  }
+});
 
   } catch(e){
     console.error(e);
