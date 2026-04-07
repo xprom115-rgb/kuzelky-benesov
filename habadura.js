@@ -48,6 +48,7 @@ let seasonReady = false;
 const btnLiga1   = document.getElementById("btn-liga1");
 const btnLiga2   = document.getElementById("btn-liga2");
 const ligaSelect = document.getElementById("liga-select");
+const seasonBadge = document.getElementById("seasonBadge");
 
 const teamHome = document.getElementById("team-home");
 const teamAway = document.getElementById("team-away");
@@ -706,6 +707,12 @@ function listenActiveSeason(onReady){
 
       SEASON_ID = newSeason;
       PHASE = newPhase;
+      // --- Zobrazení sezóny a fáze v nadpisu ---
+if (seasonBadge) {
+  const label = s.label || SEASON_ID; // např. "2025/2026"
+  const phaseText = (PHASE === "spring") ? "jaro" : "podzim";
+  seasonBadge.textContent = `(${label} – ${phaseText})`;
+}
 
       seasonReady = true;
       submitBtn.disabled = false;
