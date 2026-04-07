@@ -90,54 +90,53 @@ function stopMatchListeners(){
   unsubPhase1?.();  unsubPhase2?.();
   unsubTotals1 = unsubTotals2 = unsubPhase1 = unsubPhase2 = null;
 }
-
 function startMatchListeners(){
   stopMatchListeners();
 
-  // totals: celá sezóna (podzim + jaro) => tabulka družstev + hráčů
+  // --- totals: celá sezóna (podzim + jaro) => tabulka družstev + hráčů
   const qT1 = query(collection(db, "matches"),
-    where("liga","==",1),
-    where("seasonId","==", SEASON_ID)
-  );
-  const qT2 = query(collection(db, "matches"),
-    where("liga","==",2),
-    where("seasonId","==", SEASON_ID)
+    where("liga", "==", 1),
+    where("seasonId", "==", SEASON_ID)
   );
 
-  unsubTotals1 = onSnapshot(qT1, snap=>{
-    totalsCache[1] = snap.docs.map(d=>d.data());
+  const qT2 = query(collection(db, "matches"),
+    where("liga", "==", 2),
+    where("seasonId", "==", SEASON_ID)
+  );
+
+  unsubTotals1 = onSnapshot(qT1, snap => {
+    totalsCache[1] = snap.docs.map(d => d.data());
     if (Number(ligaSelect.value) === 1) renderAll(1);
   });
 
-  unsubTotals2 = onSnapshot(qT2, snap=>{
-    totalsCache[2] = snap.docs.map(d=>d.data());
+  unsubTotals2 = onSnapshot(qT2, snap => {
+    totalsCache[2] = snap.docs.map(d => d.data());
     if (Number(ligaSelect.value) === 2) renderAll(2);
   });
 
-  // phase: pouze aktivní fáze => matice
+  // --- phase: pouze aktivní fáze => matice
   const qP1 = query(collection(db, "matches"),
-    where("liga","==",1),
-    where("seasonId","==", SEASON_ID),
-    where("phase","==", PHASE)
-  );
-  const qP2 = query(collection(db, "matches"),
-    where("liga","==",2),
-    where("seasonId","==", SEASON_ID),
-    where("phase","==", PHASE)
+    where("liga", "==", 1),
+    where("seasonId", "==", SEASON_ID),
+    where("phase", "==", PHASE)
   );
 
-  unsubPhase1 = onSnapshot(qP1, snap=>{
-    phaseCache[1] = snap.docs.map(d=>d.data());
+  const qP2 = query(collection(db, "matches"),
+    where("liga", "==", 2),
+    where("seasonId", "==", SEASON_ID),
+    where("phase", "==", PHASE)
+  );
+
+  unsubPhase1 = onSnapshot(qP1, snap => {
+    phaseCache[1] = snap.docs.map(d => d.data());
     if (Number(ligaSelect.value) === 1) renderAll(1);
   });
 
-  unsubPhase2 = onSnapshot(qP2, snap=>{
-    phaseCache[2] = snap.docs.map(d=>d.data());
+  unsubPhase2 = onSnapshot(qP2, snap => {
+    phaseCache[2] = snap.docs.map(d => d.data());
     if (Number(ligaSelect.value) === 2) renderAll(2);
   });
 }
-``
-
 // -------------------------
 // Helpers
 // -------------------------
