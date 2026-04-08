@@ -3,14 +3,18 @@ import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.
 
 const listEl = document.getElementById("seasonsList");
 
+function phaseLabel(phase){
+  return phase === "spring" ? "jaro" : "podzim";
+}
+
 function render(seasons){
   if (!seasons.length){
     listEl.innerHTML = "<p><em>Zatím nejsou žádné sezóny.</em></p>";
     return;
   }
 
-  // řazení od nejnovější
-  seasons.sort((a,b)=> (b.id||"").localeCompare(a.id||""));
+  // nejnovější nahoře
+  seasons.sort((a,b)=> (b.id || "").localeCompare(a.id || ""));
 
   listEl.innerHTML = seasons.map(s => {
     const label = s.label || s.id;
@@ -24,17 +28,30 @@ function render(seasons){
     return `
       <div class="season-card">
         <h3>${label}${activeTag}</h3>
-        <div class="meta">Dokument ID: ${s.id}</div>
+        <div class="meta">ID: ${s.id} • aktivní fáze: ${phaseLabel(s.activePhase || "autumn")}</div>
+
         <div class="actions">
-          ${autumnHref}Výsledky podzim</a>
-          ${springHref}Výsledky jaro</a>
+          <a class="btn-link ${autumnOk ? "" : "disabled"}" href="${autumnHref}">
+            Výsledky podzim
+          </a>
+          <a class="btn-link ${springOk ? "" : "disabled"}" href="${springHref}">
+            Výsledky jaro
+          </a>
+        </div>
+
+        <div class="meta" style="margin-top:10px;">
+          Podzim: ${autumnOk ? "uložen" : "neuzavřen"} • Jaro: ${springOk ? "uložen" : "neuzavřen"}
         </div>
       </div>
     `;
   }).join("");
 }
 
-onSnapshot(collection(db,"seasons"), (snap)=>{
-  const seasons = snap.docs.map(d=>({ id:d.id, ...d.data() }));
+// realtime načítání seasons
+onSnapshot(collection(db, "seasons"), (snap) => {
+  const seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   render(seasons);
+}, (err) => {
+  console.error(err);
+  listEl.innerHTML = "<p><strong>Chyba načítání sezón.</strong></p>";
 });
