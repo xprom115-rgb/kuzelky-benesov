@@ -1,1 +1,80 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Historie</title><link rel='stylesheet' href='style.css'></head><body><header><div class='header-left'><img src='logo.jpg' class='logo'></div><div class='header-title'>Kuželky Benešov</div><div class='header-right'></div></header><nav><ul><li><a href='index.html'>Domů</a></li><li><a href='aktuality.html'>Aktuality</a></li><li><a href='historie.html'>Historie</a></li><li><a href='druzstva.html'>Družstva</a></li><li><a href='rezervace.html'>Rezervace</a></li><li><a href='habadura.html'>Habaďůra</a></li><li><a href='kontakty.html'>Kontakty</a></li><li><a href='admin.html'>Admin</a></li></ul></nav><main><div class='content-box'><h2>Historie</h2><p>Obsah doplním později…</p></div></main><footer>© Kuželky Benešov – 2026</footer></body></html>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuželky Benešov – Historie</title>
+  ./style.css?v=1
+  <style>
+    .tiles { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; margin-top:14px; }
+    .tile {
+      display:flex; flex-direction:column; justify-content:space-between;
+      padding:16px; border-radius:14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      min-height:120px;
+    }
+    .tile h3 { margin:0; color:#ffd700; }
+    .tile p { margin:8px 0 0 0; opacity:0.9; font-size:13px; }
+    .tile a.btn {
+      margin-top:12px; align-self:flex-start;
+      padding:10px 14px; border-radius:10px; border:0;
+      background:#1e235c; color:#ffd700; font-weight:bold; display:inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">logo.jpg</div>
+  <div class="header-title">Kuželky Benešov</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li>index.htmlDomů</a></li>
+    <li>aktuality.htmlAktuality</a></li>
+    <li>historie.htmlHistorie</a></li>
+    <li>druzstva.htmlDružstva</a></li>
+    <li>rezervace.htmlRezervace</a></li>
+    <li>habadura.htmlHabaďůra</a></li>
+    <li>kontakty.htmlKontakty</a></li>
+    <li>admin.htmlAdmin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+    <h2>Historie</h2>
+
+    <div class="tiles">
+      <div class="tile">
+        <div>
+          <h3>Historie klubu</h3>
+          <p>Odkaz na oficiální historii (od roku 2002).</p>
+        </div>
+        historie-klubu.htmlOtevřít</a>
+      </div>
+
+      <div class="tile">
+        <div>
+          <h3>Historie mužstev</h3>
+          <p>Zatím prázdné – doplníme později.</p>
+        </div>
+        historie-muzstev.htmlOtevřít</a>
+      </div>
+
+      <div class="tile">
+        <div>
+          <h3>Historie Habaďůry</h3>
+          <p>Sezóny + podzim/jaro se zobrazí automaticky po uzavření v adminu.</p>
+        </div>
+        historie-habadury.htmlOtevřít</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+</body>
+</html>
