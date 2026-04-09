@@ -34,11 +34,11 @@ function render(seasons){
         </div>
 
         <div class="actions">
-          <a class="btn-link ${autumnOk ? "" : "disabled"}" href="${autumnHref}">
+          <a class="btn-link ${autumnOk ? "" : "disabled"}" href="${autumnOk ? autumnHref : "#"}">
             Výsledky podzim
           </a>
 
-          <a class="btn-link ${springOk ? "" : "disabled"}" href="${springHref}">
+          <a class="btn-link ${springOk ? "" : "disabled"}" href="${springOk ? springHref : "#"}">
             Výsledky jaro
           </a>
         </div>
@@ -52,7 +52,7 @@ function render(seasons){
 }
 
 // realtime načítání seasons
-onSnapshot(collection(db,"seasons"), (snap) => {
+onSnapshot(collection(db, "seasons"), (snap) => {
   const seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   render(seasons);
 }, (err) => {
