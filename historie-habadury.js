@@ -13,7 +13,6 @@ function render(seasons){
     return;
   }
 
-  // nejnovější nahoře
   seasons.sort((a,b)=> (b.id || "").localeCompare(a.id || ""));
 
   listEl.innerHTML = seasons.map(s => {
@@ -26,14 +25,17 @@ function render(seasons){
     const autumnHref = `habadura-historie.html?season=${encodeURIComponent(s.id)}&phase=autumn`;
     const springHref = `habadura-historie.html?season=${encodeURIComponent(s.id)}&phase=spring`;
 
-    // ✅ TADY je zásadní rozdíl: odkazy jsou skutečné <a href="...">
-    const autumnLink = autumnOk
-      ? `<a class="btn-link" href="${autumnHref}">Výsledky podzim</a>`
-      : `<a class="btn-link disabled" href="#">Výsledky podzim</a>`;
+    const autumnBtn = `
+      <a class="btn-link ${autumnOk ? "" : "disabled"}"
+         href="${autumnOk ? autumnHref : "#"}">
+        Výsledky podzim
+      </a>`;
 
-    const springLink = springOk
-      ? `<a class="btn-link" href="${springHref}">Výsledky jaro</a>`
-      : `<a class="btn-link disabled" href="#">Výsledky jaro</a>`;
+    const springBtn = `
+      <a class="btn-link ${springOk ? "" : "disabled"}"
+         href="${springOk ? springHref : "#"}">
+        Výsledky jaro
+      </a>`;
 
     return `
       <div class="season-card">
@@ -43,8 +45,8 @@ function render(seasons){
         </div>
 
         <div class="actions">
-          ${autumnLink}
-          ${springLink}
+          ${autumnBtn}
+          ${springBtn}
         </div>
 
         <div class="meta" style="margin-top:10px;">
