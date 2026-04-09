@@ -2,16 +2,41 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <title>Habaďůra – Historie</title>
-  <link rel="stylesheet" href="./style.css?v=500">
+  <title>Habaďůra – Historie (sezóna)</title>
+  <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    .liga-switch { display:flex; gap:10px; margin:14px 0 10px 0; flex-wrap:wrap; }
+    .liga-btn{
+      padding:10px 16px; border-radius:10px;
+      border:1px solid #ffd700; background:#1e235c; color:#ffd700;
+      cursor:pointer; font-weight:bold;
+    }
+    .liga-btn.active{ background:#ffd700; color:#1e235c; }
+
+    .badge{
+      display:inline-block;
+      font-size:13px; font-weight:bold;
+      padding:4px 10px; border-radius:999px;
+      background: rgba(255, 215, 0, 0.15);
+      border: 1px solid rgba(255, 215, 0, 0.6);
+      color: #ffd700;
+      margin-left:10px;
+      white-space: nowrap;
+    }
+  </style>
 </head>
+
 <body>
 
 <header>
-  <div class="header-left">logo.jpg</div>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo">
+  </div>
   <div class="header-title">Kuželky Benešov</div>
   <div class="header-right"></div>
 </header>
+
 
 <nav>
   <ul>
@@ -28,7 +53,15 @@
 
 <main>
   <div class="content-box">
-    <h2 id="histTitle">Habaďůra – Historie</h2>
+    <h2 id="histTitle">
+      Habaďůra – Historie
+      <span id="histBadge" class="badge"></span>
+    </h2>
+
+    <div class="liga-switch">
+      <button type="button" id="btn-liga1" class="liga-btn active">1. liga</button>
+      <button type="button" id="btn-liga2" class="liga-btn">2. liga</button>
+    </div>
 
     <h3 style="color:#ffd700;">Tabulka družstev</h3>
     <div id="tab-druzstva"></div>
@@ -43,6 +76,6 @@
 
 <footer>© Kuželky Benešov – 2026</footer>
 
-./habadura-historie.js?v=2script>
+<script type="module" src="./habadura-historie.js?v=1"></script>
 </body>
 </html>
