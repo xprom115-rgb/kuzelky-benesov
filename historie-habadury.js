@@ -255,6 +255,6 @@ async function init(){
   setLiga(1);
   renderAll();
 }
-
+console.log("✅ habadura-historie.js běží");
 init();
 ``
