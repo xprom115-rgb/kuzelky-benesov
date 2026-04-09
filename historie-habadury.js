@@ -11,7 +11,7 @@ const params = new URLSearchParams(location.search);
 const SEASON_ID = params.get("season");
 const PHASE = params.get("phase"); // autumn | spring
 
-const badgeEl = document.getElementById("histBadge");
+const badgeEl = document.getElementById("seasonsList");
 const btnLiga1 = document.getElementById("btn-liga1");
 const btnLiga2 = document.getElementById("btn-liga2");
 
@@ -25,6 +25,9 @@ let currentLiga = 1;
 
 let matchesL1 = [];
 let matchesL2 = [];
+if (!listEl) {
+  console.error('Chybí element id="seasonsList" v historie-habadury.html');
+}
 
 function csCompare(a,b){ return (a||"").localeCompare(b||"","cs"); }
 
