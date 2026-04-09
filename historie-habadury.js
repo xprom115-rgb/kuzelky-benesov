@@ -25,9 +25,6 @@ let currentLiga = 1;
 
 let matchesL1 = [];
 let matchesL2 = [];
-if (!listEl) {
-  console.error('Chybí element id="seasonsList" v historie-habadury.html');
-}
 
 function csCompare(a,b){ return (a||"").localeCompare(b||"","cs"); }
 
