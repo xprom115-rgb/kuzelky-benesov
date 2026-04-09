@@ -33,11 +33,11 @@ function render(seasons){
 
     const autumnLink = autumnOk
       ? `<a class="btn-link" href="${autumnHref}">Výsledky podzim</a>`
-      : `<a class="btn-link disabled" href="#" aria-disabled="true">Výsledky podzim</a>`;
+      : `<a class="btn-link disabled" href="#">Výsledky podzim</a>`;
 
     const springLink = springOk
       ? `<a class="btn-link" href="${springHref}">Výsledky jaro</a>`
-      : `<a class="btn-link disabled" href="#" aria-disabled="true">Výsledky jaro</a>`;
+      : `<a class="btn-link disabled" href="#">Výsledky jaro</a>`;
 
     return `
       <div class="season-card">
