@@ -235,3 +235,43 @@ async function init(){
     return;
   }
 
+  if (badgeEl) badgeEl.textContent = `(${SEASON_ID} – ${phaseText(PHASE)})`;
+
+  console.log("📌 Historie načítá:", { SEASON_ID, PHASE });
+
+  await loadBase();
+
+  const q1 = query(
+    collection(db,"matches"),
+    where("seasonId","==", SEASON_ID),
+    where("phase","==", PHASE),
+    where("liga","==", 1)
+  );
+
+  const q2 = query(
+    collection(db,"matches"),
+    where("seasonId","==", SEASON_ID),
+    where("phase","==", PHASE),
+    where("liga","==", 2)
+  );
+
+  onSnapshot(q1, snap=>{
+    matchesL1 = snap.docs.map(d=>d.data());
+    console.log("📊 Zápasy historie liga 1:", matchesL1.length);
+    if (currentLiga === 1) renderAll();
+  }, err => console.error(err));
+
+  onSnapshot(q2, snap=>{
+    matchesL2 = snap.docs.map(d=>d.data());
+    console.log("📊 Zápasy historie liga 2:", matchesL2.length);
+    if (currentLiga === 2) renderAll();
+  }, err => console.error(err));
+
+  btnLiga1.addEventListener("click", ()=> setLiga(1));
+  btnLiga2.addEventListener("click", ()=> setLiga(2));
+
+  setLiga(1);
+  renderAll();
+}
+
+init();
