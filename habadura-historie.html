@@ -2,80 +2,20 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <title>Habaďůra – Historie (sezóna)</title>
-  <link rel="stylesheet" href="./style.css?v=1">
-
-  <style>
-    .liga-switch { display:flex; gap:10px; margin:14px 0 10px 0; flex-wrap:wrap; }
-    .liga-btn{
-      padding:10px 16px; border-radius:10px;
-      border:1px solid #ffd700; background:#1e235c; color:#ffd700;
-      cursor:pointer; font-weight:bold;
-    }
-    .liga-btn.active{ background:#ffd700; color:#1e235c; }
-
-    .badge{
-      display:inline-block;
-      font-size:13px; font-weight:bold;
-      padding:4px 10px; border-radius:999px;
-      background: rgba(255, 215, 0, 0.15);
-      border: 1px solid rgba(255, 215, 0, 0.6);
-      color: #ffd700;
-      margin-left:10px;
-      white-space: nowrap;
-    }
-  </style>
+  <title>Přesměrování…</title>
+  <script>
+    // přesměrování se zachováním ?season=...&phase=... + případného #hash
+    const target = "habadura-vysledky.html" + (location.search || "") + (location.hash || "");
+    location.replace(target);
+  </script>
+  <noscript>
+    <meta http-equiv="refresh" content="0; url=habadura-vysledky.html">
+  </noscript>
 </head>
-
 <body>
-
-<header>
-  <div class="header-left">
-    <img src="logo.jpg" class="logo" alt="Logo">
-  </div>
-  <div class="header-title">Kuželky Benešov</div>
-  <div class="header-right"></div>
-</header>
-
-
-<nav>
-  <ul>
-    <li><a href="index.html">Domů</a></li>
-    <li><a href="aktuality.html">Aktuality</a></li>
-    <li><a href="historie.html">Historie</a></li>
-    <li><a href="druzstva.html">Družstva</a></li>
-    <li><a href="rezervace.html">Rezervace</a></li>
-    <li><a href="habadura.html">Habaďůra</a></li>
-    <li><a href="kontakty.html">Kontakty</a></li>
-    <li><a href="admin.html">Admin</a></li>
-  </ul>
-</nav>
-
-<main>
-  <div class="content-box">
-    <h2 id="histTitle">
-      Habaďůra – Historie
-      <span id="histBadge" class="badge"></span>
-    </h2>
-
-    <div class="liga-switch">
-      <button type="button" id="btn-liga1" class="liga-btn active">1. liga</button>
-      <button type="button" id="btn-liga2" class="liga-btn">2. liga</button>
-    </div>
-
-    <h3 style="color:#ffd700;">Tabulka družstev</h3>
-    <div id="tab-druzstva"></div>
-
-    <h3 style="color:#ffd700;">Tabulka hráčů</h3>
-    <div id="tab-hracu"></div>
-
-    <h3 style="color:#ffd700;">Tabulka vzájemných zápasů (matice)</h3>
-    <div id="tab-matice"></div>
-  </div>
-</main>
-
-<footer>© Kuželky Benešov – 2026</footer>
-
-<script type="module" src="./historie-habadury.js?v=1000script>
+  <p>Přesměrovávám… Pokud se nic nestane, klikněte: <a id="lnk" href="habadura-vysledky.html">habadura-vysledky.html</a></p>
+  <script>
+    document.getElementById("lnk").href = "habadura-vysledky.html" + (location.search || "") + (location.hash || "");
+  </script>
 </body>
 </html>
