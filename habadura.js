@@ -724,7 +724,6 @@ if (seasonBadge) {
   seasonBadge.textContent = `(${label} – kolo ${ROUND})`;
 }
 
-}
 
       seasonReady = true;
       submitBtn.disabled = false;
