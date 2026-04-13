@@ -295,3 +295,66 @@ async function init() {
   }
 
   // badge: vezmeme label ze seasons (pokud existuje)
+  let label = SEASON_ID;
+
+  if (ROUND_PARAM === "final") {
+    const info = await getFinalRounds(SEASON_ID);
+    label = info.label;
+    if (badgeEl) badgeEl.textContent = `(${label} – finální)`;
+  } else {
+    // kolo 1/2/3
+    const sRef = doc(db, "seasons", SEASON_ID);
+    const sSnap = await getDoc(sRef);
+    const s = sSnap.exists() ? sSnap.data() : null;
+    label = s?.label || SEASON_ID;
+    if (badgeEl) badgeEl.textContent = `(${label} – kolo ${ROUND_PARAM})`;
+  }
+
+  await loadBase();
+
+  // liga přepínače
+  btnLiga1.addEventListener("click", () => setLiga(1));
+  btnLiga2.addEventListener("click", () => setLiga(2));
+  setLiga(1);
+
+  // subscriptions from archive
+  stopSubs();
+
+  if (ROUND_PARAM === "final") {
+    // finále = spojení round 1+2 nebo 1+2+3
+    const info = await getFinalRounds(SEASON_ID);
+    const rounds = info.rounds;
+
+    const byLiga = { 1: [], 2: [] };
+
+    rounds.forEach(r => {
+      subscribeRound(SEASON_ID, r, (arr) => {
+        // přepočítáme spojení všech kol (pro každou ligu)
+        // nejjednodušší: načteme znovu všechna kola (udržujeme je v closure)
+        byLiga[r] = arr; // uložíme podle čísla kola
+        const all = [];
+        rounds.forEach(rr => {
+          const a = byLiga[rr];
+          if (Array.isArray(a)) all.push(...a);
+        });
+
+        matchesL1 = all.filter(m => Number(m.liga) === 1);
+        matchesL2 = all.filter(m => Number(m.liga) === 2);
+        renderAll();
+      });
+    });
+
+  } else {
+    // konkrétní kolo
+    const r = Number(ROUND_PARAM);
+    subscribeRound(SEASON_ID, r, (arr) => {
+      matchesL1 = arr.filter(m => Number(m.liga) === 1);
+      matchesL2 = arr.filter(m => Number(m.liga) === 2);
+      renderAll();
+    });
+  }
+
+  renderAll();
+}
+
+init();
