@@ -38,7 +38,7 @@ import {
 console.log("✅ habadura.js načten (finální)");
 
 let SEASON_ID = null;
-let PHASE = null;
+let ROUND = null;
 let seasonReady = false;
 
 
@@ -119,13 +119,13 @@ function startMatchListeners(){
   const qP1 = query(collection(db, "matches"),
     where("liga", "==", 1),
     where("seasonId", "==", SEASON_ID),
-    where("phase", "==", PHASE)
+    where("round","==", ROUND)
   );
 
   const qP2 = query(collection(db, "matches"),
     where("liga", "==", 2),
     where("seasonId", "==", SEASON_ID),
-    where("phase", "==", PHASE)
+    where("round","==", ROUND)
   );
 
   unsubPhase1 = onSnapshot(qP1, snap => {
@@ -337,7 +337,7 @@ function validatePlayers(list){
 // ----------------------------------------------------
 async function saveMatch(){
   
-if (!seasonReady || !SEASON_ID || !PHASE) {
+if (!seasonReady || !SEASON_ID || !ROUND) {
   alert("Sezóna ještě není načtena. Zkuste to prosím za chvíli znovu.");
   return;
 }
@@ -377,15 +377,15 @@ if (!seasonReady || !SEASON_ID || !PHASE) {
   else if (s.scoreHome < s.scoreAway) { leaguePointsHome = 0; leaguePointsAway = 2; }
   else { leaguePointsHome = 1; leaguePointsAway = 1; }
 
-  // DUPLICITA: stejná dvojice týmů v rámci liga+season+phase jen jednou
+  // DUPLICITA: stejná dvojice týmů v rámci liga+season+round jen jednou
   const [a, b] = [homeTeam, awayTeam].sort();
   const pairKey = `${a}_${b}`;
-  const matchId = `m_${liga}_${SEASON_ID}_${PHASE}_${pairKey}`;
+  const matchId = `m_${liga}_${SEASON_ID}_${ROUND}_${pairKey}`;
 
   const data = {
     liga,
     seasonId: SEASON_ID,
-    phase: PHASE,
+    round: ROUND,
     pairKey,
 
     date,
@@ -607,7 +607,7 @@ function renderPlayersTable(liga, matches){
 }
 
 // ----------------------------------------------------
-// 9) Matice zápasů (jen aktuální fáze PHASE)
+// 9) Matice zápasů (jen aktuální fáze)
 // ----------------------------------------------------
 function buildMatchMap(matches){
   const map = new Map();
@@ -701,23 +701,34 @@ function listenActiveSeason(onReady){
       const s = { id: d.id, ...d.data() };
 
       const newSeason = s.id;
-      const newPhase  = s.activePhase || "autumn";
+      
+const newRound = Number(s.activeRound || 1);
+const changed = (SEASON_ID !== s.id) || (ROUND !== newRound);
+      
+SEASON_ID = s.id;
+ROUND = newRound;
 
-      const changed = (SEASON_ID !== newSeason) || (PHASE !== newPhase);
+seasonReady = true;
+submitBtn.disabled = false;
 
-      SEASON_ID = newSeason;
-      PHASE = newPhase;
+console.log("✅ Aktivní sezóna/kolo:", SEASON_ID, ROUND);
+
+if (changed) {
+  startMatchListeners();
+  renderAll(Number(ligaSelect.value || 1));
+}
+      
       // --- Zobrazení sezóny a fáze v nadpisu ---
 if (seasonBadge) {
   const label = s.label || SEASON_ID; // např. "2025/2026"
-  const phaseText = (PHASE === "spring") ? "jaro" : "podzim";
-  seasonBadge.textContent = `(${label} – ${phaseText})`;
+  const roundText = (ROUND === "1") ? "fáze 1" : "fáze 2" : "fáze 3";
+  seasonBadge.textContent = `(${label} – ${roundText})`;
 }
 
       seasonReady = true;
       submitBtn.disabled = false;
 
-      console.log("✅ Aktivní sezóna/fáze:", SEASON_ID, PHASE);
+      console.log("✅ Aktivní sezóna/fáze:", SEASON_ID, ROUND);
 
       if (changed) {
         startMatchListeners();
@@ -754,7 +765,7 @@ function listenPhase(liga) {
     collection(db, "matches"),
     where("liga", "==", Number(liga)),
     where("seasonId", "==", SEASON_ID),
-    where("phase", "==", PHASE)
+    where("round", "==", ROUND)
   );
 
   onSnapshot(
