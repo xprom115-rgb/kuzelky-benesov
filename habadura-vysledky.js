@@ -4,7 +4,7 @@ import { collection, getDocs, query, where, onSnapshot } from "https://www.gstat
 const params = new URLSearchParams(location.search);
 const SEASON_ID = params.get("season");
 const PHASE = params.get("phase"); // autumn | spring | final
-
+const maticeSection = document.getElementById("maticeSection");
 const badgeEl = document.getElementById("histBadge");
 const btnLiga1 = document.getElementById("btn-liga1");
 const btnLiga2 = document.getElementById("btn-liga2");
@@ -204,12 +204,23 @@ function renderAll(){
 
   if (!matches.length){
     showEmpty(`V sezóně ${SEASON_ID} (${phaseText(PHASE)}) zatím nejsou zápasy pro ${currentLiga}. ligu.`);
+    // ve finále matici schovat i když nejsou data
+    if (maticeSection) maticeSection.style.display = (PHASE === "final") ? "none" : "";
     return;
   }
 
   renderTeamsTable(matches, currentLiga);
   renderPlayersTable(matches, currentLiga);
-  renderMatrix(matches, currentLiga);
+
+  // ✅ ve finále matici úplně vypnout
+  if (PHASE === "final") {
+    if (maticeSection) maticeSection.style.display = "none";
+    if (tabMatice) tabMatice.innerHTML = "";
+  } else {
+    if (maticeSection) maticeSection.style.display = "";
+    renderMatrix(matches, currentLiga);
+  }
+
 }
 
 async function loadBase(){
