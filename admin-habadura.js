@@ -240,10 +240,6 @@ if (btnStartNewSeason) {
       seasonMessage("❌ Nepodařilo se založit novou sezónu (zkontroluj Rules/Auth).");
     }
   });
-}
-``
-}
-
 
 const csCompare = (a, b) => (a || "").localeCompare(b || "", "cs");
 const sum = (arr) => arr.reduce((a, b) => a + b, 0);
