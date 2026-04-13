@@ -720,9 +720,10 @@ if (changed) {
       
       // --- Zobrazení sezóny a fáze v nadpisu ---
 if (seasonBadge) {
-  const label = s.label || SEASON_ID; // např. "2025/2026"
-  const roundText = (ROUND === "1") ? "fáze 1" : "fáze 2" : "fáze 3";
-  seasonBadge.textContent = `(${label} – ${roundText})`;
+  const label = s.label || SEASON_ID;   // např. 2025/2026
+  seasonBadge.textContent = `(${label} – kolo ${ROUND})`;
+}
+
 }
 
       seasonReady = true;
