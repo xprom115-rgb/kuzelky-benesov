@@ -66,9 +66,9 @@ const editMsg = document.getElementById("editMsg");
 
 // ===== SEZÓNA UI (KROK 4.2) =====
 const seasonSelect = document.getElementById("seasonSelect");
-const phaseSelect = document.getElementById("phaseSelect");
-const btnPublishAutumn = document.getElementById("btnPublishAutumn");
-const btnPublishSpring = document.getElementById("btnPublishSpring");
+const roundInfo = document.getElementById("roundInfo");
+const btnCloseRound = document.getElementById("btnCloseRound");
+
 const newSeasonId = document.getElementById("newSeasonId");
 const newSeasonLabel = document.getElementById("newSeasonLabel");
 const btnStartNewSeason = document.getElementById("btnStartNewSeason");
@@ -101,53 +101,102 @@ function renderSeasons() {
   const active = sorted.find(s => s.isActive);
   if (active) seasonSelect.value = active.id;
 
-  syncPhaseSelect();
+  syncRoundInfo();
 }
-
-function syncPhaseSelect() {
-  if (!phaseSelect || !seasonSelect) return;
-
-  const selectedId = seasonSelect.value;
-  const s = seasons.find(x => x.id === selectedId);
+function syncRoundInfo(){
+  if (!roundInfo || !seasonSelect) return;
+  const s = seasons.find(x => x.id === seasonSelect.value);
   if (!s) return;
 
-  phaseSelect.value = s.activePhase || "autumn";
+  const r = Number(s.activeRound || 1);
+  roundInfo.value = `kolo ${r}`;
 }
 
 // listener na změnu výběru sezóny
 if (seasonSelect) {
-  seasonSelect.addEventListener("change", syncPhaseSelect);
+  seasonSelect.addEventListener("change", syncRoundInfo);
   // ===== KROK 4.4: tlačítka sezóny (publish podzim/jaro + nová sezóna) =====
+function nowTs(){ return Timestamp.now(); }
 
-function nowTs(){
-  return Timestamp.now();
-}
+btnCloseRound?.addEventListener("click", async () => {
+  const id = seasonSelect?.value;
+  const s = seasons.find(x => x.id === id);
+  if (!s) return seasonMessage("⚠️ Nevybraná sezóna.");
 
-// (volitelné) fázi v selectu necháme jen jako ukazatel, aby se ručně nepřepisovala
-if (phaseSelect) phaseSelect.disabled = true;
+  const currentRound = Number(s.activeRound || 1);
 
-// Uzavřít PODZIM: uložit do historie + přepnout aktivní fázi na JARO
-if (btnPublishAutumn) {
-  btnPublishAutumn.addEventListener("click", async () => {
-    const id = seasonSelect?.value;
-    const s = seasons.find(x => x.id === id);
-    if (!s) return seasonMessage("⚠️ Nevybraná sezóna.");
-
-    if (!confirm(`Uzavřít PODZIM do historie pro sezónu ${s.label || id}?\n(Přepne se aktivní fáze na JARO)`)) return;
+  // 1) Uzavření kola 1
+  if (currentRound === 1) {
+    if (!confirm(`Uzavřít 1. kolo sezóny ${s.label || id}?\n(Přepne se na 2. kolo)`)) return;
 
     try {
       await updateDoc(doc(db, "seasons", id), {
-        autumnPublished: true,
-        activePhase: "spring",
+        round1Published: true,
+        activeRound: 2,
         updatedAt: nowTs()
       });
-      seasonMessage("✅ PODZIM uložen do historie. Aktivní fáze přepnuta na JARO.");
+      seasonMessage("✅ 1. kolo uzavřeno. Aktivní je 2. kolo.");
     } catch (e) {
       console.error(e);
-      seasonMessage("❌ Nepodařilo se uzavřít podzim (zkontroluj Rules/Auth).");
+      seasonMessage("❌ Nepodařilo se uzavřít 1. kolo.");
     }
-  });
-}
+    return;
+  }
+
+  // 2) Uzavření kola 2 + otázka na 3. kolo
+  if (currentRound === 2) {
+    if (!confirm(`Uzavřít 2. kolo sezóny ${s.label || id}?`)) return;
+
+    const wantRound3 = confirm("Chcete odehrát 3. kolo?\nOK = ano (přepne na kolo 3)\nStorno = ne (sezóna skončí po 2 kolech a zveřejní se finální)");
+
+    try {
+      if (wantRound3) {
+        await updateDoc(doc(db, "seasons", id), {
+          round2Published: true,
+          hasRound3: true,
+          activeRound: 3,
+          updatedAt: nowTs()
+        });
+        seasonMessage("✅ 2. kolo uzavřeno. Bude 3. kolo (aktivní kolo 3).");
+      } else {
+        await updateDoc(doc(db, "seasons", id), {
+          round2Published: true,
+          hasRound3: false,
+          finalPublished: true,
+          isActive: false,
+          updatedAt: nowTs()
+        });
+        seasonMessage("✅ 2. kolo uzavřeno. 3. kolo nebude. Sezóna ukončena a finální zveřejněno (součet 2 kol).");
+      }
+    } catch (e) {
+      console.error(e);
+      seasonMessage("❌ Nepodařilo se uzavřít 2. kolo / rozhodnout o 3. kole.");
+    }
+    return;
+  }
+
+  // 3) Uzavření kola 3 (pokud existuje)
+  if (currentRound === 3) {
+    if (!confirm(`Uzavřít 3. kolo sezóny ${s.label || id}?\n(Sezóna se ukončí a zveřejní se finální)`)) return;
+
+    try {
+      await updateDoc(doc(db, "seasons", id), {
+        round3Published: true,
+        finalPublished: true,
+        isActive: false,
+        updatedAt: nowTs()
+      });
+      seasonMessage("✅ 3. kolo uzavřeno. Sezóna ukončena a finální zveřejněno (součet 3 kol).");
+    } catch (e) {
+      console.error(e);
+      seasonMessage("❌ Nepodařilo se uzavřít 3. kolo.");
+    }
+    return;
+  }
+
+  seasonMessage("⚠️ Neznámé aktivní kolo (čekám 1/2/3).");
+});
+
 
 // Uzavřít JARO: uložit do historie + ukončit sezónu
 if (btnPublishSpring) {
