@@ -490,7 +490,7 @@ onSnapshot(
     seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     console.log("✅ seasons loaded:", seasons.length);
     renderSeasons();
-    syncPhaseSelect();
+    syncRoundInfo();
   },
   (err) => {
     console.error("❌ seasons snapshot error:", err);
