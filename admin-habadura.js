@@ -198,27 +198,7 @@ btnCloseRound?.addEventListener("click", async () => {
 });
 
 
-// Uzavřít JARO: uložit do historie + ukončit sezónu
-if (btnPublishSpring) {
-  btnPublishSpring.addEventListener("click", async () => {
-    const id = seasonSelect?.value;
-    const s = seasons.find(x => x.id === id);
-    if (!s) return seasonMessage("⚠️ Nevybraná sezóna.");
 
-    if (!confirm(`Uzavřít JARO do historie pro sezónu ${s.label || id}?\n(Sezóna bude ukončena)`)) return;
-
-    try {
-      await updateDoc(doc(db, "seasons", id), {
-        springPublished: true,
-        isActive: false,
-        updatedAt: nowTs()
-      });
-      seasonMessage("✅ JARO uloženo do historie. Sezóna ukončena (není aktivní).");
-    } catch (e) {
-      console.error(e);
-      seasonMessage("❌ Nepodařilo se uzavřít jaro (zkontroluj Rules/Auth).");
-    }
-  });
 }
 
 // Start nové sezóny: vytvoří nový dokument seasons/{id} jako aktivní (autumn)
