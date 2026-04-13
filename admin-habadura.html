@@ -68,16 +68,14 @@
           <label><strong>Aktivní sezóna:</strong></label>
           <select id="seasonSelect"></select>
 
-          <label><strong>Aktivní fáze:</strong></label>
-          <select id="phaseSelect">
-            <option value="autumn">Podzim</option>
-            <option value="spring">Jaro</option>
-          </select>
+         
+<label><strong>Aktivní kolo:</strong></label>
+<input id="roundInfo" type="text" value="—" readonly style="max-width:120px;">
+
         </div>
 
         <div class="toolrow">
-          <button id="btnPublishAutumn" class="btn-primary">Uzavřít PODZIM (uložit do historie)</button>
-          <button id="btnPublishSpring" class="btn-primary">Uzavřít JARO (uložit do historie)</button>
+         <button id="btnCloseRound" class="btn-primary">Uzavřít aktuální kolo</button>
         </div>
 
         <div class="toolrow">
