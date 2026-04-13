@@ -12,6 +12,7 @@ const btnBackSeasons = document.getElementById("btnBackSeasons");
 const tabDruzstva = document.getElementById("tab-druzstva");
 const tabHracu = document.getElementById("tab-hracu");
 const tabMatice = document.getElementById("tab-matice");
+const btnBackSeasons = document.getElementById("btnBackSeasons");
 
 let teams = [];
 let players = [];
@@ -23,6 +24,12 @@ let matchesL2 = [];
 if (btnBackSeasons) {
   btnBackSeasons.addEventListener("click", () => {
     // zpět na seznam sezón
+    window.location.href = "habadura-sezony.html";
+  });
+}
+
+if (btnBackSeasons) {
+  btnBackSeasons.addEventListener("click", () => {
     window.location.href = "habadura-sezony.html";
   });
 }
