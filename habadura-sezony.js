@@ -4,12 +4,11 @@ import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.
 const listEl = document.getElementById("seasonsList");
 if (!listEl) console.error('Chybí element id="seasonsList" v habadura-sezony.html');
 
-function phaseLabel(phase) {
-  return phase === "spring" ? "jaro" : "podzim";
+function phaseLabelRound(r){
+  return `kolo ${Number(r || 1)}`;
 }
 
 function btn(href, text, enabled) {
-  // enabled => klikací tlačítko; jinak šedé a neklikací
   const cls = enabled ? "btn-link" : "btn-link disabled";
   const safeHref = enabled ? href : "#";
   return `<a class="${cls}" href="${safeHref}">${text}</a>`;
@@ -23,36 +22,39 @@ function render(seasons) {
     return;
   }
 
-  // nejnovější nahoře
   seasons.sort((a, b) => (b.id || "").localeCompare(a.id || ""));
 
   listEl.innerHTML = seasons.map(s => {
     const label = s.label || s.id;
     const activeTag = s.isActive ? " (aktivní)" : "";
 
-    const autumnOk = !!s.autumnPublished;
-    const springOk = !!s.springPublished;
-    const finalOk  = autumnOk && springOk;
+    const r1 = !!s.round1Published;
+    const r2 = !!s.round2Published;
+    const r3 = !!s.round3Published;
+    const has3 = (s.hasRound3 === true);
+    const fin = !!s.finalPublished;
 
-    const autumnHref = `habadura-vysledky.html?season=${encodeURIComponent(s.id)}&phase=autumn`;
-    const springHref = `habadura-vysledky.html?season=${encodeURIComponent(s.id)}&phase=spring`;
-    const finalHref  = `habadura-vysledky.html?season=${encodeURIComponent(s.id)}&phase=final`;
+    const href1 = `habadura-vysledky.html?season=${encodeURIComponent(s.id)}&round=1`;
+    const href2 = `habadura-vysledky.html?season=${encodeURIComponent(s.id)}&round=2`;
+    const href3 = `habadura-vysledky.html?season=${encodeURIComponent(s.id)}&round=3`;
+    const hrefF = `habadura-vysledky.html?season=${encodeURIComponent(s.id)}&round=final`;
 
     return `
       <div class="season-card">
         <h3>${label}${activeTag}</h3>
         <div class="meta">
-          ID: ${s.id} • aktivní fáze: ${phaseLabel(s.activePhase || "autumn")}
+          ID: ${s.id} • aktivní: ${phaseLabelRound(s.activeRound)}
         </div>
 
         <div class="actions">
-          ${btn(autumnHref, "Výsledky podzim", autumnOk)}
-          ${btn(springHref, "Výsledky jaro", springOk)}
-          ${btn(finalHref,  "Finální",        finalOk)}
+          ${btn(href1, "1. kolo", r1)}
+          ${btn(href2, "2. kolo", r2)}
+          ${btn(href3, "3. kolo", has3 && r3)}
+          ${btn(hrefF, "Finální", fin)}
         </div>
 
         <div class="meta" style="margin-top:10px;">
-          Podzim: ${autumnOk ? "uložen" : "neuzavřen"} • Jaro: ${springOk ? "uložen" : "neuzavřen"}
+          1: ${r1 ? "uloženo" : "ne"} • 2: ${r2 ? "uloženo" : "ne"} • 3: ${has3 ? (r3 ? "uloženo" : "ne") : "nehraje se"} • finále: ${fin ? "uloženo" : "ne"}
         </div>
       </div>
     `;
@@ -62,7 +64,4 @@ function render(seasons) {
 onSnapshot(collection(db, "seasons"), (snap) => {
   const seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   render(seasons);
-}, (err) => {
-  console.error(err);
-  if (listEl) listEl.innerHTML = "<p><strong>Chyba načítání sezón.</strong></p>";
 });
