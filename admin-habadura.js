@@ -208,9 +208,6 @@ if (currentRound === 1) {
 }
 
   seasonMessage("⚠️ Neznámé aktivní kolo (čekám 1/2/3).");
-});
-
-
 
 }
 // ===== ARCHIVACE: zkopíruj zápasy aktuálního kola do habadura_history =====
