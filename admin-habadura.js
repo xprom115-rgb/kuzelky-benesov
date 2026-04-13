@@ -200,6 +200,46 @@ btnCloseRound?.addEventListener("click", async () => {
 
 
 }
+// ===== ARCHIVACE: zkopíruj zápasy aktuálního kola do habadura_history =====
+async function archiveRoundMatches(seasonId, round) {
+  // Bereme všechny zápasy sezóny (bez indexů) a kolo filtrujeme v JS.
+  const qSeason = query(collection(db, "matches"), where("seasonId", "==", seasonId));
+  const snap = await getDocs(qSeason);
+
+  const srcDocs = snap.docs.filter(d => Number(d.data()?.round) === Number(round));
+  if (srcDocs.length === 0) return 0;
+
+  const BATCH_LIMIT = 450; // bezpečně pod 500
+  let copied = 0;
+
+  for (let i = 0; i < srcDocs.length; i += BATCH_LIMIT) {
+    const chunk = srcDocs.slice(i, i + BATCH_LIMIT);
+    const batch = writeBatch(db);
+
+    for (const d of chunk) {
+      const m = d.data() || {};
+
+      // cílová cesta archivu:
+      // habadura_history/{seasonId}/rounds/{round}/matches/{matchId}
+      const destRef = doc(db, "habadura_history", seasonId, "rounds", String(round), "matches", d.id);
+
+      const archived = {
+        ...m,
+        seasonId: m.seasonId || seasonId,
+        round: Number(m.round ?? round),
+        archivedAt: Timestamp.now(),
+        sourceMatchId: d.id
+      };
+
+      batch.set(destRef, archived, { merge: false });
+    }
+
+    await batch.commit();
+    copied += chunk.length;
+  }
+
+  return copied;
+}
 
 // Start nové sezóny: vytvoří nový dokument seasons/{id} jako aktivní (autumn)
 if (btnStartNewSeason) {
