@@ -12,7 +12,6 @@ const btnBackSeasons = document.getElementById("btnBackSeasons");
 const tabDruzstva = document.getElementById("tab-druzstva");
 const tabHracu = document.getElementById("tab-hracu");
 const tabMatice = document.getElementById("tab-matice");
-const btnBackSeasons = document.getElementById("btnBackSeasons");
 
 let teams = [];
 let players = [];
