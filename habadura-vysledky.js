@@ -8,7 +8,7 @@ const maticeSection = document.getElementById("maticeSection");
 const badgeEl = document.getElementById("histBadge");
 const btnLiga1 = document.getElementById("btn-liga1");
 const btnLiga2 = document.getElementById("btn-liga2");
-
+const btnBackSeasons = document.getElementById("btnBackSeasons");
 const tabDruzstva = document.getElementById("tab-druzstva");
 const tabHracu = document.getElementById("tab-hracu");
 const tabMatice = document.getElementById("tab-matice");
