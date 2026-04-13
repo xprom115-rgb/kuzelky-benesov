@@ -20,6 +20,13 @@ let currentLiga = 1;
 let matchesL1 = [];
 let matchesL2 = [];
 
+if (btnBackSeasons) {
+  btnBackSeasons.addEventListener("click", () => {
+    // zpět na seznam sezón
+    window.location.href = "habadura-sezony.html";
+  });
+}
+
 function csCompare(a,b){ return (a||"").localeCompare(b||"","cs"); }
 function phaseText(p){
   if (p === "spring") return "jaro";
