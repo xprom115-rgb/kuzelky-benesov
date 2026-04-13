@@ -1,8 +1,10 @@
-// admin-habadura.js — FINÁLNÍ (editace zápasu dle nové logiky)
-// - Skóre = (součet bodů hráčů) + (bonus za kuželky: 2:0 / 0:2 / 1:1)
-// - Součet bodů hráčů musí být 6, celkové Skóre 8
-// - Body do tabulky (2/1/0) podle výsledného Skóre
-// - Ukládá přesně pole, která používá veřejná habadura.js
+// admin-habadura.js — FINÁLNÍ (kola 1/2/3 + archivace + editace zápasů)
+// ================================================================
+// - Přihlášení přes Firebase Auth (Email/Password)
+// - Správa zápasů (edit/delete) + přepočet skóre 8 bodů
+// - Sezóny: activeRound + publish flagy + volitelné 3. kolo
+// - Uzavření kola = archivace do habadura_history/{seasonId}/rounds/{round}/matches/{matchId}
+// - POZOR: v editaci zápasu jsou týmy zamknuté (kvůli deterministickému matchId v public habadura.js)
 
 import { app, db } from "./firebase-config.js";
 
@@ -12,7 +14,6 @@ import {
   signInWithEmailAndPassword,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-
 
 import {
   collection,
@@ -32,61 +33,104 @@ console.log("✅ admin-habadura.js načten");
 
 const auth = getAuth(app);
 
+// =====================
 // DOM
-const loginBox = document.getElementById("loginBox");
-const appBox = document.getElementById("appBox");
-const editBox = document.getElementById("editBox");
+// =====================
+const loginBox  = document.getElementById("loginBox");
+const appBox    = document.getElementById("appBox");
+const editBox   = document.getElementById("editBox");
 
-const emailEl = document.getElementById("email");
-const passEl = document.getElementById("pass");
-const btnLogin = document.getElementById("btnLogin");
+const emailEl   = document.getElementById("email");
+const passEl    = document.getElementById("pass");
+const btnLogin  = document.getElementById("btnLogin");
 const btnLogout = document.getElementById("btnLogout");
-const loginMsg = document.getElementById("loginMsg");
+const loginMsg  = document.getElementById("loginMsg");
 
-const ligaEl = document.getElementById("liga");
+const ligaEl       = document.getElementById("liga");
 const filterDateEl = document.getElementById("filterDate");
-const clearFilter = document.getElementById("clearFilter");
-const matchesList = document.getElementById("matchesList");
+const clearFilter  = document.getElementById("clearFilter");
+const matchesList  = document.getElementById("matchesList");
 
+// Seasons UI (kola)
+const seasonSelect     = document.getElementById("seasonSelect");
+const roundInfo        = document.getElementById("roundInfo");
+const btnCloseRound    = document.getElementById("btnCloseRound");
+const newSeasonId      = document.getElementById("newSeasonId");
+const newSeasonLabel   = document.getElementById("newSeasonLabel");
+const btnStartNewSeason= document.getElementById("btnStartNewSeason");
+const seasonMsg        = document.getElementById("seasonMsg");
+
+// Match editor
 const editDate = document.getElementById("editDate");
 const editHomeTeam = document.getElementById("editHomeTeam");
 const editAwayTeam = document.getElementById("editAwayTeam");
 const editHomePlayers = document.getElementById("editHomePlayers");
 const editAwayPlayers = document.getElementById("editAwayPlayers");
 
-const sumHomeEl = document.getElementById("sumHome");
-const sumAwayEl = document.getElementById("sumAway");
-const bodyHomeEl = document.getElementById("bodyHome"); // zde zobrazujeme Skóre
-const bodyAwayEl = document.getElementById("bodyAway"); // zde zobrazujeme Skóre
+const sumHomeEl  = document.getElementById("sumHome");
+const sumAwayEl  = document.getElementById("sumAway");
+const bodyHomeEl = document.getElementById("bodyHome"); // tady ukazujeme SKÓRE
+const bodyAwayEl = document.getElementById("bodyAway"); // tady ukazujeme SKÓRE
 
-const btnCloseEdit = document.getElementById("btnCloseEdit");
-const btnSaveEdit = document.getElementById("btnSaveEdit");
+const btnCloseEdit   = document.getElementById("btnCloseEdit");
+const btnSaveEdit    = document.getElementById("btnSaveEdit");
 const btnDeleteMatch = document.getElementById("btnDeleteMatch");
-const editMsg = document.getElementById("editMsg");
+const editMsg        = document.getElementById("editMsg");
 
-// ===== SEZÓNA UI (KROK 4.2) =====
-const seasonSelect = document.getElementById("seasonSelect");
-const roundInfo = document.getElementById("roundInfo");
-const btnCloseRound = document.getElementById("btnCloseRound");
+// =====================
+// State
+// =====================
+let teams = [];      // teams cache
+let players = [];    // players cache
+let seasons = [];    // seasons cache
 
-const newSeasonId = document.getElementById("newSeasonId");
-const newSeasonLabel = document.getElementById("newSeasonLabel");
-const btnStartNewSeason = document.getElementById("btnStartNewSeason");
-const seasonMsg = document.getElementById("seasonMsg");
+let unsubscribeMatches = null;
 
+let currentDocId = null; // edited match docId
 
-let teams = [];
-let players = [];
-let currentDocId = null;
-let unsubscribe = null;
-
-// ===== SEZÓNY (stabilní blok) =====
-let seasons = []; // [{id,label,isActive,activePhase,autumnPublished,springPublished,...}]
+// =====================
+// Helpers
+// =====================
+const csCompare = (a, b) => (a || "").localeCompare(b || "", "cs");
+const sum = (arr) => arr.reduce((a, b) => a + b, 0);
 
 function seasonMessage(text) {
   if (seasonMsg) seasonMsg.textContent = text || "";
 }
 
+function nowTs() {
+  return Timestamp.now();
+}
+
+function teamName(id) {
+  return teams.find(t => t.id === id)?.name || "(tým?)";
+}
+
+function playersOfTeam(teamId) {
+  return players.filter(p => p.teamId === teamId).sort((a, b) => csCompare(a.name, b.name));
+}
+
+// Bonus do SKÓRE za kuželky: +2 vítězi, remíza 1:1
+function computeBonus(sumHome, sumAway) {
+  if (sumHome > sumAway) return { bonusScoreHome: 2, bonusScoreAway: 0 };
+  if (sumHome < sumAway) return { bonusScoreHome: 0, bonusScoreAway: 2 };
+  return { bonusScoreHome: 1, bonusScoreAway: 1 };
+}
+
+// =====================
+// Load base data
+// =====================
+async function loadBase() {
+  const ts = await getDocs(collection(db, "teams"));
+  teams = ts.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => csCompare(a.name, b.name));
+
+  const ps = await getDocs(collection(db, "players"));
+  players = ps.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => csCompare(a.name, b.name));
+}
+
+// =====================
+// Seasons UI
+// =====================
 function renderSeasons() {
   if (!seasonSelect) return;
 
@@ -103,21 +147,18 @@ function renderSeasons() {
 
   syncRoundInfo();
 }
-function syncRoundInfo(){
+
+function syncRoundInfo() {
   if (!roundInfo || !seasonSelect) return;
   const s = seasons.find(x => x.id === seasonSelect.value);
   if (!s) return;
-
   const r = Number(s.activeRound || 1);
   roundInfo.value = `kolo ${r}`;
 }
 
-// listener na změnu výběru sezóny
-if (seasonSelect) {
-  seasonSelect.addEventListener("change", syncRoundInfo);
-  // ===== KROK 4.4: tlačítka sezóny (publish podzim/jaro + nová sezóna) =====
-function nowTs(){ return Timestamp.now(); }
+seasonSelect?.addEventListener("change", syncRoundInfo);
 
+// Uzavření aktuálního kola + archivace
 btnCloseRound?.addEventListener("click", async () => {
   const id = seasonSelect?.value;
   const s = seasons.find(x => x.id === id);
@@ -128,7 +169,6 @@ btnCloseRound?.addEventListener("click", async () => {
   // --- Kolo 1 ---
   if (currentRound === 1) {
     if (!confirm(`Uzavřít 1. kolo sezóny ${s.label || id}?\n(Zápasy se zkopírují do archivu a přepne se na 2. kolo)`)) return;
-
     try {
       seasonMessage("⏳ Archivuju zápasy 1. kola…");
       const copied = await archiveRoundMatches(id, 1);
@@ -211,9 +251,49 @@ btnCloseRound?.addEventListener("click", async () => {
 
   seasonMessage("⚠️ Neznámé aktivní kolo (čekám 1/2/3).");
 });
-// ===== ARCHIVACE: zkopíruj zápasy aktuálního kola do habadura_history =====
+
+// Start nové sezóny (aktivní kolo 1)
+btnStartNewSeason?.addEventListener("click", async () => {
+  const id = (newSeasonId?.value || "").trim();       // např. 2026-2027
+  const label = (newSeasonLabel?.value || "").trim(); // např. 2026/2027
+  if (!id) return seasonMessage("⚠️ Zadej ID nové sezóny (např. 2026-2027).");
+
+  if (!confirm(`Opravdu založit novou sezónu ${label || id}?\n(Aktivní bude kolo 1)`)) return;
+
+  try {
+    // ukonči případnou aktivní sezónu, aby nebyly dvě aktivní
+    const active = seasons.find(s => s.isActive);
+    if (active) {
+      await updateDoc(doc(db, "seasons", active.id), { isActive: false, updatedAt: nowTs() });
+    }
+
+    await setDoc(doc(db, "seasons", id), {
+      label: label || id,
+      isActive: true,
+      activeRound: 1,
+      round1Published: false,
+      round2Published: false,
+      round3Published: false,
+      hasRound3: null,
+      finalPublished: false,
+      createdAt: nowTs(),
+      updatedAt: nowTs()
+    });
+
+    newSeasonId.value = "";
+    newSeasonLabel.value = "";
+    seasonMessage("✅ Nová sezóna založena. Aktivní je kolo 1.");
+  } catch (e) {
+    console.error(e);
+    seasonMessage("❌ Nepodařilo se založit novou sezónu (rules/auth).");
+  }
+});
+
+// =====================
+// Archivace kola do habadura_history
+// =====================
 async function archiveRoundMatches(seasonId, round) {
-  // načti všechny zápasy sezóny a kolo filtruj v JS (bez indexů)
+  // načti všechny zápasy sezóny (bez indexů) a filtruj kolo v JS
   const qSeason = query(collection(db, "matches"), where("seasonId", "==", seasonId));
   const snap = await getDocs(qSeason);
 
@@ -254,75 +334,74 @@ async function archiveRoundMatches(seasonId, round) {
   return copied;
 }
 
-// Start nové sezóny: vytvoří nový dokument seasons/{id} jako aktivní (autumn)
-if (btnStartNewSeason) {
-  btnStartNewSeason.addEventListener("click", async () => {
-    const id = (newSeasonId?.value || "").trim();      // např. 2026-2027
-    const label = (newSeasonLabel?.value || "").trim();// např. 2026/2027
+// =====================
+// Matches list (admin)
+// =====================
+function listenMatches() {
+  if (unsubscribeMatches) unsubscribeMatches();
 
-    if (!id) return seasonMessage("⚠️ Zadej ID nové sezóny (např. 2026-2027).");
+  const liga = Number(ligaEl.value);
+  const q = query(collection(db, "matches"), where("liga", "==", liga));
 
-    if (!confirm(`Opravdu založit novou sezónu ${label || id}?\n(Aktivní bude PODZIM.)`)) return;
+  unsubscribeMatches = onSnapshot(q, (snap) => {
+    let list = snap.docs.map(d => ({ docId: d.id, data: d.data() }));
 
-    try {
-      // vypnout případnou aktivní sezónu, aby nebyly dvě aktivní
-      const active = seasons.find(s => s.isActive);
-      if (active) {
-        await updateDoc(doc(db, "seasons", active.id), {
-          isActive: false,
-          updatedAt: nowTs()
-        });
-      }
+    const fd = filterDateEl.value;
+    if (fd) list = list.filter(x => x.data.date === fd);
 
-      await setDoc(doc(db, "seasons", id), {
-        label: label || id,
-        isActive: true,
-        activePhase: "autumn",
-        autumnPublished: false,
-        springPublished: false,
-        createdAt: nowTs(),
-        updatedAt: nowTs()
-      });
+    // řazení dle date desc
+    list.sort((a, b) => (b.data.date || "").localeCompare(a.data.date || ""));
 
-      if (newSeasonId) newSeasonId.value = "";
-      if (newSeasonLabel) newSeasonLabel.value = "";
+    renderMatches(list);
+  }, (err) => console.error(err));
+}
 
-      seasonMessage("✅ Nová sezóna založena (aktivní PODZIM).");
-    } catch (e) {
-      console.error(e);
-      seasonMessage("❌ Nepodařilo se založit novou sezónu (zkontroluj Rules/Auth).");
-    }
+function renderMatches(list) {
+  if (!list.length) {
+    matchesList.innerHTML = "<p><em>Žádné zápasy.</em></p>";
+    return;
+  }
+
+  matchesList.innerHTML = list.map(x => {
+    const m = x.data;
+    const home = teamName(m.homeTeam);
+    const away = teamName(m.awayTeam);
+
+    const score = `${m.scoreHome ?? "?"}:${m.scoreAway ?? "?"}`;
+    const pts = `${m.leaguePointsHome ?? "?"}:${m.leaguePointsAway ?? "?"}`;
+    const kuz = `${m.sumHome ?? "?"}:${m.sumAway ?? "?"}`;
+    const r = m.round ? ` • kolo ${m.round}` : "";
+
+    return `
+      <div class="listrow">
+        <div>
+          <strong>${m.date || ""}</strong> — ${home} vs ${away}${r}
+          <span class="small"> | Skóre ${score} | Body ${pts} | Kuželky ${kuz}</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="btn-primary" data-edit="${x.docId}">Upravit</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  matchesList.querySelectorAll("button[data-edit]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.edit;
+      const found = list.find(x => x.docId === id);
+      if (found) openEdit(id, found.data, Number(ligaEl.value));
+    });
   });
-
-const csCompare = (a, b) => (a || "").localeCompare(b || "", "cs");
-const sum = (arr) => arr.reduce((a, b) => a + b, 0);
-
-function teamName(id) {
-  return teams.find(t => t.id === id)?.name || "(tým?)";
 }
 
-// bonus do SKÓRE za kuželky
-function computeBonus(sumHome, sumAway) {
-  if (sumHome > sumAway) return { bonusScoreHome: 2, bonusScoreAway: 0 };
-  if (sumHome < sumAway) return { bonusScoreHome: 0, bonusScoreAway: 2 };
-  return { bonusScoreHome: 1, bonusScoreAway: 1 }; // remíza kuželek
-}
-
-// načti týmy a hráče pro editor
-async function loadBase() {
-  const ts = await getDocs(collection(db, "teams"));
-  teams = ts.docs.map(d => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => csCompare(a.name, b.name));
-
-  const ps = await getDocs(collection(db, "players"));
-  players = ps.docs.map(d => ({ id: d.id, ...d.data() }))
-    .sort((a, b) => csCompare(a.name, b.name));
-}
-
+// =====================
+// Match editor
+// =====================
 function fillTeamSelects(liga) {
   const ligaTeams = teams.filter(t => Number(t.liga) === Number(liga));
   editHomeTeam.innerHTML = "";
   editAwayTeam.innerHTML = "";
+
   ligaTeams.forEach(t => {
     const o1 = document.createElement("option");
     o1.value = t.id; o1.textContent = t.name;
@@ -331,11 +410,6 @@ function fillTeamSelects(liga) {
     editHomeTeam.appendChild(o1);
     editAwayTeam.appendChild(o2);
   });
-}
-
-function playersOfTeam(teamId) {
-  return players.filter(p => p.teamId === teamId)
-    .sort((a, b) => csCompare(a.name, b.name));
 }
 
 function mkPlayerRow(side, idx) {
@@ -373,7 +447,6 @@ function fillPlayerRows() {
   });
 }
 
-// přepočet: kuželky + skóre 8 + body 2/1/0
 function recompute() {
   const hk = [...document.querySelectorAll(".home-kuz")].map(x => Number(x.value) || 0);
   const hb = [...document.querySelectorAll(".home-bod")].map(x => Number(x.value) || 0);
@@ -383,21 +456,21 @@ function recompute() {
   const sumHome = sum(hk);
   const sumAway = sum(ak);
 
-  const scoreHomeBase = sum(hb); // musí dát dohromady 6
+  const scoreHomeBase = sum(hb);  // musí dát celkem 6
   const scoreAwayBase = sum(ab);
 
   const { bonusScoreHome, bonusScoreAway } = computeBonus(sumHome, sumAway);
 
-  const scoreHome = scoreHomeBase + bonusScoreHome; // musí dát dohromady 8
+  const scoreHome = scoreHomeBase + bonusScoreHome; // musí dát celkem 8
   const scoreAway = scoreAwayBase + bonusScoreAway;
 
-  // body 2/1/0 do tabulky podle výsledného SkÓRE
+  // body 2/1/0 dle výsledného skóre
   let leaguePointsHome = 0, leaguePointsAway = 0;
   if (scoreHome > scoreAway) { leaguePointsHome = 2; leaguePointsAway = 0; }
   else if (scoreHome < scoreAway) { leaguePointsHome = 0; leaguePointsAway = 2; }
   else { leaguePointsHome = 1; leaguePointsAway = 1; }
 
-  // UI (tady ukazujeme kuželky a Skóre)
+  // UI (součet kuželek + skóre)
   sumHomeEl.textContent = sumHome;
   sumAwayEl.textContent = sumAway;
   bodyHomeEl.textContent = scoreHome;
@@ -423,11 +496,10 @@ function openEdit(docId, match, liga) {
   editHomeTeam.value = match.homeTeam;
   editAwayTeam.value = match.awayTeam;
 
-  // Doporučení: neměnit týmy (kvůli deterministickému matchId)
+  // Zamknout týmy (kvůli deterministickému matchId)
   editHomeTeam.disabled = true;
   editAwayTeam.disabled = true;
 
-  // vytvoř 3+3 řádky
   editHomePlayers.innerHTML = "";
   editAwayPlayers.innerHTML = "";
   for (let i = 0; i < 3; i++) {
@@ -437,7 +509,6 @@ function openEdit(docId, match, liga) {
 
   fillPlayerRows();
 
-  // doplň hodnoty
   (match.homePlayers || []).forEach((p, i) => {
     const sel = document.querySelectorAll(".home-pl")[i];
     const kuz = document.querySelectorAll(".home-kuz")[i];
@@ -458,129 +529,16 @@ function openEdit(docId, match, liga) {
 
   recompute();
 
-  // listeners pro přepočet
   [...document.querySelectorAll(".home-kuz,.home-bod,.away-kuz,.away-bod")]
     .forEach(inp => inp.addEventListener("input", recompute));
 }
 
-function renderMatches(list) {
-  if (!list.length) {
-    matchesList.innerHTML = "<p><em>Žádné zápasy.</em></p>";
-    return;
-  }
-
-  matchesList.innerHTML = list.map(x => {
-    const m = x.data;
-    const home = teamName(m.homeTeam);
-    const away = teamName(m.awayTeam);
-
-    const score = `${m.scoreHome ?? "?"}:${m.scoreAway ?? "?"}`;
-    const pts = `${m.leaguePointsHome ?? "?"}:${m.leaguePointsAway ?? "?"}`;
-    const kuz = `${m.sumHome ?? "?"}:${m.sumAway ?? "?"}`;
-
-    return `
-      <div class="listrow">
-        <div>
-          <strong>${m.date || ""}</strong> — ${home} vs ${away}
-          <span class="small"> | Skóre ${score} | Body ${pts} | Kuželky ${kuz}</span>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <button class="btn-primary" data-edit="${x.docId}">Upravit</button>
-        </div>
-      </div>
-    `;
-  }).join("");
-
-  matchesList.querySelectorAll("button[data-edit]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.dataset.edit;
-      const found = list.find(x => x.docId === id);
-      if (found) openEdit(id, found.data, Number(ligaEl.value));
-    });
-  });
-}
-
-function listenMatches() {
-  if (unsubscribe) unsubscribe();
-
-  const liga = Number(ligaEl.value);
-  const q = query(collection(db, "matches"), where("liga", "==", liga));
-
-  unsubscribe = onSnapshot(q, snap => {
-    let list = snap.docs.map(d => ({ docId: d.id, data: d.data() }));
-
-    const fd = filterDateEl.value;
-    if (fd) list = list.filter(x => x.data.date === fd);
-
-    list.sort((a, b) => (b.data.date || "").localeCompare(a.data.date || ""));
-    renderMatches(list);
-  });
-}
-
-// ---------- Auth ----------
-btnLogin.addEventListener("click", async () => {
-  loginMsg.textContent = "";
-  try {
-    await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
-  } catch (e) {
-    console.error(e);
-    loginMsg.textContent = "Nepodařilo se přihlásit (zkontroluj email/heslo).";
-  }
-});
-
-btnLogout.addEventListener("click", () => signOut(auth));
-
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    console.log("✅ admin přihlášen UID:", user.uid);
-    loginBox.style.display = "none";
-    appBox.style.display = "block";
-    await loadBase();
- // ✅ KROK 4.3 – realtime načítání sezón do adminu
-onSnapshot(
-  collection(db, "seasons"),
-  (snap) => {
-    seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    console.log("✅ seasons loaded:", seasons.length);
-    renderSeasons();
-    syncRoundInfo();
-  },
-  (err) => {
-    console.error("❌ seasons snapshot error:", err);
-  }
-);
-
-    listenMatches();
-  } else {
-    loginBox.style.display = "block";
-    appBox.style.display = "none";
-    editBox.style.display = "none";
-    currentDocId = null;
-    if (unsubscribe) unsubscribe();
-    unsubscribe = null;
-  }
-});
-
-// UI events
-ligaEl.addEventListener("change", () => {
-  editBox.style.display = "none";
-  currentDocId = null;
-  listenMatches();
-});
-
-clearFilter.addEventListener("click", () => {
-  filterDateEl.value = "";
-  listenMatches();
-});
-filterDateEl.addEventListener("change", listenMatches);
-
-btnCloseEdit.addEventListener("click", () => {
+btnCloseEdit?.addEventListener("click", () => {
   editBox.style.display = "none";
   currentDocId = null;
 });
 
-// SAVE EDIT
-btnSaveEdit.addEventListener("click", async () => {
+btnSaveEdit?.addEventListener("click", async () => {
   if (!currentDocId) return;
 
   const liga = Number(ligaEl.value);
@@ -597,7 +555,6 @@ btnSaveEdit.addEventListener("click", async () => {
     body: Number(document.querySelectorAll(".away-bod")[i].value) || 0
   }));
 
-  // validace vstupů
   for (const p of [...homePlayers, ...awayPlayers]) {
     if (!p.playerId) { editMsg.textContent = "Vyber hráče ve všech řádcích."; return; }
     if (![0, 1, 2].includes(p.body)) { editMsg.textContent = "Body musí být 0/1/2."; return; }
@@ -616,8 +573,6 @@ btnSaveEdit.addEventListener("click", async () => {
     await updateDoc(doc(db, "matches", currentDocId), {
       liga,
       date: editDate.value,
-
-      // týmy jsou zamknuté (neměníme)
       homeTeam: editHomeTeam.value,
       awayTeam: editAwayTeam.value,
 
@@ -645,8 +600,7 @@ btnSaveEdit.addEventListener("click", async () => {
   }
 });
 
-// DELETE
-btnDeleteMatch.addEventListener("click", async () => {
+btnDeleteMatch?.addEventListener("click", async () => {
   if (!currentDocId) return;
   if (!confirm("Opravdu smazat zápas?")) return;
 
@@ -654,12 +608,65 @@ btnDeleteMatch.addEventListener("click", async () => {
     await deleteDoc(doc(db, "matches", currentDocId));
     editBox.style.display = "none";
     currentDocId = null;
-  } 
-  catch (e) {
+  } catch (e) {
     console.error(e);
     editMsg.textContent = "❌ Smazání selhalo (zkontroluj Rules/UID admina).";
   }
 });
-  
 
-            
+// =====================
+// Filters
+// =====================
+ligaEl?.addEventListener("change", () => {
+  editBox.style.display = "none";
+  currentDocId = null;
+  listenMatches();
+});
+
+clearFilter?.addEventListener("click", () => {
+  filterDateEl.value = "";
+  listenMatches();
+});
+filterDateEl?.addEventListener("change", listenMatches);
+
+// =====================
+// Auth
+// =====================
+btnLogin?.addEventListener("click", async () => {
+  loginMsg.textContent = "";
+  try {
+    await signInWithEmailAndPassword(auth, emailEl.value.trim(), passEl.value);
+  } catch (e) {
+    console.error(e);
+    loginMsg.textContent = "Nepodařilo se přihlásit (zkontroluj email/heslo).";
+  }
+});
+
+btnLogout?.addEventListener("click", () => signOut(auth));
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    console.log("✅ admin přihlášen UID:", user.uid);
+
+    loginBox.style.display = "none";
+    appBox.style.display = "block";
+
+    await loadBase();
+
+    // realtime seasons
+    onSnapshot(collection(db, "seasons"), (snap) => {
+      seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderSeasons();
+    });
+
+    listenMatches();
+  } else {
+    loginBox.style.display = "block";
+    appBox.style.display = "none";
+    editBox.style.display = "none";
+    currentDocId = null;
+
+    if (unsubscribeMatches) unsubscribeMatches();
+    unsubscribeMatches = null;
+  }
+});
