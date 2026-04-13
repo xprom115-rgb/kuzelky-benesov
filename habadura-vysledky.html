@@ -67,17 +67,18 @@
     <li><a href="admin.html">Admin</a></li>
   </ul>
 </nav>
-
 <main>
   <div class="content-box">
+
     <h2 style="margin-bottom:6px;">
       Habaďůra – výsledky
       <span id="histBadge" class="badge"></span>
     </h2>
 
-<div style="margin:10px 0 6px 0;">
-  <button type="button" id="btnBackSeasons" class="back-btn">← Zpět na sezóny</button>
-</div>
+    <!-- Zpět na sezóny -->
+    <div style="margin:10px 0 6px 0;">
+      <button type="button" id="btnBackSeasons" class="back-btn">← Zpět na sezóny</button>
+    </div>
 
     <!-- Přepínač lig -->
     <div class="liga-switch">
@@ -91,10 +92,11 @@
     <h3 style="color:#ffd700;">Tabulka hráčů</h3>
     <div id="tab-hracu"></div>
 
-<div id="maticeSection">
-  <h3 style="color:#ffd700;">Tabulka vzájemných zápasů (matice)</h3>
-  <div id="tab-matice"></div>
-</div>
+    <!-- Matice (lze ve finále skrýt pomocí JS) -->
+    <div id="maticeSection">
+      <h3 style="color:#ffd700;">Tabulka vzájemných zápasů (matice)</h3>
+      <div id="tab-matice"></div>
+    </div>
 
   </div>
 </main>
