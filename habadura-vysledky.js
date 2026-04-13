@@ -3,7 +3,7 @@ import { collection, getDocs, query, where, onSnapshot } from "https://www.gstat
 
 const params = new URLSearchParams(location.search);
 const SEASON_ID = params.get("season");
-const PHASE = params.get("phase"); // autumn/spring
+const PHASE = params.get("phase"); // autumn | spring | final
 
 const badgeEl = document.getElementById("histBadge");
 const btnLiga1 = document.getElementById("btn-liga1");
@@ -21,7 +21,11 @@ let matchesL1 = [];
 let matchesL2 = [];
 
 function csCompare(a,b){ return (a||"").localeCompare(b||"","cs"); }
-function phaseText(p){ return p === "spring" ? "jaro" : "podzim"; }
+function phaseText(p){
+  if (p === "spring") return "jaro";
+  if (p === "final") return "finální";
+  return "podzim";
+}
 
 function setLiga(liga){
   currentLiga = Number(liga);
@@ -40,7 +44,7 @@ function showEmpty(msg){
   tabMatice.innerHTML = "";
 }
 
-// --- Teams table ---
+// ---------- TABULKA DRUŽSTEV ----------
 function computeTeamsTable(matches, liga){
   const ligaTeams = teams.filter(t=>Number(t.liga)===Number(liga));
   const stats = {};
@@ -58,7 +62,7 @@ function computeTeamsTable(matches, liga){
     home.points += (m.leaguePointsHome||0);
     home.scoreFor += (m.scoreHome||0);
     home.scoreAgainst += (m.scoreAway||0);
-    home.nv = Math.max(home.nv, (m.sumHome||0));
+    home.nv = Math.max(home.nv, (m.sumHome||0)); // ✅ max z obou částí, pokud je matches obsahují
 
     away.zapasy++;
     away.kuzelky += (m.sumAway||0);
@@ -98,7 +102,7 @@ function renderTeamsTable(matches, liga){
   tabDruzstva.innerHTML = html;
 }
 
-// --- Players table (sort by average) ---
+// ---------- TABULKA HRÁČŮ (ŘAZENÍ PODLE PRŮMĚRU) ----------
 function computePlayersTable(matches, liga){
   const ps = {};
 
@@ -126,6 +130,7 @@ function computePlayersTable(matches, liga){
     prumer: r.zapasy ? (r.kuzelky/r.zapasy).toFixed(2) : "0.00"
   }));
 
+  // ✅ řazení primárně podle průměru (desc)
   rows.sort((a,b)=>{
     if (b.prumerNum !== a.prumerNum) return b.prumerNum - a.prumerNum;
     if (b.nv !== a.nv) return b.nv - a.nv;
@@ -150,7 +155,7 @@ function renderPlayersTable(matches, liga){
   tabHracu.innerHTML = html;
 }
 
-// --- Matrix ---
+// ---------- MATICE ----------
 function buildMatchMap(matches){
   const map = new Map();
   matches.forEach(m=> map.set(`${m.homeTeam}-${m.awayTeam}`, m));
@@ -210,7 +215,6 @@ function renderAll(){
 async function loadBase(){
   const ts = await getDocs(collection(db,"teams"));
   teams = ts.docs.map(d=>({id:d.id, ...d.data()}));
-
   const ps = await getDocs(collection(db,"players"));
   players = ps.docs.map(d=>({id:d.id, ...d.data()}));
 }
@@ -225,17 +229,23 @@ async function init(){
 
   await loadBase();
 
-  // Bez indexů: jen seasonId+phase a rozdělení ligy až v JS
-  const qAll = query(
+  // ✅ vždy načteme všechny zápasy pro sezónu a pak filtrujeme fázi v JS
+  const qAllSeason = query(
     collection(db,"matches"),
-    where("seasonId","==", SEASON_ID),
-    where("phase","==", PHASE)
+    where("seasonId","==", SEASON_ID)
   );
 
-  onSnapshot(qAll, snap=>{
-    const all = snap.docs.map(d=>d.data());
-    matchesL1 = all.filter(m => Number(m.liga) === 1);
-    matchesL2 = all.filter(m => Number(m.liga) === 2);
+  onSnapshot(qAllSeason, snap=>{
+    const allSeason = snap.docs.map(d=>d.data());
+
+    // filtr fáze
+    const filtered = (PHASE === "final")
+      ? allSeason.filter(m => m.phase === "autumn" || m.phase === "spring")
+      : allSeason.filter(m => m.phase === PHASE);
+
+    matchesL1 = filtered.filter(m => Number(m.liga) === 1);
+    matchesL2 = filtered.filter(m => Number(m.liga) === 2);
+
     renderAll();
   });
 
