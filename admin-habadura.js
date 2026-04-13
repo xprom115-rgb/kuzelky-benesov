@@ -606,4 +606,4 @@ btnDeleteMatch.addEventListener("click", async () => {
     editMsg.textContent = "❌ Smazání selhalo (zkontroluj Rules/UID admina).";
   }
 });
-``
+  }
