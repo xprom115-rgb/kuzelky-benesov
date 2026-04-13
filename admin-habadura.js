@@ -125,91 +125,92 @@ btnCloseRound?.addEventListener("click", async () => {
 
   const currentRound = Number(s.activeRound || 1);
 
-  // 1) Uzavření kola 1
-if (currentRound === 1) {
-  if (!confirm(`Uzavřít 1. kolo sezóny ${s.label || id}?\n(Zápasy se zkopírují do archivu a přepne se na 2. kolo)`)) return;
+  // --- Kolo 1 ---
+  if (currentRound === 1) {
+    if (!confirm(`Uzavřít 1. kolo sezóny ${s.label || id}?\n(Zápasy se zkopírují do archivu a přepne se na 2. kolo)`)) return;
 
-  try {
-    seasonMessage("⏳ Archivuju zápasy 1. kola…");
-    const copied = await archiveRoundMatches(id, 1);
+    try {
+      seasonMessage("⏳ Archivuju zápasy 1. kola…");
+      const copied = await archiveRoundMatches(id, 1);
 
-    await updateDoc(doc(db, "seasons", id), {
-      round1Published: true,
-      activeRound: 2,
-      updatedAt: nowTs()
-    });
-
-    seasonMessage(`✅ 1. kolo uzavřeno. Archiv: ${copied} zápasů. Aktivní je 2. kolo.`);
-  } catch (e) {
-    console.error(e);
-    seasonMessage("❌ Nepodařilo se uzavřít 1. kolo (archivace / rules / auth).");
-  }
-  return;
-}
-
-  // 2) Uzavření kola 2 + otázka na 3. kolo
-  if (currentRound === 2) {
-  if (!confirm(`Uzavřít 2. kolo sezóny ${s.label || id}?\n(Zápasy se zkopírují do archivu)`)) return;
-
-  const wantRound3 = confirm("Chcete odehrát 3. kolo?\nOK = ano (přepne na kolo 3)\nStorno = ne (sezóna skončí po 2 kolech a zveřejní se finální)");
-
-  try {
-    seasonMessage("⏳ Archivuju zápasy 2. kola…");
-    const copied = await archiveRoundMatches(id, 2);
-
-    if (wantRound3) {
       await updateDoc(doc(db, "seasons", id), {
-        round2Published: true,
-        hasRound3: true,
-        activeRound: 3,
+        round1Published: true,
+        activeRound: 2,
         updatedAt: nowTs()
       });
-      seasonMessage(`✅ 2. kolo uzavřeno. Archiv: ${copied} zápasů. Bude 3. kolo (aktivní kolo 3).`);
-    } else {
+
+      seasonMessage(`✅ 1. kolo uzavřeno. Archiv: ${copied} zápasů. Aktivní je 2. kolo.`);
+    } catch (e) {
+      console.error(e);
+      seasonMessage("❌ Nepodařilo se uzavřít 1. kolo (archivace/rules/auth).");
+    }
+    return;
+  }
+
+  // --- Kolo 2 + otázka na 3. kolo ---
+  if (currentRound === 2) {
+    if (!confirm(`Uzavřít 2. kolo sezóny ${s.label || id}?\n(Zápasy se zkopírují do archivu)`)) return;
+
+    const wantRound3 = confirm(
+      "Chcete odehrát 3. kolo?\n\n" +
+      "OK = ano (přepne se na kolo 3)\n" +
+      "Storno = ne (sezóna skončí po 2 kolech a zveřejní se finální)"
+    );
+
+    try {
+      seasonMessage("⏳ Archivuju zápasy 2. kola…");
+      const copied = await archiveRoundMatches(id, 2);
+
+      if (wantRound3) {
+        await updateDoc(doc(db, "seasons", id), {
+          round2Published: true,
+          hasRound3: true,
+          activeRound: 3,
+          updatedAt: nowTs()
+        });
+        seasonMessage(`✅ 2. kolo uzavřeno. Archiv: ${copied} zápasů. Bude 3. kolo (aktivní kolo 3).`);
+      } else {
+        await updateDoc(doc(db, "seasons", id), {
+          round2Published: true,
+          hasRound3: false,
+          finalPublished: true,
+          isActive: false,
+          updatedAt: nowTs()
+        });
+        seasonMessage(`✅ 2. kolo uzavřeno. Archiv: ${copied} zápasů. 3. kolo nebude. Sezóna ukončena a finální zveřejněno (součet 2 kol).`);
+      }
+    } catch (e) {
+      console.error(e);
+      seasonMessage("❌ Nepodařilo se uzavřít 2. kolo (archivace/rules/auth).");
+    }
+    return;
+  }
+
+  // --- Kolo 3 ---
+  if (currentRound === 3) {
+    if (!confirm(`Uzavřít 3. kolo sezóny ${s.label || id}?\n(Zápasy se zkopírují do archivu, sezóna se ukončí a zveřejní se finální)`)) return;
+
+    try {
+      seasonMessage("⏳ Archivuju zápasy 3. kola…");
+      const copied = await archiveRoundMatches(id, 3);
+
       await updateDoc(doc(db, "seasons", id), {
-        round2Published: true,
-        hasRound3: false,
+        round3Published: true,
         finalPublished: true,
         isActive: false,
         updatedAt: nowTs()
       });
-      seasonMessage(`✅ 2. kolo uzavřeno. Archiv: ${copied} zápasů. 3. kolo nebude. Sezóna ukončena a finální zveřejněno (součet 2 kol).`);
+
+      seasonMessage(`✅ 3. kolo uzavřeno. Archiv: ${copied} zápasů. Sezóna ukončena a finální zveřejněno (součet 3 kol).`);
+    } catch (e) {
+      console.error(e);
+      seasonMessage("❌ Nepodařilo se uzavřít 3. kolo (archivace/rules/auth).");
     }
-  } catch (e) {
-    console.error(e);
-    seasonMessage("❌ Nepodařilo se uzavřít 2. kolo (archivace / rules / auth).");
+    return;
   }
-  return;
-
-      }
-
-  // 3) Uzavření kola 3 (pokud existuje)
-  if (currentRound === 3) {
-    if (currentRound === 3) {
-  if (!confirm(`Uzavřít 3. kolo sezóny ${s.label || id}?\n(Zápasy se zkopírují do archivu, sezóna se ukončí a zveřejní se finální)`)) return;
-
-  try {
-    seasonMessage("⏳ Archivuju zápasy 3. kola…");
-    const copied = await archiveRoundMatches(id, 3);
-
-    await updateDoc(doc(db, "seasons", id), {
-      round3Published: true,
-      finalPublished: true,
-      isActive: false,
-      updatedAt: nowTs()
-    });
-
-    seasonMessage(`✅ 3. kolo uzavřeno. Archiv: ${copied} zápasů. Sezóna ukončena a finální zveřejněno (součet 3 kol).`);
-  } catch (e) {
-    console.error(e);
-    seasonMessage("❌ Nepodařilo se uzavřít 3. kolo (archivace / rules / auth).");
-  }
-  return;
-}
 
   seasonMessage("⚠️ Neznámé aktivní kolo (čekám 1/2/3).");
-
-}
+});
 // ===== ARCHIVACE: zkopíruj zápasy aktuálního kola do habadura_history =====
 async function archiveRoundMatches(seasonId, round) {
   // načti všechny zápasy sezóny a kolo filtruj v JS (bez indexů)
@@ -653,11 +654,12 @@ btnDeleteMatch.addEventListener("click", async () => {
     await deleteDoc(doc(db, "matches", currentDocId));
     editBox.style.display = "none";
     currentDocId = null;
-  } catch (e) {
+  } 
+  catch (e) {
     console.error(e);
     editMsg.textContent = "❌ Smazání selhalo (zkontroluj Rules/UID admina).";
   }
 });
-  }
+  
 
                             }    
