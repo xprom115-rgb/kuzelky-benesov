@@ -267,8 +267,8 @@ function renderAll() {
   // ✅ DŮLEŽITÉ: matici rendruj i ve finále,
   // jen bude skrytá na obrazovce a vytiskne se
   renderMatrix(matches, currentLiga);
-}
-}
+
+
 
 // ======================
 // Data loading
