@@ -20,15 +20,25 @@
     .season-card h3{ margin:0; color:#ffd700; }
     .meta{ margin-top:6px; opacity:0.85; font-size:13px; }
     .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; }
-    .btn-link{
-      padding:10px 14px;
-      border-radius:10px;
-      background:#1e235c;
-      color:#ffd700;
-      font-weight:bold;
-      display:inline-block;
-    }
-    .btn-link.disabled{ opacity:0.35; pointer-events:none; cursor:not-allowed; }
+   .btn-link{
+  padding:10px 14px;
+  border-radius:10px;
+  background:#1e235c;
+  color:#ffd700;
+  font-weight:bold;
+  display:inline-block;
+  border:1px solid #ffd700;
+  text-decoration:none;
+}
+.btn-link:hover{
+  background:#ffd700;
+  color:#1e235c;
+}
+.btn-link.disabled{
+  opacity:0.35;
+  pointer-events:none;
+  cursor:not-allowed;
+}
   </style>
 </head>
 <body>
