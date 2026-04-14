@@ -165,7 +165,10 @@ btnCloseRound?.addEventListener("click", async () => {
   if (!s) return seasonMessage("⚠️ Nevybraná sezóna.");
 
   const currentRound = Number(s.activeRound || 1);
-
+btnResetSeason?.addEventListener("click", () => {
+  const id = seasonSelect?.value || "(nevybráno)";
+  seasonMessage(`✅ Reset testů – tlačítko funguje. Vybraná sezóna: ${id} (zatím bez mazání).`);
+});
   // --- Kolo 1 ---
   if (currentRound === 1) {
     if (!confirm(`Uzavřít 1. kolo sezóny ${s.label || id}?\n(Zápasy se zkopírují do archivu a přepne se na 2. kolo)`)) return;
