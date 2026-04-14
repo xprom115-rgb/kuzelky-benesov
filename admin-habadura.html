@@ -42,3 +42,131 @@
 </nav>
 
 <main>
+  <div class="content-box">
+
+    <!-- LOGIN -->
+    <div id="loginBox" class="card">
+      <h2>Přihlášení admina</h2>
+      <p class="small">Přihlášení probíhá přes Firebase Authentication (Email/Password).</p>
+
+      <div class="toolrow">
+        <input id="email" type="email" placeholder="Email admina">
+        <input id="pass" type="password" placeholder="Heslo">
+        <button id="btnLogin" class="btn-primary">Přihlásit</button>
+      </div>
+
+      <div id="loginMsg" class="small"></div>
+    </div>
+
+    <!-- APP -->
+    <div id="appBox" class="card" style="display:none;">
+
+      <!-- SEZÓNA – KOLA 1/2/3 -->
+      <div class="card" id="seasonCard">
+        <h3 style="margin:0 0 10px 0;">Sezóna (kola 1 / 2 / 3)</h3>
+
+        <div class="toolrow">
+          <label><strong>Aktivní sezóna:</strong></label>
+          <select id="seasonSelect"></select>
+
+          <label><strong>Aktivní kolo:</strong></label>
+          <input id="roundInfo" type="text" value="—" readonly style="max-width:120px;">
+        </div>
+
+        <div class="toolrow">
+          <button id="btnCloseRound" class="btn-primary">Uzavřít aktuální kolo</button>
+        </div>
+
+        <div class="toolrow">
+          <input id="newSeasonId" type="text" placeholder="Nová sezóna ID (např. 2026-2027)" style="min-width:240px;">
+          <input id="newSeasonLabel" type="text" placeholder="Popis (např. 2026/2027)" style="min-width:240px;">
+          <button id="btnStartNewSeason" class="btn-soft">Start nové sezóny</button>
+        </div>
+
+        <!-- RESET TESTŮ -->
+        <div class="toolrow">
+          <button id="btnResetSeason" class="btn-danger">Reset testů sezóny</button>
+        </div>
+        <div class="small" style="opacity:0.85; margin-top:6px;">
+          Reset smaže zápasy v <strong>matches</strong> i v archivu <strong>habadura_history</strong> pro vybranou sezónu
+          a nastaví sezónu zpět na <strong>kolo 1</strong>.
+        </div>
+
+        <div id="seasonMsg" class="small" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- Správa zápasů -->
+      <div class="toolrow" style="justify-content:space-between;">
+        <div>
+          <h2 style="margin:0;">Správa zápasů</h2>
+          <div class="small">Editace/smazání zápasů (jen admin).</div>
+        </div>
+        <button id="btnLogout" class="btn-soft">Odhlásit</button>
+      </div>
+
+      <hr style="margin:14px 0;">
+
+      <div class="toolrow">
+        <label><strong>Liga:</strong></label>
+        <select id="liga">
+          <option value="1">1. liga</option>
+          <option value="2">2. liga</option>
+        </select>
+
+        <label><strong>Datum:</strong></label>
+        <input id="filterDate" type="date">
+        <button id="clearFilter" class="btn-soft">Zrušit filtr</button>
+      </div>
+
+      <div id="matchesList"></div>
+    </div> <!-- /appBox -->
+
+    <!-- EDITOR -->
+    <div id="editBox" class="card" style="display:none;">
+      <h3>Upravit zápas</h3>
+
+      <div class="toolrow">
+        <label><strong>Datum:</strong></label>
+        <input id="editDate" type="date">
+      </div>
+
+      <div class="grid2">
+        <div>
+          <h4 style="color:#ffd700;margin:6px 0;">Domácí</h4>
+          <select id="editHomeTeam"></select>
+          <div id="editHomePlayers"></div>
+          <div class="small">
+            Součet: <span id="sumHome" class="mono">0</span> |
+            Skóre: <span id="bodyHome" class="mono">0</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 style="color:#ffd700;margin:6px 0;">Hosté</h4>
+          <select id="editAwayTeam"></select>
+          <div id="editAwayPlayers"></div>
+          <div class="small">
+            Součet: <span id="sumAway" class="mono">0</span> |
+            Skóre: <span id="bodyAway" class="mono">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="toolrow" style="margin-top:12px;">
+        <button id="btnCloseEdit" class="btn-soft">Zavřít</button>
+        <button id="btnSaveEdit" class="btn-primary">Uložit změny</button>
+        <button id="btnDeleteMatch" class="btn-danger">Smazat zápas</button>
+        <span id="editMsg" class="small"></span>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<!-- ✅ správné načtení JS jako modul -->
+<script type="module" src="./admin-habadura.js?v=9103"></script>
+
+</body>
+</html>
