@@ -45,7 +45,7 @@ const passEl    = document.getElementById("pass");
 const btnLogin  = document.getElementById("btnLogin");
 const btnLogout = document.getElementById("btnLogout");
 const loginMsg  = document.getElementById("loginMsg");
-
+const btnResetSeason = document.getElementById("btnResetSeason");
 const ligaEl       = document.getElementById("liga");
 const filterDateEl = document.getElementById("filterDate");
 const clearFilter  = document.getElementById("clearFilter");
