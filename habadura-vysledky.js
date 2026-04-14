@@ -255,6 +255,7 @@ function renderAll() {
   toggleMatrixVisibility();
 
   const matches = (currentLiga === 1) ? matchesL1 : matchesL2;
+
   if (!matches.length) {
     showEmpty(`V sezóně ${SEASON_ID} (${roundText(ROUND_PARAM)}) zatím nejsou zápasy pro ${currentLiga}. ligu.`);
     return;
@@ -262,11 +263,11 @@ function renderAll() {
 
   renderTeamsTable(matches, currentLiga);
   renderPlayersTable(matches, currentLiga);
-  
- // matici kresli jen když není finále
-  if (ROUND_PARAM !== "final") {
-    renderMatrix(matches, currentLiga);
-  }
+
+  // ✅ DŮLEŽITÉ: matici rendruj i ve finále,
+  // jen bude skrytá na obrazovce a vytiskne se
+  renderMatrix(matches, currentLiga);
+}
 }
 }
 
