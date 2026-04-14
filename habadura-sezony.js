@@ -2,7 +2,6 @@ import { db } from "./firebase-config.js";
 import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 const listEl = document.getElementById("seasonsList");
-if (!listEl) console.error('Chybí element id="seasonsList" v habadura-sezony.html');
 
 function btn(href, text, enabled) {
   const cls = enabled ? "btn-link" : "btn-link disabled";
@@ -63,10 +62,3 @@ function render(seasons) {
   }).join("");
 }
 
-onSnapshot(collection(db, "seasons"), (snap) => {
-  const seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  render(seasons);
-}, (err) => {
-  console.error(err);
-  if (listEl) listEl.innerHTML = "<p><strong>Chyba načítání sezón.</strong></p>";
-});
