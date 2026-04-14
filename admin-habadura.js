@@ -101,7 +101,42 @@ function seasonMessage(text) {
 function nowTs() {
   return Timestamp.now();
 }
+async function batchDeleteRefs(refs) {
+  const LIMIT = 450; // bezpečně pod 500
+  for (let i = 0; i < refs.length; i += LIMIT) {
+    const chunk = refs.slice(i, i + LIMIT);
+    const batch = writeBatch(db);
+    chunk.forEach(r => batch.delete(r));
+    await batch.commit();
+  }
+}
 
+async function deleteMatchesForSeason(seasonId) {
+  const q = query(collection(db, "matches"), where("seasonId", "==", seasonId));
+  const snap = await getDocs(q);
+  const refs = snap.docs.map(d => doc(db, "matches", d.id));
+  await batchDeleteRefs(refs);
+  return refs.length;
+}
+
+async function deleteArchiveForSeason(seasonId) {
+  let total = 0;
+
+  for (const r of [1, 2, 3]) {
+    const collRef = collection(db, "habadura_history", seasonId, "rounds", String(r), "matches");
+    const snap = await getDocs(collRef);
+
+    const refs = snap.docs.map(d =>
+      doc(db, "habadura_history", seasonId, "rounds", String(r), "matches", d.id)
+    );
+
+    await batchDeleteRefs(refs);
+    total += refs.length;
+  }
+
+  return total;
+}
+``
 function teamName(id) {
   return teams.find(t => t.id === id)?.name || "(tým?)";
 }
@@ -288,11 +323,47 @@ btnStartNewSeason?.addEventListener("click", async () => {
     seasonMessage("❌ Nepodařilo se založit novou sezónu (rules/auth).");
   }
 });
+btnResetSeason?.addEventListener("click", async () => {
+  const id = seasonSelect?.value;
+  const s = seasons.find(x => x.id === id);
+  if (!s) return seasonMessage("⚠️ Nevybraná sezóna.");
 
-btnResetSeason?.addEventListener("click", () => {
-  const id = seasonSelect?.value || "(nevybráno)";
-  seasonMessage(`✅ Reset testů – tlačítko funguje. Vybraná sezóna: ${id} (zatím bez mazání).`);
+  const label = s.label || id;
+
+  const ok = confirm(
+    `RESET TESTŮ – sezóna ${label}\n\n` +
+    `SMAŽE:\n` +
+    `- všechny zápasy v matches pro sezónu\n` +
+    `- archiv v habadura_history (kola 1..3)\n` +
+    `- resetuje sezónu na kolo 1 a zruší zveřejnění\n\n` +
+    `Pokračovat?`
+  );
+  if (!ok) return;
+
+  try {
+    seasonMessage("⏳ Resetuji testy… (mazání matches + archivu)");
+
+    const delMatches = await deleteMatchesForSeason(id);
+    const delArch = await deleteArchiveForSeason(id);
+
+    await updateDoc(doc(db, "seasons", id), {
+      isActive: true,
+      activeRound: 1,
+      round1Published: false,
+      round2Published: false,
+      round3Published: false,
+      hasRound3: null,
+      finalPublished: false,
+      updatedAt: Timestamp.now()
+    });
+
+    seasonMessage(`✅ Reset hotový. Smazáno matches: ${delMatches}, archiv: ${delArch}. Sezóna = kolo 1.`);
+  } catch (e) {
+    console.error(e);
+    seasonMessage("❌ Reset selhal (zkontroluj Rules/Auth).");
+  }
 });
+``
 
 // =====================
 // Archivace kola do habadura_history
