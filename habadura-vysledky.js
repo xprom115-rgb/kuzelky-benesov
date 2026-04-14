@@ -64,7 +64,7 @@ function showEmpty(msg) {
 
 function hideMatrixIfFinal() {
   if (ROUND_PARAM === "final") {
-    if (maticeSection) maticeSection.style.display = "none";
+    if (maticeSection) maticeSection.classList.add("hide-on-screen");
     if (tabMatice) tabMatice.innerHTML = "";
   } else {
     if (maticeSection) maticeSection.style.display = "";
