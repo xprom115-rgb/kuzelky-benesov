@@ -49,22 +49,29 @@
     display: none !important;
   }
 
-  /* odstranit pozadí a stíny, aby PDF bylo čisté */
+ @media print {
+  /* 1) schovat navigaci a ovládání */
+  header, nav, footer, .liga-switch, .back-btn { display: none !important; }
+
+  /* 2) čistý tisk bez pozadí */
   body { background: #fff !important; }
   .content-box { background: #fff !important; box-shadow: none !important; }
 
-  /* vše černě kvůli čitelnosti */
+  /* 3) černý text kvůli čitelnosti */
   h2, h3, p, th, td { color: #000 !important; }
 
-  /* tabulky ať se nelámou uprostřed */
-  table { page-break-inside: avoid; }
+  /* 4) pevné stránkování: každá sekce na vlastní stránku */
+  #teamsSection { break-after: page; page-break-after: always; }
+  #playersSection { break-after: page; page-break-after: always; }
+  #maticeSection { break-before: page; page-break-before: always; }
 
-  /* matice (pokud existuje) na novou stránku */
-  #maticeSection { page-break-before: always; }
+  /* 5) tabulky se nelámou uprostřed, pokud to jde */
+  table { break-inside: avoid; page-break-inside: avoid; }
 
-  /* když je matice široká, pomůže menší písmo */
-  #tab-matice table { font-size: 11px; }
+  /* 6) matice bývá široká – zmenšíme písmo */
+  #maticeSection table { font-size: 11px; }
 }
+``
   </style>
 </head>
 
@@ -108,11 +115,19 @@
       <button type="button" id="btn-liga2" class="liga-btn">2. liga</button>
     </div>
 
-    <h3 style="color:#ffd700;">Tabulka družstev</h3>
-    <div id="tab-druzstva"></div>
+   
+<div id="teamsSection">
+  <h3 style="color:#ffd700;">Tabulka družstev</h3>
+  <div id="tab-druzstva"></div>
+</div>
 
-    <h3 style="color:#ffd700;">Tabulka hráčů</h3>
-    <div id="tab-hracu"></div>
+
+   
+<div id="playersSection">
+  <h3 style="color:#ffd700;">Tabulka hráčů</h3>
+  <div id="tab-hracu"></div>
+</div>
+
 
     <!-- Matice (lze ve finále skrýt pomocí JS) -->
     <div id="maticeSection">
