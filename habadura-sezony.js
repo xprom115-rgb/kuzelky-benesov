@@ -4,14 +4,10 @@ import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.
 const listEl = document.getElementById("seasonsList");
 if (!listEl) console.error('Chybí element id="seasonsList" v habadura-sezony.html');
 
-function phaseLabelRound(r){
-  return `kolo ${Number(r || 1)}`;
-}
-
 function btn(href, text, enabled) {
   const cls = enabled ? "btn-link" : "btn-link disabled";
   const safeHref = enabled ? href : "#";
-  return `<a class="${cls}" href="${safeHref}">${text}</a>`;
+  return `${safeHref}${text}</a>`;
 }
 
 function render(seasons) {
@@ -22,6 +18,7 @@ function render(seasons) {
     return;
   }
 
+  // nejnovější nahoře
   seasons.sort((a, b) => (b.id || "").localeCompare(a.id || ""));
 
   listEl.innerHTML = seasons.map(s => {
@@ -39,11 +36,13 @@ function render(seasons) {
     const href3 = `habadura-vysledky.html?season=${encodeURIComponent(s.id)}&round=3`;
     const hrefF = `habadura-vysledky.html?season=${encodeURIComponent(s.id)}&round=final`;
 
+    const activeRound = Number(s.activeRound || 1);
+
     return `
       <div class="season-card">
         <h3>${label}${activeTag}</h3>
         <div class="meta">
-          ID: ${s.id} • aktivní: ${phaseLabelRound(s.activeRound)}
+          ID: ${s.id} • aktivní: kolo ${activeRound}
         </div>
 
         <div class="actions">
@@ -54,7 +53,10 @@ function render(seasons) {
         </div>
 
         <div class="meta" style="margin-top:10px;">
-          1: ${r1 ? "uloženo" : "ne"} • 2: ${r2 ? "uloženo" : "ne"} • 3: ${has3 ? (r3 ? "uloženo" : "ne") : "nehraje se"} • finále: ${fin ? "uloženo" : "ne"}
+          1: ${r1 ? "uloženo" : "ne"} •
+          2: ${r2 ? "uloženo" : "ne"} •
+          3: ${has3 ? (r3 ? "uloženo" : "ne") : "nehraje se"} •
+          finále: ${fin ? "uloženo" : "ne"}
         </div>
       </div>
     `;
@@ -64,4 +66,7 @@ function render(seasons) {
 onSnapshot(collection(db, "seasons"), (snap) => {
   const seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   render(seasons);
+}, (err) => {
+  console.error(err);
+  if (listEl) listEl.innerHTML = "<p><strong>Chyba načítání sezón.</strong></p>";
 });
