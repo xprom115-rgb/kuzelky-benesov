@@ -71,7 +71,11 @@
   /* 6) matice bývá široká – zmenšíme písmo */
   #maticeSection table { font-size: 11px; }
 }
-``
+  
+/* Skrytí jen na obrazovce (ne při tisku) */
+.hide-on-screen { display: none; }
+@media print { .hide-on-screen { display: block !important; } }
+
   </style>
 </head>
 
