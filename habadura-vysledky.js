@@ -238,8 +238,21 @@ function renderMatrix(matches, liga) {
   tabMatice.innerHTML = html;
 }
 
+function toggleMatrixVisibility() {
+  if (!maticeSection) return;
+
+  if (ROUND_PARAM === "final") {
+    // schovej jen na obrazovce, ale tisk ji ukáže
+    maticeSection.classList.add("hide-on-screen");
+    if (tabMatice) tabMatice.innerHTML = ""; // na obrazovce prázdné
+  } else {
+       maticeSection.classList.remove("hide-on-screen");
+  }
+}
+
+
 function renderAll() {
-  hideMatrixIfFinal();
+  toggleMatrixVisibility();
 
   const matches = (currentLiga === 1) ? matchesL1 : matchesL2;
   if (!matches.length) {
@@ -249,7 +262,12 @@ function renderAll() {
 
   renderTeamsTable(matches, currentLiga);
   renderPlayersTable(matches, currentLiga);
-  renderMatrix(matches, currentLiga);
+  
+ // matici kresli jen když není finále
+  if (ROUND_PARAM !== "final") {
+    renderMatrix(matches, currentLiga);
+  }
+}
 }
 
 // ======================
