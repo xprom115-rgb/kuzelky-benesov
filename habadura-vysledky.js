@@ -34,6 +34,10 @@ let matchesL2 = [];
 // unsub funkce pro snapshoty
 let unsubs = [];
 
+const backBtn = document.getElementById("btnBackToSeasons");
+if (backBtn) backBtn.addEventListener("click", () => { location.href = "habadura-sezony.html"; });
+
+
 function csCompare(a, b) { return (a || "").localeCompare(b || "", "cs"); }
 
 function roundText(r) {
