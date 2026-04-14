@@ -41,7 +41,30 @@
   background:#ffd700;
   color:#1e235c;
 }
+@media print {
+  /* schovat navigaci a ovládací prvky */
+  header, nav, footer,
+  .liga-switch,
+  .back-btn {
+    display: none !important;
+  }
 
+  /* odstranit pozadí a stíny, aby PDF bylo čisté */
+  body { background: #fff !important; }
+  .content-box { background: #fff !important; box-shadow: none !important; }
+
+  /* vše černě kvůli čitelnosti */
+  h2, h3, p, th, td { color: #000 !important; }
+
+  /* tabulky ať se nelámou uprostřed */
+  table { page-break-inside: avoid; }
+
+  /* matice (pokud existuje) na novou stránku */
+  #maticeSection { page-break-before: always; }
+
+  /* když je matice široká, pomůže menší písmo */
+  #tab-matice table { font-size: 11px; }
+}
   </style>
 </head>
 
