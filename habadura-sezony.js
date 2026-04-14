@@ -49,3 +49,24 @@ function render(seasons) {
           ${btn(href1, "1. kolo", r1)}
           ${btn(href2, "2. kolo", r2)}
           ${btn(href3, "3. kolo", has3 && r3)}
+          ${btn(hrefF, "Finální", fin)}
+        </div>
+
+        <div class="meta" style="margin-top:10px;">
+          1: ${r1 ? "uloženo" : "ne"} •
+          2: ${r2 ? "uloženo" : "ne"} •
+          3: ${has3 ? (r3 ? "uloženo" : "ne") : "nehraje se"} •
+          finále: ${fin ? "uloženo" : "ne"}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+onSnapshot(collection(db, "seasons"), (snap) => {
+  const seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  render(seasons);
+}, (err) => {
+  console.error(err);
+  if (listEl) listEl.innerHTML = "<p><strong>Chyba načítání sezón.</strong></p>";
+});
