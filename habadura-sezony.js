@@ -1,7 +1,12 @@
 import { db } from "./firebase-config.js";
 import { collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
+console.log("✅ habadura-sezony.js načten");
+
 const listEl = document.getElementById("seasonsList");
+if (!listEl) {
+  console.error('❌ Chybí element id="seasonsList" v habadura-sezony.html');
+}
 
 function btn(href, text, enabled) {
   const cls = enabled ? "btn-link" : "btn-link disabled";
@@ -40,9 +45,7 @@ function render(seasons) {
     return `
       <div class="season-card">
         <h3>${label}${activeTag}</h3>
-        <div class="meta">
-          ID: ${s.id} • aktivní: kolo ${activeRound}
-        </div>
+        <div class="meta">ID: ${s.id} • aktivní: kolo ${activeRound}</div>
 
         <div class="actions">
           ${btn(href1, "1. kolo", r1)}
@@ -62,3 +65,17 @@ function render(seasons) {
   }).join("");
 }
 
+// realtime načítání seasons
+onSnapshot(
+  collection(db, "seasons"),
+  (snap) => {
+    const seasons = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    console.log("✅ seasons načteno:", seasons.length);
+    render(seasons);
+  },
+  (err) => {
+    console.error("❌ seasons onSnapshot error:", err);
+    if (listEl) listEl.innerHTML = "<p><strong>Chyba načítání sezón.</strong></p>";
+  }
+);
+``
