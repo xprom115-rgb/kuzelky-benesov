@@ -1,1 +1,104 @@
-<!DOCTYPE html><html><head><meta charset='UTF-8'><title>Družstva</title><link rel='stylesheet' href='style.css'></head><body><header><div class='header-left'><img src='logo.jpg' class='logo'></div><div class='header-title'>Kuželky Benešov</div><div class='header-right'></div></header><nav><ul><li><a href='index.html'>Domů</a></li><li><a href='aktuality.html'>Aktuality</a></li><li><a href='historie.html'>Historie</a></li><li><a href='druzstva.html'>Družstva</a></li><li><a href='rezervace.html'>Rezervace</a></li><li><a href='habadura.html'>Habaďůra</a></li><li><a href='kontakty.html'>Kontakty</a></li><li><a href='admin.html'>Admin</a></li></ul></nav><main><div class='content-box'><h2>Družstva</h2><p>Obsah doplním později…</p></div></main><footer>© Kuželky Benešov – 2026</footer></body></html>
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Kuželky Benešov – Družstva</title>
+  <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    .tiles {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .tile {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      min-height: 140px;
+    }
+    .tile h3 { margin: 0; color: #ffd700; }
+    .tile p { margin: 8px 0 0 0; opacity: 0.9; font-size: 13px; line-height: 1.35; }
+    .tile .btn {
+      margin-top: 12px;
+      align-self: flex-start;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid #ffd700;
+      background: #1e235c;
+      color: #ffd700;
+      font-weight: bold;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .tile .btn:hover { background:#ffd700; color:#1e235c; }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo">
+  </div>
+  <div class="header-title">Kuželky Benešov</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+    <h2>Družstva</h2>
+    <p>Vyberte družstvo pro zobrazení posledních výsledků, tabulky a následujících zápasů.</p>
+
+    <div class="tiles">
+      <div class="tile">
+        <div>
+          <h3>Družstvo „A“</h3>
+          <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+        </div>
+        <a class="btn" href="druzstvo-a.html">Otevřít</a>
+      </div>
+
+      <div class="tile">
+        <div>
+          <h3>Družstvo „B“</h3>
+          <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+        </div>
+        <a class="btn" href="druzstvo-b.html">Otevřít</a>
+      </div>
+
+      <div class="tile">
+        <div>
+          <h3>Družstvo „C“</h3>
+          <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+        </div>
+        <a class="btn" href="druzstvo-c.html">Otevřít</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+</body>
+</html>
+``
