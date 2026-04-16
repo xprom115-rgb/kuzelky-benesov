@@ -198,7 +198,11 @@ input[type="date"] {
     color: rgba(255,255,255,0.65);
     cursor: not-allowed;
 }
-
+/* zvýraznění řádku Benešova */
+.tabulka tr.is-benesov td {
+  background: rgba(255, 215, 0, 0.18);
+  font-weight: bold;
+}
 /* ============================= */
 /* POTVRZENÍ REZERVACE (kód + QR) */
 /* ============================= */
