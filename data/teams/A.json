@@ -1,5 +1,6 @@
 {
   "label": "Družstvo A – 3. KLM B",
+  "source": { "type": "cka", "competitionId": "c800", "teamKey": "TJ Sokol Benešov" },
   "updatedAt": null,
   "lastMatch": null,
   "nextMatch": null,
