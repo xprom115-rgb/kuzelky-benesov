@@ -39,7 +39,7 @@ const auth = getAuth(app);
 const loginBox  = document.getElementById("loginBox");
 const appBox    = document.getElementById("appBox");
 const editBox   = document.getElementById("editBox");
-
+const btnSeedFeeds = document.getElementById("btnSeedFeeds");
 const emailEl   = document.getElementById("email");
 const passEl    = document.getElementById("pass");
 const btnLogin  = document.getElementById("btnLogin");
@@ -321,6 +321,53 @@ btnStartNewSeason?.addEventListener("click", async () => {
   } catch (e) {
     console.error(e);
     seasonMessage("❌ Nepodařilo se založit novou sezónu (rules/auth).");
+  }
+});
+btnSeedFeeds?.addEventListener("click", async () => {
+  const ok = confirm("Vytvořit/aktualizovat team_feeds/A,B,C,DOROST (placeholder)?");
+  if (!ok) return;
+
+  try {
+    seasonMessage("⏳ Vytvářím team_feeds…");
+
+    await setDoc(doc(db, "team_feeds", "A"), {
+      label: "Družstvo A – 3. KLM B",
+      source: { type: "cka", competitionId: "c800", teamKey: "TJ Sokol Benešov" },
+      updatedAt: Timestamp.now(),
+      lastMatch: null,
+      nextMatch: null,
+      table: { columns: ["Poř", "Družstvo", "Body", "Z", "Skóre", "Průměr"], rows: [] }
+    }, { merge: true });
+
+    await setDoc(doc(db, "team_feeds", "B"), {
+      label: "Družstvo B – Divize AS",
+      source: { type: "cka", competitionId: "c788", teamKey: "TJ Sokol Benešov B" },
+      updatedAt: Timestamp.now(),
+      lastMatch: null,
+      nextMatch: null,
+      table: { columns: ["Poř", "Družstvo", "Body", "Z", "Skóre", "Průměr"], rows: [] }
+    }, { merge: true });
+
+    await setDoc(doc(db, "team_feeds", "C"), {
+      label: "Družstvo C – Středočeský KP I. třídy",
+      source: { type: "cka", competitionId: "c791", teamKey: "TJ Sokol Benešov C" },
+      updatedAt: Timestamp.now(),
+      lastMatch: null,
+      nextMatch: null,
+      table: { columns: ["Poř", "Družstvo", "Body", "Z", "Skóre", "Průměr"], rows: [] }
+    }, { merge: true });
+
+    await setDoc(doc(db, "team_feeds", "DOROST"), {
+      label: "Dorost – Středočeský pohár mládeže",
+      source: { type: "skks", url: "https://www.skks-kuzelky.cz/index.php/souteze/stredocesky-pohar-mladeze" },
+      updatedAt: Timestamp.now(),
+      bulletins: []
+    }, { merge: true });
+
+    seasonMessage("✅ Hotovo. team_feeds/A,B,C,DOROST vytvořeny/aktualizovány.");
+  } catch (e) {
+    console.error(e);
+    seasonMessage("❌ Seed selhal (permissions). Zkontroluj Firestore Rules pro team_feeds.");
   }
 });
 btnResetSeason?.addEventListener("click", async () => {
