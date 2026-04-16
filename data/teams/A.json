@@ -1,8 +1,22 @@
 {
   "label": "Družstvo A – 3. KLM B",
-  "source": { "type": "cka", "competitionId": "c800", "teamKey": "TJ Sokol Benešov" },
-  "updatedAt": null,
+  "source": {
+    "type": "cka",
+    "competitionId": "c800",
+    "teamKey": "TJ Sokol Benešov"
+  },
+  "updatedAt": "2026-04-16T19:36:39+00:00",
   "lastMatch": null,
   "nextMatch": null,
-  "table": { "columns": ["Poř","Družstvo","Body","Z","Skóre","Průměr"], "rows": [] }
+  "table": {
+    "columns": [
+      "Poř",
+      "Družstvo",
+      "Body",
+      "Z",
+      "Skóre",
+      "Průměr"
+    ],
+    "rows": []
+  }
 }
