@@ -52,31 +52,49 @@ function renderMatch(boxEl, match, emptyText){
   `;
 }
 
-function renderTable(table){
+function renderTable(table) {
   if (!elTable) return;
 
-  if (!table || !Array.isArray(table.rows) || table.rows.length === 0){
+  // Prázdná / chybějící tabulka
+  if (!table || !Array.isArray(table.rows) || table.rows.length === 0) {
     elTable.innerHTML = `<p><em>Tabulka zatím není naimportována.</em></p>`;
     return;
   }
 
+  // Sloupce – vezmi z JSON, jinak fallback
   const cols = Array.isArray(table.columns) && table.columns.length
     ? table.columns
-    : ["Poř","Družstvo","Body","Z","Skóre","Průměr"];
+    : ["#","Družstvo","Body","Zápasy","Skóre","Průměr"];
 
-  const head = `<tr>${cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>`;
+  // teamKey pro zvýraznění Benešova (nastavuje se v init())
+  const teamKey = (window.__teamKey || "").toLowerCase().trim();
+
+  const head = `<tr>${cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr>`;
 
   const body = table.rows.map(r => {
-    // r je Array (hodnoty ve stejném pořadí jako cols)
+    // 1) Preferovaný formát: array-of-arrays (nejstabilnější)
     if (Array.isArray(r)) {
-      return `<tr>${r.map(x => `<td>${esc(x)}</td>`).join("")}</tr>`;
-    }
-    // fallback: kdyby někdy přišla map
-    return `<tr>${cols.map(c => `<td>${esc(r[c] ?? "")}</td>`).join("")}</tr>`;
-  }).join("");
+      // srovnat délku řádku na počet sloupců
+      let rowArr = r.slice(0, cols.length);
+      if (rowArr.length < cols.length) {
+        rowArr = rowArr.concat(Array(cols.length - rowArr.length).fill(""));
+      }
 
-  elTable.innerHTML = `<table class="tabulka">${head}${body}</table>`;
-}
+      const rowText = rowArr.join(" ").toLowerCase();
+      const isBenesov = teamKey && rowText.includes(teamKey);
+
+      return `<tr class="${isBenesov ? "is-benesov" : ""}">
+        ${rowArr.map(x => `<td>${esc(x)}</td>`).join("")}
+      </tr>`;
+    }
+
+    // 2) Fallback: array-of-maps (kdyby někdy rows byly objekty)
+    if (r && typeof r === "object") {
+      const values = cols.map(colName => r[colName] ?? r[colName.toLowerCase()] ?? "");
+      const rowText = values.join(" ").toLowerCase();
+      const isBenesov = teamKey && rowText.includes(teamKey);
+
+
 
 function renderBulletins(bulletins){
   if (!elBulletins) return;
@@ -137,6 +155,7 @@ async function init(){
     const res = await fetch(`./data/teams/${TEAM_ID}.json?v=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const feed = await res.json();
+window.__teamKey = feed?.source?.teamKey || "";
     render(feed);
   } catch (e) {
     console.error(e);
