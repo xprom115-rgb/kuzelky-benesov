@@ -65,12 +65,14 @@ function renderTable(table){
     : ["Poř","Družstvo","Body","Z","Skóre","Průměr"];
 
   const head = `<tr>${cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>`;
-  const body = table.rows.map(r=>{
-    // očekáváme array-of-maps
-    const tds = [
-      r.pos, r.team, r.points, r.played, r.score, r.avg
-    ].map(x=>`<td>${esc(x)}</td>`).join("");
-    return `<tr>${tds}</tr>`;
+
+  const body = table.rows.map(r => {
+    // r je Array (hodnoty ve stejném pořadí jako cols)
+    if (Array.isArray(r)) {
+      return `<tr>${r.map(x => `<td>${esc(x)}</td>`).join("")}</tr>`;
+    }
+    // fallback: kdyby někdy přišla map
+    return `<tr>${cols.map(c => `<td>${esc(r[c] ?? "")}</td>`).join("")}</tr>`;
   }).join("");
 
   elTable.innerHTML = `<table class="tabulka">${head}${body}</table>`;
