@@ -30,3 +30,36 @@
   <ul>
     <li><a href="druzstva.html">Družstva</a></li>
     <li><a href="index.html">Domů</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+    <h2 id="teamTitle">Družstvo B</h2>
+    <div id="teamUpdated" class="small" style="opacity:0.85;"></div>
+
+    <h3 class="section-title">Poslední zápas</h3>
+    <div id="lastMatch"></div>
+
+    <h3 class="section-title">Následující zápas</h3>
+    <div id="nextMatch"></div>
+
+    <h3 class="section-title">Tabulka soutěže (celá)</h3>
+    <div id="tableWrap"></div>
+
+    <div id="bulletinsWrap" style="display:none;"></div>
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<script type="module" src="./team-page.js?v=2"></script>
+<script>
+  if (!location.search.includes("team=")) {
+    location.replace(location.pathname + "?team=B");
+  }
+</script>
+
+</body>
+</html>
+``
