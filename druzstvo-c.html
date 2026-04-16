@@ -4,23 +4,62 @@
   <meta charset="UTF-8">
   <title>Družstvo C – Kuželky Benešov</title>
   <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    .feed-card{
+      padding:14px;
+      border-radius:14px;
+      background:rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+      margin:10px 0;
+    }
+    .section-title{ color:#ffd700; margin-top:18px; }
+  </style>
 </head>
 <body>
+
 <header>
-  <div class="header-left"><img src="logo.jpg" class="logo" alt="Logo"></div>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo">
+  </div>
   <div class="header-title">Kuželky Benešov</div>
   <div class="header-right"></div>
 </header>
-<nav><ul>
-  <li><a href="druzstva.html">Zpět na družstva</a></li>
-  <li><a href="index.html">Domů</a></li>
-</ul></nav>
 
-<main><div class="content-box">
-  <h2>Družstvo „C“</h2>
-  <p>Zatím prázdné – v dalším kroku sem doplníme poslední výsledky, tabulku a následující zápasy.</p>
-</div></main>
+<nav>
+  <ul>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="index.html">Domů</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+    <h2 id="teamTitle">Družstvo C</h2>
+    <div id="teamUpdated" class="small" style="opacity:0.85;"></div>
+
+    <h3 class="section-title">Poslední zápas</h3>
+    <div id="lastMatch"></div>
+
+    <h3 class="section-title">Následující zápas</h3>
+    <div id="nextMatch"></div>
+
+    <h3 class="section-title">Tabulka soutěže (celá)</h3>
+    <div id="tableWrap"></div>
+
+    <div id="bulletinsWrap" style="display:none;"></div>
+  </div>
+</main>
 
 <footer>© Kuželky Benešov – 2026</footer>
+
+<script type="module" src="./team-page.js?v=2"></script>
+<script>
+  if (!location.search.includes("team=")) {
+    location.replace(location.pathname + "?team=C");
+  }
+</script>
+
 </body>
 </html>
+``
