@@ -1,1 +1,8 @@
-
+{
+  "label": "Družstvo B – Divize AS",
+  "source": { "type": "cka", "competitionId": "c788", "teamKey": "TJ Sokol Benešov B" },
+  "updatedAt": null,
+  "lastMatch": null,
+  "nextMatch": null,
+  "table": { "columns": ["Poř","Družstvo","Body","Z","Skóre","Průměr"], "rows": [] }
+}
