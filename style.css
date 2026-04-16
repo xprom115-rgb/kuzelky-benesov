@@ -106,7 +106,52 @@ select {
 input[type="date"] {
     margin-top: 8px;
 }
+/* Tabulky – lepší čitelnost */
+.tabulka {
+  border-collapse: collapse;
+  width: 100%;
+}
 
+/* Vnější rámeček tabulky */
+.tabulka {
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Buňky */
+.tabulka th,
+.tabulka td {
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  vertical-align: middle;
+}
+
+/* ✅ Svislé čáry mezi sloupci */
+.tabulka th:not(:last-child),
+.tabulka td:not(:last-child) {
+  border-right: 1px solid rgba(255, 215, 0, 0.18);
+}
+
+/* Hlavička */
+.tabulka th {
+  background: rgba(30, 35, 92, 0.55);
+  color: #ffd700;
+  font-weight: bold;
+  position: sticky; /* volitelné, když scrolluješ */
+  top: 0;           /* volitelné */
+}
+
+/* ✅ Čísla hezky (tabular-nums) */
+.tabulka td {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Zarovnání: první a druhý sloupec (pořadí + tým) vlevo, zbytek doprava */
+.tabulka td { text-align: right; }
+.tabulka td:nth-child(1),
+.tabulka td:nth-child(2) { text-align: left; }
+``
 /* ============================= */
 /* REZERVACE – DRAHY a SLOTY */
 /* ============================= */
