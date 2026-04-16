@@ -4,23 +4,51 @@
   <meta charset="UTF-8">
   <title>Dorost – Kuželky Benešov</title>
   <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    .section-title{ color:#ffd700; margin-top:18px; }
+  </style>
 </head>
 <body>
+
 <header>
-  <div class="header-left"><img src="logo.jpg" class="logo" alt="Logo"></div>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo">
+  </div>
   <div class="header-title">Kuželky Benešov</div>
   <div class="header-right"></div>
 </header>
-<nav><ul>
-  <li><a href="druzstva.html">Zpět na družstva</a></li>
-  <li><a href="index.html">Domů</a></li>
-</ul></nav>
 
-<main><div class="content-box">
-  <h2>Dorost</h2>
-  <p>Zatím prázdné – v dalším kroku sem doplníme poslední výsledky, tabulku a následující zápasy.</p>
-</div></main>
+<nav>
+  <ul>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="index.html">Domů</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+    <h2 id="teamTitle">Dorost</h2>
+    <div id="teamUpdated" class="small" style="opacity:0.85;"></div>
+
+    <h3 class="section-title">Zpravodaje</h3>
+    <div id="bulletinsWrap"></div>
+
+    <!-- tyto části schová team-page.js automaticky pro DOROST -->
+    <div id="lastMatch" style="display:none;"></div>
+    <div id="nextMatch" style="display:none;"></div>
+    <div id="tableWrap" style="display:none;"></div>
+  </div>
+</main>
 
 <footer>© Kuželky Benešov – 2026</footer>
+
+<script type="module" src="./team-page.js?v=2"></script>
+<script>
+  if (!location.search.includes("team=")) {
+    location.replace(location.pathname + "?team=DOROST");
+  }
+</script>
+
 </body>
 </html>
