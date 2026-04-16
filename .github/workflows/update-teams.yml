@@ -1,0 +1,16 @@
+name: Weekly Update (test)
+
+on:
+  schedule:
+    - cron: "0 3 * * 0"   # každou neděli 03:00 UTC
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Hello
+        run: echo "Workflow is running!"
