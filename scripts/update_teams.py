@@ -263,7 +263,7 @@ def compute_last_next(matches: List[Match]) -> Tuple[Optional[Dict[str, Any]], O
     return (to_dict(last) if last else None, to_dict(nxt) if nxt else None)
 
 def update_cka_team(team_id: str, comp_id: str, team_key: str, label: str):
-    base_url = f"https://www.vysledky.kuzelky.cz/soutez.php?id={comp_id}"
+    base_url = f"https://vysledky.kuzelky.cz/soutez.php?id={comp_id}"
     html = fetch(base_url)
     soup = BeautifulSoup(html, "lxml")
 
