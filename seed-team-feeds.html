@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Seed team_feeds</title>
+  <link rel="stylesheet" href="./style.css?v=1">
+</head>
+<body>
+  <main>
+    <div class="content-box">
+      <h2>Seed team_feeds (placeholder)</h2>
+      <p>Vytvoří/aktualizuje dokumenty team_feeds/A,B,C,DOROST jedním klikem.</p>
+
+      <button id="btnSeed" class="btn-primary" type="button">Vytvořit / aktualizovat team_feeds</button>
+      <div id="msg" style="margin-top:10px;"></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { db } from "./firebase-config.js";
+    import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+    const msg = document.getElementById("msg");
+    const btn = document.getElementById("btnSeed");
+
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      msg.textContent = "⏳ Vytvářím dokumenty…";
+
+      try {
+        // A
+        await setDoc(doc(db, "team_feeds", "A"), {
+          label: "Družstvo A – 3. KLM B",
+          source: { type: "cka", competitionId: "c800", teamKey: "TJ Sokol Benešov" },
+          updatedAt: serverTimestamp(),
+          lastMatch: null,
+          nextMatch: null,
+          table: { columns: ["Poř", "Družstvo", "Body", "Z", "Skóre", "Průměr"], rows: [] }
+        }, { merge: true });
+
+        // B
+        await setDoc(doc(db, "team_feeds", "B"), {
+          label: "Družstvo B – Divize AS",
+          source: { type: "cka", competitionId: "c788", teamKey: "TJ Sokol Benešov B" },
+          updatedAt: serverTimestamp(),
+          lastMatch: null,
+          nextMatch: null,
+          table: { columns: ["Poř", "Družstvo", "Body", "Z", "Skóre", "Průměr"], rows: [] }
+        }, { merge: true });
+
+        // C
+        await setDoc(doc(db, "team_feeds", "C"), {
+          label: "Družstvo C – Středočeský KP I. třídy",
+          source: { type: "cka", competitionId: "c791", teamKey: "TJ Sokol Benešov C" },
+          updatedAt: serverTimestamp(),
+          lastMatch: null,
+          nextMatch: null,
+          table: { columns: ["Poř", "Družstvo", "Body", "Z", "Skóre", "Průměr"], rows: [] }
+        }, { merge: true });
+
+        // DOROST – jen zpravodaje
+        await setDoc(doc(db, "team_feeds", "DOROST"), {
+          label: "Dorost – Středočeský pohár mládeže",
+          source: { type: "skks", url: "https://www.skks-kuzelky.cz/index.php/souteze/stredocesky-pohar-mladeze" },
+          updatedAt: serverTimestamp(),
+          bulletins: []
+        }, { merge: true });
+
+        msg.textContent = "✅ Hotovo. Dokumenty team_feeds/A,B,C,DOROST vytvořeny.";
+      } catch (e) {
+        console.error(e);
+        msg.textContent = "❌ Chyba při vytváření (zkontroluj Firestore Rules pro zápis).";
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
+``
