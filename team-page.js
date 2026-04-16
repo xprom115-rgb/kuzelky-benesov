@@ -70,3 +70,100 @@ function renderBulletins(bulletins) {
         const title = esc(b.title || "Zpravodaj");
         const url = esc(b.url || "");
         const date = b.date ? ` (${esc(b.date)})` : "";
+        return `<li><a href="${url}" target="_blank" rel="noopener">${title}${date}</a></li>`;
+      }).join("")}
+    </ul>
+  `;
+}
+
+/**
+ * ✅ CELÁ renderTable (dynamická podle columns + zvýraznění Benešova)
+ * Očekává table.rows jako array-of-arrays (nejstabilnější).
+ */
+function renderTable(table) {
+  if (!elTable) return;
+
+  if (!table || !Array.isArray(table.rows) || table.rows.length === 0) {
+    elTable.innerHTML = `<p><em>Tabulka zatím není naimportována.</em></p>`;
+    return;
+  }
+
+  const cols = Array.isArray(table.columns) && table.columns.length
+    ? table.columns
+    : ["#","Družstvo","Body","Zápasy","Skóre","Průměr"];
+
+  const teamKey = (window.__teamKey || "").toLowerCase().trim();
+
+  const head = `<tr>${cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr>`;
+
+  const body = table.rows.map(r => {
+    if (!Array.isArray(r)) return "";
+
+    // srovnat délku řádku na počet sloupců
+    let rowArr = r.slice(0, cols.length);
+    if (rowArr.length < cols.length) {
+      rowArr = rowArr.concat(Array(cols.length - rowArr.length).fill(""));
+    }
+
+    // zvýraznění Benešova: hledáme teamKey v řádku
+    const rowText = rowArr.join(" ").toLowerCase();
+    const isBenesov = teamKey && rowText.includes(teamKey);
+
+    return `<tr class="${isBenesov ? "is-benesov" : ""}">
+      ${rowArr.map(x => `<td>${esc(x)}</td>`).join("")}
+    </tr>`;
+  }).join("");
+
+  elTable.innerHTML = `<table class="tabulka">${head}${body}</table>`;
+}
+
+function render(feed) {
+  const label = feed?.label || `Tým ${TEAM_ID}`;
+  if (elTitle) elTitle.textContent = label;
+
+  if (elUpdated) elUpdated.textContent = feed?.updatedAt ? `Aktualizováno: ${feed.updatedAt}` : "";
+
+  // Nastav teamKey pro zvýraznění Benešova v tabulce
+  window.__teamKey = feed?.source?.teamKey || "";
+
+  const srcType = feed?.source?.type;
+  const isDorost = (srcType === "skks" || TEAM_ID === "DOROST");
+
+  if (isDorost) {
+    if (elLast) elLast.style.display = "none";
+    if (elNext) elNext.style.display = "none";
+    if (elTable) elTable.style.display = "none";
+    if (elBulletins) elBulletins.style.display = "";
+
+    renderBulletins(feed?.bulletins);
+    return;
+  }
+
+  if (elLast) elLast.style.display = "";
+  if (elNext) elNext.style.display = "";
+  if (elTable) elTable.style.display = "";
+  if (elBulletins) elBulletins.style.display = "none";
+
+  renderMatch(elLast, feed?.lastMatch, "Poslední zápas zatím není naimportován.");
+  renderMatch(elNext, feed?.nextMatch, "Následující zápas zatím není naimportován.");
+  renderTable(feed?.table);
+}
+
+async function init() {
+  if (!TEAM_ID) {
+    if (elTitle) elTitle.textContent = "Chybí parametr ?team=";
+    return;
+  }
+
+  try {
+    const res = await fetch(`./data/teams/${TEAM_ID}.json?v=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const feed = await res.json();
+    render(feed);
+  } catch (e) {
+    console.error(e);
+    if (elTitle) elTitle.textContent = "Chyba načítání JSON (data/teams).";
+  }
+}
+
+init();
