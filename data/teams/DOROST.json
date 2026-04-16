@@ -1,7 +1,9 @@
 {
   "label": "Dorost – Středočeský pohár mládeže",
-  "source": { "type": "skks", "url": "https://www.skks-kuzelky.cz/index.php/souteze/stredocesky-pohar-mladeze" },
+  "source": {
+    "type": "skks",
+    "url": "https://www.skks-kuzelky.cz/index.php/souteze/stredocesky-pohar-mladeze"
+  },
   "updatedAt": null,
   "bulletins": []
 }
-``
