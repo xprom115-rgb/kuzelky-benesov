@@ -5,7 +5,7 @@
     "competitionId": "c788",
     "teamKey": "TJ Sokol Benešov B"
   },
-  "updatedAt": "2026-04-16T19:36:39+00:00",
+  "updatedAt": "2026-04-16T20:01:37+00:00",
   "lastMatch": null,
   "nextMatch": null,
   "table": {
@@ -17,6 +17,119 @@
       "Skóre",
       "Průměr"
     ],
-    "rows": []
+    "rows": [
+      {
+        "pos": "1.",
+        "team": "KK Konstruktiva Praha B",
+        "points": 42,
+        "played": 25,
+        "score": "20",
+        "avg": 2
+      },
+      {
+        "pos": "2.",
+        "team": "TJ Sokol Kostelec n.Č.l.",
+        "points": 32,
+        "played": 25,
+        "score": "16",
+        "avg": 0
+      },
+      {
+        "pos": "3.",
+        "team": "AC Sparta Praha",
+        "points": 31,
+        "played": 26,
+        "score": "15",
+        "avg": 1
+      },
+      {
+        "pos": "4.",
+        "team": "KK Vlašim B",
+        "points": 30,
+        "played": 25,
+        "score": "15",
+        "avg": 0
+      },
+      {
+        "pos": "5.",
+        "team": "TJ Sokol Brandýs n. L.",
+        "points": 30,
+        "played": 26,
+        "score": "15",
+        "avg": 0
+      },
+      {
+        "pos": "6.",
+        "team": "TJ Sokol Rudná",
+        "points": 28,
+        "played": 26,
+        "score": "13",
+        "avg": 2
+      },
+      {
+        "pos": "7.",
+        "team": "SK Meteor Praha",
+        "points": 28,
+        "played": 26,
+        "score": "13",
+        "avg": 2
+      },
+      {
+        "pos": "8.",
+        "team": "TJ Sokol Benešov B",
+        "points": 27,
+        "played": 26,
+        "score": "13",
+        "avg": 1
+      },
+      {
+        "pos": "9.",
+        "team": "KK Kolín",
+        "points": 22,
+        "played": 25,
+        "score": "11",
+        "avg": 0
+      },
+      {
+        "pos": "10.",
+        "team": "KK Kosmonosy B",
+        "points": 22,
+        "played": 26,
+        "score": "11",
+        "avg": 0
+      },
+      {
+        "pos": "11.",
+        "team": "TJ Kovohutě Příbram",
+        "points": 21,
+        "played": 26,
+        "score": "10",
+        "avg": 1
+      },
+      {
+        "pos": "12.",
+        "team": "KK Vlašim A",
+        "points": 20,
+        "played": 25,
+        "score": "10",
+        "avg": 0
+      },
+      {
+        "pos": "13.",
+        "team": "KK Slavoj C",
+        "points": 14,
+        "played": 26,
+        "score": "7",
+        "avg": 0
+      },
+      {
+        "pos": "14.",
+        "team": "SC Olympia Radotín",
+        "points": 11,
+        "played": 25,
+        "score": "5",
+        "avg": 1
+      }
+    ]
   }
 }

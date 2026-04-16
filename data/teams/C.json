@@ -5,7 +5,7 @@
     "competitionId": "c791",
     "teamKey": "TJ Sokol Benešov C"
   },
-  "updatedAt": "2026-04-16T19:36:39+00:00",
+  "updatedAt": "2026-04-16T20:01:37+00:00",
   "lastMatch": null,
   "nextMatch": null,
   "table": {
@@ -17,6 +17,119 @@
       "Skóre",
       "Průměr"
     ],
-    "rows": []
+    "rows": [
+      {
+        "pos": "1.",
+        "team": "TJ Sokol Červené Pečky",
+        "points": 44,
+        "played": 26,
+        "score": "22",
+        "avg": 0
+      },
+      {
+        "pos": "2.",
+        "team": "KK Kosmonosy C",
+        "points": 41,
+        "played": 25,
+        "score": "20",
+        "avg": 1
+      },
+      {
+        "pos": "3.",
+        "team": "KK Sadská B",
+        "points": 38,
+        "played": 25,
+        "score": "19",
+        "avg": 0
+      },
+      {
+        "pos": "4.",
+        "team": "TJ Lhotka A",
+        "points": 34,
+        "played": 25,
+        "score": "17",
+        "avg": 0
+      },
+      {
+        "pos": "5.",
+        "team": "KK Vlašim C",
+        "points": 31,
+        "played": 26,
+        "score": "15",
+        "avg": 1
+      },
+      {
+        "pos": "6.",
+        "team": "KK Kosmonosy D",
+        "points": 28,
+        "played": 25,
+        "score": "13",
+        "avg": 2
+      },
+      {
+        "pos": "7.",
+        "team": "TJ Neratovice",
+        "points": 26,
+        "played": 25,
+        "score": "13",
+        "avg": 0
+      },
+      {
+        "pos": "8.",
+        "team": "KK Jiří Poděbrady B",
+        "points": 25,
+        "played": 25,
+        "score": "12",
+        "avg": 1
+      },
+      {
+        "pos": "9.",
+        "team": "TJ Sokol Benešov C",
+        "points": 22,
+        "played": 26,
+        "score": "10",
+        "avg": 2
+      },
+      {
+        "pos": "10.",
+        "team": "TJ Sokol Kostelec n.Č.l. B",
+        "points": 17,
+        "played": 25,
+        "score": "8",
+        "avg": 1
+      },
+      {
+        "pos": "11.",
+        "team": "Kuželky Tehovec B",
+        "points": 15,
+        "played": 25,
+        "score": "7",
+        "avg": 1
+      },
+      {
+        "pos": "12.",
+        "team": "TJ Sparta Kutná Hora B",
+        "points": 15,
+        "played": 26,
+        "score": "7",
+        "avg": 1
+      },
+      {
+        "pos": "13.",
+        "team": "TJ Kovohutě Příbram B",
+        "points": 10,
+        "played": 25,
+        "score": "5",
+        "avg": 0
+      },
+      {
+        "pos": "14.",
+        "team": "TJ Sparta Kutná Hora C",
+        "points": 8,
+        "played": 25,
+        "score": "3",
+        "avg": 2
+      }
+    ]
   }
 }

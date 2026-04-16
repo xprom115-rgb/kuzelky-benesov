@@ -5,9 +5,17 @@
     "competitionId": "c800",
     "teamKey": "TJ Sokol Benešov"
   },
-  "updatedAt": "2026-04-16T19:36:39+00:00",
+  "updatedAt": "2026-04-16T20:01:37+00:00",
   "lastMatch": null,
-  "nextMatch": null,
+  "nextMatch": {
+    "date": "2026-04-18",
+    "time": "10:00",
+    "home": true,
+    "opponent": "TJ Lokomotiva Liberec",
+    "matchUrl": "https://vysledky.kuzelky.cz/soutez.php?id=c800",
+    "scoreHome": 0,
+    "scoreAway": 0
+  },
   "table": {
     "columns": [
       "Poř",
@@ -17,6 +25,103 @@
       "Skóre",
       "Průměr"
     ],
-    "rows": []
+    "rows": [
+      {
+        "pos": "1.",
+        "team": "TJ Radlice",
+        "points": 32,
+        "played": 21,
+        "score": "16",
+        "avg": 0
+      },
+      {
+        "pos": "2.",
+        "team": "KK Jiří Poděbrady",
+        "points": 29,
+        "played": 21,
+        "score": "14",
+        "avg": 1
+      },
+      {
+        "pos": "3.",
+        "team": "TJ Lokomotiva Liberec",
+        "points": 29,
+        "played": 21,
+        "score": "14",
+        "avg": 1
+      },
+      {
+        "pos": "4.",
+        "team": "SKK Jičín",
+        "points": 29,
+        "played": 21,
+        "score": "13",
+        "avg": 3
+      },
+      {
+        "pos": "5.",
+        "team": "TJ Tesla Pardubice",
+        "points": 25,
+        "played": 21,
+        "score": "11",
+        "avg": 3
+      },
+      {
+        "pos": "6.",
+        "team": "TJ Kuželky Česká Lípa",
+        "points": 23,
+        "played": 21,
+        "score": "11",
+        "avg": 1
+      },
+      {
+        "pos": "7.",
+        "team": "TJ Sparta Kutná Hora A",
+        "points": 20,
+        "played": 21,
+        "score": "9",
+        "avg": 2
+      },
+      {
+        "pos": "8.",
+        "team": "TJ Sokol Benešov",
+        "points": 19,
+        "played": 21,
+        "score": "9",
+        "avg": 1
+      },
+      {
+        "pos": "9.",
+        "team": "Kuželky Tehovec",
+        "points": 19,
+        "played": 21,
+        "score": "9",
+        "avg": 1
+      },
+      {
+        "pos": "10.",
+        "team": "SK Verneřice",
+        "points": 13,
+        "played": 21,
+        "score": "6",
+        "avg": 1
+      },
+      {
+        "pos": "11.",
+        "team": "Solnice",
+        "points": 11,
+        "played": 21,
+        "score": "5",
+        "avg": 1
+      },
+      {
+        "pos": "12.",
+        "team": "TJ Sokol Praha-Vršovice",
+        "points": 3,
+        "played": 21,
+        "score": "1",
+        "avg": 1
+      }
+    ]
   }
 }
