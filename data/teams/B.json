@@ -5,131 +5,191 @@
     "competitionId": "c788",
     "teamKey": "TJ Sokol Benešov B"
   },
-  "updatedAt": "2026-04-16T20:01:37+00:00",
+  "updatedAt": "2026-04-16T20:25:37+00:00",
   "lastMatch": null,
   "nextMatch": null,
   "table": {
     "columns": [
-      "Poř",
+      "#",
       "Družstvo",
       "Body",
-      "Z",
+      "Zápasy",
+      "V",
+      "R",
+      "P",
       "Skóre",
+      "Sety",
       "Průměr"
     ],
     "rows": [
-      {
-        "pos": "1.",
-        "team": "KK Konstruktiva Praha B",
-        "points": 42,
-        "played": 25,
-        "score": "20",
-        "avg": 2
-      },
-      {
-        "pos": "2.",
-        "team": "TJ Sokol Kostelec n.Č.l.",
-        "points": 32,
-        "played": 25,
-        "score": "16",
-        "avg": 0
-      },
-      {
-        "pos": "3.",
-        "team": "AC Sparta Praha",
-        "points": 31,
-        "played": 26,
-        "score": "15",
-        "avg": 1
-      },
-      {
-        "pos": "4.",
-        "team": "KK Vlašim B",
-        "points": 30,
-        "played": 25,
-        "score": "15",
-        "avg": 0
-      },
-      {
-        "pos": "5.",
-        "team": "TJ Sokol Brandýs n. L.",
-        "points": 30,
-        "played": 26,
-        "score": "15",
-        "avg": 0
-      },
-      {
-        "pos": "6.",
-        "team": "TJ Sokol Rudná",
-        "points": 28,
-        "played": 26,
-        "score": "13",
-        "avg": 2
-      },
-      {
-        "pos": "7.",
-        "team": "SK Meteor Praha",
-        "points": 28,
-        "played": 26,
-        "score": "13",
-        "avg": 2
-      },
-      {
-        "pos": "8.",
-        "team": "TJ Sokol Benešov B",
-        "points": 27,
-        "played": 26,
-        "score": "13",
-        "avg": 1
-      },
-      {
-        "pos": "9.",
-        "team": "KK Kolín",
-        "points": 22,
-        "played": 25,
-        "score": "11",
-        "avg": 0
-      },
-      {
-        "pos": "10.",
-        "team": "KK Kosmonosy B",
-        "points": 22,
-        "played": 26,
-        "score": "11",
-        "avg": 0
-      },
-      {
-        "pos": "11.",
-        "team": "TJ Kovohutě Příbram",
-        "points": 21,
-        "played": 26,
-        "score": "10",
-        "avg": 1
-      },
-      {
-        "pos": "12.",
-        "team": "KK Vlašim A",
-        "points": 20,
-        "played": 25,
-        "score": "10",
-        "avg": 0
-      },
-      {
-        "pos": "13.",
-        "team": "KK Slavoj C",
-        "points": 14,
-        "played": 26,
-        "score": "7",
-        "avg": 0
-      },
-      {
-        "pos": "14.",
-        "team": "SC Olympia Radotín",
-        "points": 11,
-        "played": 25,
-        "score": "5",
-        "avg": 1
-      }
+      [
+        "1.",
+        "KK Konstruktiva Praha B",
+        "42",
+        "25",
+        "20",
+        "2",
+        "3",
+        "145 : 55",
+        "189 : 111",
+        "2610"
+      ],
+      [
+        "2.",
+        "TJ Sokol Kostelec n.Č.l.",
+        "32",
+        "25",
+        "16",
+        "0",
+        "9",
+        "115,5 : 84,5",
+        "161 : 139",
+        "2585"
+      ],
+      [
+        "3.",
+        "AC Sparta Praha",
+        "31",
+        "26",
+        "15",
+        "1",
+        "10",
+        "113,5 : 94,5",
+        "156 : 156",
+        "2553"
+      ],
+      [
+        "4.",
+        "KK Vlašim B",
+        "30",
+        "25",
+        "15",
+        "0",
+        "10",
+        "109,5 : 90,5",
+        "163,5 : 136,5",
+        "2583"
+      ],
+      [
+        "5.",
+        "TJ Sokol Brandýs n. L.",
+        "30",
+        "26",
+        "15",
+        "0",
+        "11",
+        "112 : 96",
+        "160 : 152",
+        "2553"
+      ],
+      [
+        "6.",
+        "TJ Sokol Rudná",
+        "28",
+        "26",
+        "13",
+        "2",
+        "11",
+        "104 : 104",
+        "148 : 164",
+        "2544"
+      ],
+      [
+        "7.",
+        "SK Meteor Praha",
+        "28",
+        "26",
+        "13",
+        "2",
+        "11",
+        "103 : 105",
+        "153 : 159",
+        "2592"
+      ],
+      [
+        "8.",
+        "TJ Sokol Benešov B",
+        "27",
+        "26",
+        "13",
+        "1",
+        "12",
+        "108,5 : 99,5",
+        "156 : 156",
+        "2590"
+      ],
+      [
+        "9.",
+        "KK Kolín",
+        "22",
+        "25",
+        "11",
+        "0",
+        "14",
+        "99,5 : 100,5",
+        "157,5 : 142,5",
+        "2575"
+      ],
+      [
+        "10.",
+        "KK Kosmonosy B",
+        "22",
+        "26",
+        "11",
+        "0",
+        "15",
+        "91,5 : 116,5",
+        "155 : 157",
+        "2551"
+      ],
+      [
+        "11.",
+        "TJ Kovohutě Příbram",
+        "21",
+        "26",
+        "10",
+        "1",
+        "15",
+        "102,5 : 105,5",
+        "157,5 : 154,5",
+        "2544"
+      ],
+      [
+        "12.",
+        "KK Vlašim A",
+        "20",
+        "25",
+        "10",
+        "0",
+        "15",
+        "83 : 117",
+        "135 : 165",
+        "2536"
+      ],
+      [
+        "13.",
+        "KK Slavoj C",
+        "14",
+        "26",
+        "7",
+        "0",
+        "19",
+        "77,5 : 130,5",
+        "129 : 183",
+        "2514"
+      ],
+      [
+        "14.",
+        "SC Olympia Radotín",
+        "11",
+        "25",
+        "5",
+        "1",
+        "19",
+        "67 : 133",
+        "127,5 : 172,5",
+        "2506"
+      ]
     ]
   }
 }

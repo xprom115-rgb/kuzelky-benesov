@@ -5,7 +5,7 @@
     "competitionId": "c800",
     "teamKey": "TJ Sokol Benešov"
   },
-  "updatedAt": "2026-04-16T20:01:37+00:00",
+  "updatedAt": "2026-04-16T20:25:37+00:00",
   "lastMatch": null,
   "nextMatch": {
     "date": "2026-04-18",
@@ -18,110 +18,162 @@
   },
   "table": {
     "columns": [
-      "Poř",
+      "#",
       "Družstvo",
       "Body",
-      "Z",
+      "Zápasy",
+      "V",
+      "R",
+      "P",
       "Skóre",
+      "Sety",
       "Průměr"
     ],
     "rows": [
-      {
-        "pos": "1.",
-        "team": "TJ Radlice",
-        "points": 32,
-        "played": 21,
-        "score": "16",
-        "avg": 0
-      },
-      {
-        "pos": "2.",
-        "team": "KK Jiří Poděbrady",
-        "points": 29,
-        "played": 21,
-        "score": "14",
-        "avg": 1
-      },
-      {
-        "pos": "3.",
-        "team": "TJ Lokomotiva Liberec",
-        "points": 29,
-        "played": 21,
-        "score": "14",
-        "avg": 1
-      },
-      {
-        "pos": "4.",
-        "team": "SKK Jičín",
-        "points": 29,
-        "played": 21,
-        "score": "13",
-        "avg": 3
-      },
-      {
-        "pos": "5.",
-        "team": "TJ Tesla Pardubice",
-        "points": 25,
-        "played": 21,
-        "score": "11",
-        "avg": 3
-      },
-      {
-        "pos": "6.",
-        "team": "TJ Kuželky Česká Lípa",
-        "points": 23,
-        "played": 21,
-        "score": "11",
-        "avg": 1
-      },
-      {
-        "pos": "7.",
-        "team": "TJ Sparta Kutná Hora A",
-        "points": 20,
-        "played": 21,
-        "score": "9",
-        "avg": 2
-      },
-      {
-        "pos": "8.",
-        "team": "TJ Sokol Benešov",
-        "points": 19,
-        "played": 21,
-        "score": "9",
-        "avg": 1
-      },
-      {
-        "pos": "9.",
-        "team": "Kuželky Tehovec",
-        "points": 19,
-        "played": 21,
-        "score": "9",
-        "avg": 1
-      },
-      {
-        "pos": "10.",
-        "team": "SK Verneřice",
-        "points": 13,
-        "played": 21,
-        "score": "6",
-        "avg": 1
-      },
-      {
-        "pos": "11.",
-        "team": "Solnice",
-        "points": 11,
-        "played": 21,
-        "score": "5",
-        "avg": 1
-      },
-      {
-        "pos": "12.",
-        "team": "TJ Sokol Praha-Vršovice",
-        "points": 3,
-        "played": 21,
-        "score": "1",
-        "avg": 1
-      }
+      [
+        "1.",
+        "TJ Radlice",
+        "32",
+        "21",
+        "16",
+        "0",
+        "5",
+        "109,5 : 58,5",
+        "284 : 220",
+        "3382"
+      ],
+      [
+        "2.",
+        "KK Jiří Poděbrady",
+        "29",
+        "21",
+        "14",
+        "1",
+        "6",
+        "105,5 : 62,5",
+        "277 : 227",
+        "3366"
+      ],
+      [
+        "3.",
+        "TJ Lokomotiva Liberec",
+        "29",
+        "21",
+        "14",
+        "1",
+        "6",
+        "102,5 : 65,5",
+        "275,5 : 228,5",
+        "3332"
+      ],
+      [
+        "4.",
+        "SKK Jičín",
+        "29",
+        "21",
+        "13",
+        "3",
+        "5",
+        "101 : 67",
+        "274 : 230",
+        "3324"
+      ],
+      [
+        "5.",
+        "TJ Tesla Pardubice",
+        "25",
+        "21",
+        "11",
+        "3",
+        "7",
+        "85,5 : 82,5",
+        "254 : 250",
+        "3300"
+      ],
+      [
+        "6.",
+        "TJ Kuželky Česká Lípa",
+        "23",
+        "21",
+        "11",
+        "1",
+        "9",
+        "93 : 75",
+        "262,5 : 241,5",
+        "3280"
+      ],
+      [
+        "7.",
+        "TJ Sparta Kutná Hora A",
+        "20",
+        "21",
+        "9",
+        "2",
+        "10",
+        "76,5 : 91,5",
+        "241,5 : 262,5",
+        "3270"
+      ],
+      [
+        "8.",
+        "TJ Sokol Benešov",
+        "19",
+        "21",
+        "9",
+        "1",
+        "11",
+        "82 : 86",
+        "263,5 : 240,5",
+        "3271"
+      ],
+      [
+        "9.",
+        "Kuželky Tehovec",
+        "19",
+        "21",
+        "9",
+        "1",
+        "11",
+        "80,5 : 87,5",
+        "254 : 250",
+        "3265"
+      ],
+      [
+        "10.",
+        "SK Verneřice",
+        "13",
+        "21",
+        "6",
+        "1",
+        "14",
+        "66 : 102",
+        "214 : 290",
+        "3231"
+      ],
+      [
+        "11.",
+        "Solnice",
+        "11",
+        "21",
+        "5",
+        "1",
+        "15",
+        "65 : 103",
+        "233 : 271",
+        "3238"
+      ],
+      [
+        "12.",
+        "TJ Sokol Praha-Vršovice",
+        "3",
+        "21",
+        "1",
+        "1",
+        "19",
+        "41 : 127",
+        "191 : 313",
+        "3177"
+      ]
     ]
   }
 }

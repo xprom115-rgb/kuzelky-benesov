@@ -5,131 +5,191 @@
     "competitionId": "c791",
     "teamKey": "TJ Sokol Benešov C"
   },
-  "updatedAt": "2026-04-16T20:01:37+00:00",
+  "updatedAt": "2026-04-16T20:25:37+00:00",
   "lastMatch": null,
   "nextMatch": null,
   "table": {
     "columns": [
-      "Poř",
+      "#",
       "Družstvo",
       "Body",
-      "Z",
+      "Zápasy",
+      "V",
+      "R",
+      "P",
       "Skóre",
+      "Sety",
       "Průměr"
     ],
     "rows": [
-      {
-        "pos": "1.",
-        "team": "TJ Sokol Červené Pečky",
-        "points": 44,
-        "played": 26,
-        "score": "22",
-        "avg": 0
-      },
-      {
-        "pos": "2.",
-        "team": "KK Kosmonosy C",
-        "points": 41,
-        "played": 25,
-        "score": "20",
-        "avg": 1
-      },
-      {
-        "pos": "3.",
-        "team": "KK Sadská B",
-        "points": 38,
-        "played": 25,
-        "score": "19",
-        "avg": 0
-      },
-      {
-        "pos": "4.",
-        "team": "TJ Lhotka A",
-        "points": 34,
-        "played": 25,
-        "score": "17",
-        "avg": 0
-      },
-      {
-        "pos": "5.",
-        "team": "KK Vlašim C",
-        "points": 31,
-        "played": 26,
-        "score": "15",
-        "avg": 1
-      },
-      {
-        "pos": "6.",
-        "team": "KK Kosmonosy D",
-        "points": 28,
-        "played": 25,
-        "score": "13",
-        "avg": 2
-      },
-      {
-        "pos": "7.",
-        "team": "TJ Neratovice",
-        "points": 26,
-        "played": 25,
-        "score": "13",
-        "avg": 0
-      },
-      {
-        "pos": "8.",
-        "team": "KK Jiří Poděbrady B",
-        "points": 25,
-        "played": 25,
-        "score": "12",
-        "avg": 1
-      },
-      {
-        "pos": "9.",
-        "team": "TJ Sokol Benešov C",
-        "points": 22,
-        "played": 26,
-        "score": "10",
-        "avg": 2
-      },
-      {
-        "pos": "10.",
-        "team": "TJ Sokol Kostelec n.Č.l. B",
-        "points": 17,
-        "played": 25,
-        "score": "8",
-        "avg": 1
-      },
-      {
-        "pos": "11.",
-        "team": "Kuželky Tehovec B",
-        "points": 15,
-        "played": 25,
-        "score": "7",
-        "avg": 1
-      },
-      {
-        "pos": "12.",
-        "team": "TJ Sparta Kutná Hora B",
-        "points": 15,
-        "played": 26,
-        "score": "7",
-        "avg": 1
-      },
-      {
-        "pos": "13.",
-        "team": "TJ Kovohutě Příbram B",
-        "points": 10,
-        "played": 25,
-        "score": "5",
-        "avg": 0
-      },
-      {
-        "pos": "14.",
-        "team": "TJ Sparta Kutná Hora C",
-        "points": 8,
-        "played": 25,
-        "score": "3",
-        "avg": 2
-      }
+      [
+        "1.",
+        "TJ Sokol Červené Pečky",
+        "44",
+        "26",
+        "22",
+        "0",
+        "4",
+        "150 : 58",
+        "200,5 : 111,5",
+        "2563"
+      ],
+      [
+        "2.",
+        "KK Kosmonosy C",
+        "41",
+        "25",
+        "20",
+        "1",
+        "4",
+        "136,5 : 63,5",
+        "183 : 117",
+        "2548"
+      ],
+      [
+        "3.",
+        "KK Sadská B",
+        "38",
+        "25",
+        "19",
+        "0",
+        "6",
+        "136,5 : 63,5",
+        "183 : 117",
+        "2541"
+      ],
+      [
+        "4.",
+        "TJ Lhotka A",
+        "34",
+        "25",
+        "17",
+        "0",
+        "8",
+        "121,5 : 78,5",
+        "179 : 121",
+        "2501"
+      ],
+      [
+        "5.",
+        "KK Vlašim C",
+        "31",
+        "26",
+        "15",
+        "1",
+        "10",
+        "117 : 91",
+        "173,5 : 138,5",
+        "2471"
+      ],
+      [
+        "6.",
+        "KK Kosmonosy D",
+        "28",
+        "25",
+        "13",
+        "2",
+        "10",
+        "116,5 : 83,5",
+        "168,5 : 131,5",
+        "2513"
+      ],
+      [
+        "7.",
+        "TJ Neratovice",
+        "26",
+        "25",
+        "13",
+        "0",
+        "12",
+        "93,5 : 106,5",
+        "136,5 : 163,5",
+        "2437"
+      ],
+      [
+        "8.",
+        "KK Jiří Poděbrady B",
+        "25",
+        "25",
+        "12",
+        "1",
+        "12",
+        "102,5 : 97,5",
+        "173,5 : 126,5",
+        "2436"
+      ],
+      [
+        "9.",
+        "TJ Sokol Benešov C",
+        "22",
+        "26",
+        "10",
+        "2",
+        "14",
+        "95 : 113",
+        "146 : 166",
+        "2404"
+      ],
+      [
+        "10.",
+        "TJ Sokol Kostelec n.Č.l. B",
+        "17",
+        "25",
+        "8",
+        "1",
+        "16",
+        "71 : 129",
+        "113 : 187",
+        "2329"
+      ],
+      [
+        "11.",
+        "Kuželky Tehovec B",
+        "15",
+        "25",
+        "7",
+        "1",
+        "17",
+        "74 : 125",
+        "117 : 181",
+        "2318"
+      ],
+      [
+        "12.",
+        "TJ Sparta Kutná Hora B",
+        "15",
+        "26",
+        "7",
+        "1",
+        "18",
+        "84,5 : 123,5",
+        "144 : 168",
+        "2420"
+      ],
+      [
+        "13.",
+        "TJ Kovohutě Příbram B",
+        "10",
+        "25",
+        "5",
+        "0",
+        "20",
+        "52,5 : 147,5",
+        "90,5 : 209,5",
+        "2236"
+      ],
+      [
+        "14.",
+        "TJ Sparta Kutná Hora C",
+        "8",
+        "25",
+        "3",
+        "2",
+        "20",
+        "64 : 135",
+        "114 : 184",
+        "2320"
+      ]
     ]
   }
 }
