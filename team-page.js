@@ -1,6 +1,3 @@
-import { db } from "./firebase-config.js";
-import { doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-
 const params = new URLSearchParams(location.search);
 const TEAM_ID = params.get("team"); // "A" | "B" | "C" | "DOROST"
 
@@ -50,7 +47,7 @@ function renderMatch(boxEl, match, emptyText){
         <span style="font-weight:bold;">Skóre:</span> ${score}
         ${pins ? ` • <span style="font-weight:bold;">Kuželky:</span> ${pins}` : ""}
       </div>
-      ${link ? `<div style="margin-top:8px;"><a class="btn-link" href="${esc(link)}" target="_blank" rel="noopener">Detail zdroje</a></div>` : ""}
+      ${link ? `<div style="margin-top:8px;"><a href="${esc(link)}" target="_blank" rel="noopener">Detail zdroje</a></div>` : ""}
     </div>
   `;
 }
@@ -67,17 +64,9 @@ function renderTable(table){
     ? table.columns
     : ["Poř","Družstvo","Body","Z","Skóre","Průměr"];
 
-  // rows doporučujeme jako array of maps (pos/team/points/played/score/avg),
-  // ale zvládneme i array of arrays, kdyby později vzniklo jinak.
-  const rows = table.rows;
-
   const head = `<tr>${cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr>`;
-
-  const body = rows.map(r=>{
-    if (Array.isArray(r)){
-      return `<tr>${r.map(x=>`<td>${esc(x)}</td>`).join("")}</tr>`;
-    }
-    // map
+  const body = table.rows.map(r=>{
+    // očekáváme array-of-maps
     const tds = [
       r.pos, r.team, r.points, r.played, r.score, r.avg
     ].map(x=>`<td>${esc(x)}</td>`).join("");
@@ -111,12 +100,12 @@ function render(feed){
   const label = feed?.label || `Tým ${TEAM_ID}`;
   if (elTitle) elTitle.textContent = label;
 
-  const up = feed?.updatedAt?.toDate ? feed.updatedAt.toDate().toLocaleString("cs-CZ") : "";
-  if (elUpdated) elUpdated.textContent = up ? `Aktualizováno: ${up}` : "";
+  if (elUpdated) elUpdated.textContent = feed?.updatedAt ? `Aktualizováno: ${feed.updatedAt}` : "";
 
-  // Dorost: jen zpravodaje
   const srcType = feed?.source?.type;
-  if (srcType === "skks" || TEAM_ID === "DOROST"){
+  const isDorost = (srcType === "skks" || TEAM_ID === "DOROST");
+
+  if (isDorost){
     if (elLast) elLast.style.display = "none";
     if (elNext) elNext.style.display = "none";
     if (elTable) elTable.style.display = "none";
@@ -126,7 +115,6 @@ function render(feed){
     return;
   }
 
-  // A/B/C: zápasy Benešova + celá tabulka
   if (elLast) elLast.style.display = "";
   if (elNext) elNext.style.display = "";
   if (elTable) elTable.style.display = "";
@@ -137,23 +125,22 @@ function render(feed){
   renderTable(feed?.table);
 }
 
-function init(){
+async function init(){
   if (!TEAM_ID){
     if (elTitle) elTitle.textContent = "Chybí parametr ?team=";
     return;
   }
 
-  const ref = doc(db, "team_feeds", TEAM_ID);
-  onSnapshot(ref, (snap)=>{
-    if (!snap.exists()){
-      render(null);
-      return;
-    }
-    render(snap.data());
-  }, (err)=>{
-    console.error(err);
-    if (elTitle) elTitle.textContent = "Chyba načítání dat (team_feeds).";
-  });
+  try {
+    const res = await fetch(`./data/teams/${TEAM_ID}.json?v=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const feed = await res.json();
+    render(feed);
+  } catch (e) {
+    console.error(e);
+    if (elTitle) elTitle.textContent = "Chyba načítání JSON (data/teams).";
+  }
 }
 
 init();
+``
