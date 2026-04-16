@@ -96,56 +96,45 @@ def find_round_links(soup: BeautifulSoup) -> List[int]:
 
 def parse_table(soup: BeautifulSoup) -> Dict[str, Any]:
     """
-    Najde tabulku soutěže a vrátí table.columns + table.rows (array of maps).
-    Heuristika: hledáme tabulku, která má hlavičky obsahující 'Družstvo' a 'Body' a 'Skóre'.
+    Vrátí tabulku jako:
+      table.columns = [názvy sloupců]
+      table.rows    = [ [hodnota1, hodnota2, ...] ]  (řádky ve stejném pořadí jako columns)
+    => stabilní i když se změní počet sloupců.
     """
-    columns = ["Poř","Družstvo","Body","Z","Skóre","Průměr"]
-    best = None
-
+    # Najdeme tabulku, která má v hlavičce aspoň tyto klíčové sloupce
+    target = None
     for table in soup.find_all("table"):
-        head = table.get_text(" ", strip=True)
-        if ("Družstvo" in head) and ("Body" in head) and ("Skóre" in head):
-            best = table
+        header_text = table.get_text(" ", strip=True)
+        if ("Družstvo" in header_text) and ("Body" in header_text) and ("Skóre" in header_text) and ("Zápasy" in header_text):
+            target = table
             break
 
-    if not best:
-        return {"columns": columns, "rows": []}
+    if not target:
+        return {"columns": [], "rows": []}
+
+    trs = target.find_all("tr")
+    if not trs:
+        return {"columns": [], "rows": []}
+
+    # Hlavička: vezmeme první řádek s th (když není, vezmeme td)
+    header_cells = trs[0].find_all(["th", "td"])
+    columns = [normalize_team(c.get_text(" ", strip=True)) for c in header_cells]
 
     rows_out = []
-    trs = best.find_all("tr")
     for tr in trs[1:]:
-        tds = [normalize_team(td.get_text(" ", strip=True)) for td in tr.find_all(["td","th"])]
-        if len(tds) < 5:
+        cells = tr.find_all(["td", "th"])
+        if not cells:
             continue
+        row = [normalize_team(c.get_text(" ", strip=True)) for c in cells]
 
-        # pokus o mapování: pos, tým, body, zápasy, skóre, průměr
-        # některé tabulky mohou mít jiné sloupce -> bereme konzervativně podle pořadí
-        pos = try_int(tds[0])
-        team = tds[1] if len(tds) > 1 else ""
-        points = try_int(tds[2]) if len(tds) > 2 else None
-        played = try_int(tds[3]) if len(tds) > 3 else None
-        score = tds[4] if len(tds) > 4 else ""
-        avg = None
-        # průměr bývá na konci, často jako číslo s desetinnou čárkou – uložíme jako string nebo int/float?
-        # Pro jednoduchost: když je to čisté číslo, vezmeme jako int/float, jinak jako string.
-        if len(tds) > 5:
-            avg_txt = tds[5].replace(",", ".")
-            try:
-                avg = float(avg_txt)
-                # pro muže A/B může být průměr třeba 3397 -> float bude 3397.0
-                if avg.is_integer():
-                    avg = int(avg)
-            except:
-                avg = tds[5]
+        # Srovnat délky: když je méně buněk než sloupců, doplníme prázdné
+        if len(row) < len(columns):
+            row = row + [""] * (len(columns) - len(row))
+        # Když je více buněk, ořízneme (stává se u skrytých buněk)
+        if len(row) > len(columns):
+            row = row[:len(columns)]
 
-        rows_out.append({
-            "pos": pos if pos is not None else tds[0],
-            "team": team,
-            "points": points if points is not None else tds[2] if len(tds) > 2 else None,
-            "played": played if played is not None else tds[3] if len(tds) > 3 else None,
-            "score": score,
-            "avg": avg
-        })
+        rows_out.append(row)
 
     return {"columns": columns, "rows": rows_out}
 
