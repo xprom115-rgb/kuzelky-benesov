@@ -277,6 +277,23 @@ def update_cka_team(team_id: str, comp_id: str, team_key: str, label: str):
         matches_all.extend(parse_matches_from_round(soup_r, team_key, base_url))
 
     last_m, next_m = compute_last_next(matches_all)
+data_debug = {
+        "matchesFound": len(matches_all),
+        "playedCount": len([m for m in matches_all if m.played]),
+        "futureCount": len([m for m in matches_all if not m.played]),
+        "teamKey": team_key,
+        "competitionId": comp_id,
+        "sample": [
+            {
+                "date": m.date,
+                "time": m.time,
+                "home": m.home,
+                "opponent": m.opponent,
+                "played": m.played
+            }
+            for m in matches_all[:5]
+        ]
+    }
 
     path = BASE / f"{team_id}.json"
     data = load_json(path) if path.exists() else {}
