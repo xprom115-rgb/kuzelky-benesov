@@ -13,6 +13,11 @@ jobs:
   update:
     runs-on: ubuntu-latest
     steps:
+    - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 lxml
+          
       - name: Checkout
         uses: actions/checkout@v4
 
