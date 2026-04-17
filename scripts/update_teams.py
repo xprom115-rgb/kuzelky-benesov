@@ -296,18 +296,18 @@ data_debug = {
     }
 
    path = BASE / f"{team_id}.json"
-    data = load_json(path) if path.exists() else {}
+   data = load_json(path) if path.exists() else {}
 
-    data["label"] = label
-    data["source"] = {"type": "cka", "competitionId": comp_id, "teamKey": team_key}
-    data["updatedAt"] = iso_now()
-    data["lastMatch"] = last_m
-    data["nextMatch"] = next_m
-    data["table"] = table
-    data["debug"] = data_debug
+   data["label"] = label
+   data["source"] = {"type": "cka", "competitionId": comp_id, "teamKey": team_key}
+   data["updatedAt"] = iso_now()
+   data["lastMatch"] = last_m
+   data["nextMatch"] = next_m
+   data["table"] = table
+   data["debug"] = data_debug
 
-    save_json(path, data)
-    print(f"OK: updated {team_id} from {base_url}")
+   save_json(path, data)
+   print(f"OK: updated {team_id} from {base_url}")
 
 def update_dorost():
     html = fetch(SKKS_DOROST_URL)
