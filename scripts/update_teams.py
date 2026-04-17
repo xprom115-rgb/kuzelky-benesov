@@ -15,23 +15,23 @@ HEADERS = {
     "User-Agent": "kuzelky-benesov-bot/1.0 (+https://xprom115-rgb.github.io/kuzelky-benesov/)"
 }
 
-# ✅ Konfigurace týmů A/B/C
+# A/B/C – ČKA výsledkový servis
 COMPETITIONS = {
     "A": {"competitionId": "c800", "teamKey": "TJ Sokol Benešov",   "label": "Družstvo A – 3. KLM B"},
     "B": {"competitionId": "c788", "teamKey": "TJ Sokol Benešov B", "label": "Družstvo B – Divize AS"},
     "C": {"competitionId": "c791", "teamKey": "TJ Sokol Benešov C", "label": "Družstvo C – Středočeský KP I. třídy"},
 }
 
-# ✅ Dorost – jen zpravodaje
+# Dorost – jen zpravodaje (SKKS)
 SKKS_DOROST_URL = "https://www.skks-kuzelky.cz/index.php/souteze/stredocesky-pohar-mladeze"
 
 
-# ---------------- Helpers ----------------
+# ---------- helpers ----------
 
 def load_json(path: Path) -> Dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
-def save_json(path: Path, obj: Dict[str, Any]):
+def save_json(path: Path, obj: Dict[str, Any]) -> None:
     path.write_text(json.dumps(obj, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 def iso_now() -> str:
@@ -42,23 +42,15 @@ def fetch(url: str) -> str:
     r.raise_for_status()
     return r.text
 
-def normalize(s: str) -> str:
+def norm(s: str) -> str:
     return " ".join((s or "").replace("\xa0", " ").split()).strip()
 
-def to_int(s: str) -> Optional[int]:
-    s = normalize(s)
-    if not s:
-        return None
-    try:
-        return int(s)
-    except:
-        return None
 
 # datum/čas typu "Po 1. 12. 2025 17.00" / "So 10. 4. 2026 17.30"
 DT_RE = re.compile(r"(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})(?:\s+(\d{1,2})\.(\d{2}))?")
 
 def parse_dt(text: str) -> Tuple[Optional[str], Optional[str], Optional[datetime]]:
-    t = normalize(text)
+    t = norm(text)
     m = DT_RE.search(t)
     if not m:
         return None, None, None
@@ -77,19 +69,19 @@ def parse_dt(text: str) -> Tuple[Optional[str], Optional[str], Optional[datetime
     return date_str, time_str, dt
 
 
-# ---------------- Parsing TABLE (celá tabulka) ----------------
+# ---------- parse whole table ----------
 
 def parse_table(soup: BeautifulSoup) -> Dict[str, Any]:
     """
-    Vrací table jako:
-      columns: [..]
-      rows: [[..], [..], ...]
-    Stabilní i když se změní počet sloupců.
+    Vrací tabulku celou:
+      columns: [...]
+      rows: [[...], [...], ...]
+    Stabilní i když se mění počet sloupců.
     """
     target = None
     for table in soup.find_all("table"):
-        header_text = table.get_text(" ", strip=True)
-        if ("Družstvo" in header_text) and ("Body" in header_text) and ("Zápasy" in header_text):
+        txt = table.get_text(" ", strip=True)
+        if ("Družstvo" in txt) and ("Body" in txt) and ("Zápasy" in txt):
             target = table
             break
 
@@ -101,16 +93,16 @@ def parse_table(soup: BeautifulSoup) -> Dict[str, Any]:
         return {"columns": [], "rows": []}
 
     header_cells = trs[0].find_all(["th", "td"])
-    columns = [normalize(c.get_text(" ", strip=True)) for c in header_cells]
+    columns = [norm(c.get_text(" ", strip=True)) for c in header_cells]
 
     rows_out: List[List[str]] = []
     for tr in trs[1:]:
         cells = tr.find_all(["td", "th"])
         if not cells:
             continue
-        row = [normalize(c.get_text(" ", strip=True)) for c in cells]
+        row = [norm(c.get_text(" ", strip=True)) for c in cells]
         if len(row) < len(columns):
-            row = row + [""] * (len(columns) - len(row))
+            row += [""] * (len(columns) - len(row))
         if len(row) > len(columns):
             row = row[:len(columns)]
         rows_out.append(row)
@@ -118,7 +110,7 @@ def parse_table(soup: BeautifulSoup) -> Dict[str, Any]:
     return {"columns": columns, "rows": rows_out}
 
 
-# ---------------- Parsing MATCHES (jen Benešov) ----------------
+# ---------- parse matches (only Benešov) ----------
 
 @dataclass
 class Match:
@@ -127,24 +119,23 @@ class Match:
     dt: Optional[datetime]
     home: Optional[bool]
     opponent: str
-    score_text: Optional[str]
-    pins_text: Optional[str]
+    score: Optional[str]
+    pins: Optional[str]
     played: bool
 
 
 def find_round_numbers(soup: BeautifulSoup) -> List[int]:
     rounds = set()
     for a in soup.find_all("a", href=True):
-        href = a["href"]
-        m = re.search(r"[?&]r=(\d+)", href)
+        m = re.search(r"[?&]r=(\d+)", a["href"])
         if m:
             rounds.add(int(m.group(1)))
     return sorted(rounds)
 
 
-def find_matches_table(soup: BeautifulSoup) -> Optional[BeautifulSoup]:
+def find_matches_table(soup: BeautifulSoup):
     for table in soup.find_all("table"):
-        ths = [normalize(th.get_text(" ", strip=True)) for th in table.find_all("th")]
+        ths = [norm(th.get_text(" ", strip=True)) for th in table.find_all("th")]
         header = " ".join(ths)
         if ("Domácí" in header) and ("Hosté" in header):
             return table
@@ -152,7 +143,7 @@ def find_matches_table(soup: BeautifulSoup) -> Optional[BeautifulSoup]:
 
 
 def parse_team_matches_from_round(soup: BeautifulSoup, team_key: str) -> List[Match]:
-    team_key = normalize(team_key)
+    team_key = norm(team_key)
     out: List[Match] = []
 
     table = find_matches_table(soup)
@@ -161,7 +152,7 @@ def parse_team_matches_from_round(soup: BeautifulSoup, team_key: str) -> List[Ma
 
     trs = table.find_all("tr")
     for tr in trs[1:]:
-        tds = [normalize(td.get_text(" ", strip=True)) for td in tr.find_all("td")]
+        tds = [norm(td.get_text(" ", strip=True)) for td in tr.find_all("td")]
         if len(tds) < 2:
             continue
 
@@ -175,34 +166,27 @@ def parse_team_matches_from_round(soup: BeautifulSoup, team_key: str) -> List[Ma
 
         joined = " | ".join(tds)
 
-        # date/time
         date_str, time_str, dt = parse_dt(joined)
 
-        # score/pins (bereme jako text, protože někde je 3,5 : 4,5)
         score_m = re.search(r"(\d+(?:[.,]\d+)?)\s*:\s*(\d+(?:[.,]\d+)?)", joined)
         pins_m = re.search(r"(\d{3,4})\s*:\s*(\d{3,4})", joined)
 
-        score_text = None
-        if score_m:
-            score_text = f"{score_m.group(1)} : {score_m.group(2)}"
-
-        pins_text = None
-        if pins_m:
-            pins_text = f"{pins_m.group(1)} : {pins_m.group(2)}"
+        score_text = f"{score_m.group(1)} : {score_m.group(2)}" if score_m else None
+        pins_text = f"{pins_m.group(1)} : {pins_m.group(2)}" if pins_m else None
 
         played = False
         if pins_m:
-            ph = int(pins_m.group(1)); pa = int(pins_m.group(2))
+            ph = int(pins_m.group(1))
+            pa = int(pins_m.group(2))
             if not (ph == 0 and pa == 0):
                 played = True
-        # fallback podle skóre
         if score_m and ("0 : 0" not in joined) and ("0:0" not in joined):
             played = True
 
         out.append(Match(
             date=date_str, time=time_str, dt=dt,
             home=home_flag, opponent=opponent,
-            score_text=score_text, pins_text=pins_text,
+            score=score_text, pins=pins_text,
             played=played
         ))
 
@@ -211,6 +195,7 @@ def parse_team_matches_from_round(soup: BeautifulSoup, team_key: str) -> List[Ma
 
 def pick_last_next(matches: List[Match]) -> Tuple[Optional[Dict[str, Any]], Optional[Dict[str, Any]]]:
     now = datetime.now(timezone.utc)
+
     played = [m for m in matches if m.played and m.dt is not None]
     future = [m for m in matches if (not m.played) and m.dt is not None]
 
@@ -218,6 +203,7 @@ def pick_last_next(matches: List[Match]) -> Tuple[Optional[Dict[str, Any]], Opti
     future.sort(key=lambda m: m.dt)
 
     last = played[-1] if played else None
+
     nxt = None
     for m in future:
         if m.dt >= now:
@@ -233,29 +219,27 @@ def pick_last_next(matches: List[Match]) -> Tuple[Optional[Dict[str, Any]], Opti
             "home": m.home,
             "opponent": m.opponent
         }
-        if m.score_text:
-            d["score"] = m.score_text
-        if m.pins_text:
-            d["pins"] = m.pins_text
+        if m.score:
+            d["score"] = m.score
+        if m.pins:
+            d["pins"] = m.pins
         return d
 
     return (to_dict(last) if last else None, to_dict(nxt) if nxt else None)
 
 
-def update_cka_team(team_id: str, comp_id: str, team_key: str, label: str):
-    # ✅ bez www kvůli SSL certifikátu
+def update_cka_team(team_id: str, comp_id: str, team_key: str, label: str) -> None:
+    # ✅ bez www (kvůli SSL certifikátu)
     base_url = f"https://vysledky.kuzelky.cz/soutez.php?id={comp_id}"
 
     html = fetch(base_url)
     soup = BeautifulSoup(html, "lxml")
 
-    # tabulka celá
     table = parse_table(soup)
 
-    # kola
     rounds = find_round_numbers(soup)
     if not rounds:
-        rounds = list(range(1, 40))  # fallback
+        rounds = list(range(1, 40))
 
     matches_all: List[Match] = []
     for r in rounds:
@@ -301,16 +285,17 @@ def update_cka_team(team_id: str, comp_id: str, team_key: str, label: str):
     print(f"OK: updated {team_id} from {base_url}")
 
 
-def update_dorost():
+def update_dorost() -> None:
     html = fetch(SKKS_DOROST_URL)
     soup = BeautifulSoup(html, "lxml")
 
-    bulletins = []
+    bulletins: List[Dict[str, str]] = []
     seen = set()
 
     for a in soup.find_all("a", href=True):
         href = a["href"].strip()
-        text = normalize(a.get_text(" ", strip=True))
+        text = norm(a.get_text(" ", strip=True))
+
         if not href.lower().endswith(".pdf"):
             continue
         if ("zpravodaj" not in text.lower()) and ("zpravodaj" not in href.lower()):
@@ -327,10 +312,7 @@ def update_dorost():
             continue
         seen.add(url)
 
-        bulletins.append({
-            "title": text if text else "Zpravodaj",
-            "url": url
-        })
+        bulletins.append({"title": text if text else "Zpravodaj", "url": url})
 
     path = BASE / "DOROST.json"
     data = load_json(path) if path.exists() else {}
@@ -344,7 +326,7 @@ def update_dorost():
     print("OK: updated DOROST bulletins")
 
 
-def main():
+def main() -> None:
     for team_id, cfg in COMPETITIONS.items():
         update_cka_team(team_id, cfg["competitionId"], cfg["teamKey"], cfg["label"])
     update_dorost()
