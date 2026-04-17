@@ -5,7 +5,7 @@
     "competitionId": "c788",
     "teamKey": "TJ Sokol Benešov B"
   },
-  "updatedAt": "2026-04-16T20:25:37+00:00",
+  "updatedAt": "2026-04-17T10:30:01+00:00",
   "lastMatch": null,
   "nextMatch": null,
   "table": {
@@ -190,6 +190,50 @@
         "127,5 : 172,5",
         "2506"
       ]
+    ]
+  },
+  "debug": {
+    "matchesFound": 26,
+    "playedCount": 26,
+    "futureCount": 0,
+    "teamKey": "TJ Sokol Benešov B",
+    "competitionId": "c788",
+    "sample": [
+      {
+        "date": null,
+        "time": null,
+        "home": true,
+        "opponent": "SC Olympia Radotín",
+        "played": true
+      },
+      {
+        "date": null,
+        "time": null,
+        "home": false,
+        "opponent": "KK Vlašim B",
+        "played": true
+      },
+      {
+        "date": null,
+        "time": null,
+        "home": true,
+        "opponent": "TJ Sokol Brandýs n. L.",
+        "played": true
+      },
+      {
+        "date": null,
+        "time": null,
+        "home": false,
+        "opponent": "KK Slavoj C",
+        "played": true
+      },
+      {
+        "date": null,
+        "time": null,
+        "home": true,
+        "opponent": "SK Meteor Praha",
+        "played": true
+      }
     ]
   }
 }

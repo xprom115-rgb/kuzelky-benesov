@@ -5,16 +5,14 @@
     "competitionId": "c800",
     "teamKey": "TJ Sokol Benešov"
   },
-  "updatedAt": "2026-04-16T20:25:37+00:00",
+  "updatedAt": "2026-04-17T10:28:58+00:00",
   "lastMatch": null,
   "nextMatch": {
     "date": "2026-04-18",
     "time": "10:00",
     "home": true,
     "opponent": "TJ Lokomotiva Liberec",
-    "matchUrl": "https://vysledky.kuzelky.cz/soutez.php?id=c800",
-    "scoreHome": 0,
-    "scoreAway": 0
+    "score": "0 : 0"
   },
   "table": {
     "columns": [
@@ -174,6 +172,50 @@
         "191 : 313",
         "3177"
       ]
+    ]
+  },
+  "debug": {
+    "matchesFound": 22,
+    "playedCount": 21,
+    "futureCount": 1,
+    "teamKey": "TJ Sokol Benešov",
+    "competitionId": "c800",
+    "sample": [
+      {
+        "date": null,
+        "time": null,
+        "home": false,
+        "opponent": "SK Verneřice",
+        "played": true
+      },
+      {
+        "date": null,
+        "time": null,
+        "home": true,
+        "opponent": "TJ Kuželky Česká Lípa",
+        "played": true
+      },
+      {
+        "date": null,
+        "time": null,
+        "home": true,
+        "opponent": "TJ Radlice",
+        "played": true
+      },
+      {
+        "date": null,
+        "time": null,
+        "home": false,
+        "opponent": "SKK Jičín",
+        "played": true
+      },
+      {
+        "date": null,
+        "time": null,
+        "home": true,
+        "opponent": "TJ Sparta Kutná Hora A",
+        "played": true
+      }
     ]
   }
 }
