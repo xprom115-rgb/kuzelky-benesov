@@ -53,7 +53,7 @@ function renderMatch(boxEl, match, emptyText) {
     <div class="feed-card">
       <div><strong>${date}${time}</strong> • ${hv} • ${opp}</div>
       <div style="margin-top:6px;">
-        <span style="font-weight:bold;">Skóre:</span> ${score}
+        ${showScore ? `<span style="font-weight:bold;">Skóre:</span> ${score}` : `<span style="opacity:0.85;"><em>zatím neodehráno</em></span>`}
         ${pins ? ` • <span style="font-weight:bold;">Kuželky:</span> ${pins}` : ""}
       </div>
       ${link ? `<div style="margin-top:8px;"><a href="${esc(link)}" target="_blank" rel="noopener">Detail zdroje</a></div>` : ""}
