@@ -42,6 +42,11 @@ function renderMatch(boxEl, match, emptyText) {
     ? `${match.pinsHome} : ${match.pinsAway}`
     : (match.pins ? esc(match.pins) : "");
 
+  const isZeroScore = (typeof score === "string") && (score.replace(/\s+/g, "") === "0:0");
+  const hasPins = !!pins;
+
+  const showScore = !(isZeroScore && !hasPins);
+
   const link = match.matchUrl || match.url;
 
   boxEl.innerHTML = `
