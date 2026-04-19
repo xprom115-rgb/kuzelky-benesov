@@ -47,7 +47,7 @@ def norm(s: str) -> str:
 
 
 # datum/čas typu "Po 1. 12. 2025 17.00" / "So 10. 4. 2026 17.30"
-DT_RE = re.compile(r"(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})(?:\s+(\d{1,2})\.(\d{2}))?")
+DT_RE = re.compile(r"(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})(?:\s+(\d{1,2})[.:](\d{2}))?")
 
 def parse_dt(text: str) -> Tuple[Optional[str], Optional[str], Optional[datetime]]:
     t = norm(text)
