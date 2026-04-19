@@ -177,7 +177,16 @@ def parse_team_matches_from_round(soup: BeautifulSoup, team_key: str) -> List[Ma
 
         joined = " | ".join(tds)
 
-        date_str, time_str, dt = parse_dt(joined)
+       
+        date_str, time_str, dt = None, None, None
+        for cell in tds:
+            d, t, ddt = parse_dt(cell)
+            if d:
+                date_str, time_str, dt = d, t, ddt
+                break
+        if not date_str:
+            date_str, time_str, dt = parse_dt(joined)
+``
 
         score_m = re.search(r"(\d+(?:[.,]\d+)?)\s*:\s*(\d+(?:[.,]\d+)?)", joined)
         pins_m = re.search(r"(\d{3,4})\s*:\s*(\d{3,4})", joined)
