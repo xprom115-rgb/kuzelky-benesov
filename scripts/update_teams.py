@@ -338,9 +338,25 @@ def update_dorost() -> None:
 
 
 def main() -> None:
+    failures = 0
+
     for team_id, cfg in COMPETITIONS.items():
-        update_cka_team(team_id, cfg["competitionId"], cfg["teamKey"], cfg["label"])
-    update_dorost()
+        try:
+            update_cka_team(team_id, cfg["competitionId"], cfg["teamKey"], cfg["label"])
+        except Exception as e:
+            failures += 1
+            print(f"ERROR: {team_id} failed: {e}")
+
+    try:
+        update_dorost()
+    except Exception as e:
+        failures += 1
+        print(f"ERROR: DOROST failed: {e}")
+
+    # ✅ když spadne všechno, tak fail (aby sis toho všiml)
+    # ✅ když spadne jen něco, workflow necháme projít, data zůstanou stará
+    if failures >= 4:
+        raise RuntimeError("All sources failed")
 
 if __name__ == "__main__":
     main()
