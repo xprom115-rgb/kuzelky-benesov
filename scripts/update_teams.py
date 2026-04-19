@@ -38,9 +38,20 @@ def iso_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 def fetch(url: str) -> str:
-    r = requests.get(url, headers=HEADERS, timeout=30)
-    r.raise_for_status()
-    return r.text
+    # Delší timeout a jednoduché retry
+    last_err = None
+    for attempt in range(1, 4):  # 3 pokusy
+        try:
+            # (connect timeout, read timeout)
+            r = requests.get(url, headers=HEADERS, timeout=(20, 60))
+            r.raise_for_status()
+            return r.text
+        except Exception as e:
+            last_err = e
+            # krátká pauza (1s, 2s, 3s)
+            import time
+            time.sleep(attempt)
+    raise last_err
 
 def norm(s: str) -> str:
     return " ".join((s or "").replace("\xa0", " ").split()).strip()
