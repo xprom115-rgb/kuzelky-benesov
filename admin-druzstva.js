@@ -141,7 +141,11 @@ btnLoadDorostPdfs?.addEventListener("click", loadDorostBulletins);
 btnSaveDorostPdf?.addEventListener("click", async () => {
   try {
     const round = dorostRound?.value || "1";
-    let url = (dorostPdfUrl?.value || "").trim();
+   let url = (dorostPdfUrl?.value || "").trim();
+
+// ✅ auto-očištění: když někdo vloží chrome-extension://.../https://... tak vezmeme jen část od https://
+const m = url.match(/https?:\/\/.+/i);
+if (m) url = m[0].trim();
 
     if (Number(round) < 1 || Number(round) > 8) {
       setDorostMsg("⚠️ Kolo musí být 1–8.");
