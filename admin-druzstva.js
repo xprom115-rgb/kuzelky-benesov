@@ -141,22 +141,53 @@ btnLoadDorostPdfs?.addEventListener("click", loadDorostBulletins);
 btnSaveDorostPdf?.addEventListener("click", async () => {
   try {
     const round = dorostRound?.value || "1";
-    const file = dorostPdf?.files?.[0];
+    const url = (dorostPdfUrl?.value || "").trim();
 
-    if (!file) {
-      setDorostMsg("⚠️ Vyber PDF soubor.");
-      return;
-    }
-    if (file.type !== "application/pdf") {
-      setDorostMsg("⚠️ Soubor musí být PDF.");
-      return;
-    }
     if (Number(round) < 1 || Number(round) > 8) {
       setDorostMsg("⚠️ Kolo musí být 1–8.");
       return;
     }
 
-    setDorostMsg("⏳ Nahrávám PDF do Storage…");
+    if (!url) {
+      setDorostMsg("⚠️ Vlož odkaz na PDF.");
+      return;
+    }
+
+    // jednoduchá kontrola, že to vypadá jako odkaz na PDF
+    if (!/^https?:\/\/.+/i.test(url) || !url.toLowerCase().includes(".pdf")) {
+      setDorostMsg("⚠️ Odkaz musí být platná URL a ideálně končit na .pdf");
+      return;
+    }
+
+    setDorostMsg("⏳ Ukládám odkaz do Firestore…");
+
+    const ref = doc(db, "team_manual", "DOROST");
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : {};
+
+    const bulletins = (data.bulletins && typeof data.bulletins === "object") ? data.bulletins : {};
+    bulletins[String(round)] = {
+      title: `${round}. kolo`,
+      url
+    };
+
+    await setDoc(ref, {
+      updatedAt: new Date().toISOString(),
+      bulletins
+    }, { merge: true });
+
+    // refresh list
+    await loadDorostBulletins();
+
+    // volitelně vyčistit pole
+    if (dorostPdfUrl) dorostPdfUrl.value = "";
+
+    setDorostMsg(`✅ Uloženo: ${round}. kolo`);
+  } catch (e) {
+    console.error(e);
+    setDorostMsg("❌ Uložení selhalo (zkontroluj Rules / přihlášení).");
+  }
+});
 
     // Cesta ve Storage: dorost/bulletins/kolo-<round>.pdf
     // (přepsání stejného kola je OK – vždy bude poslední verze)
