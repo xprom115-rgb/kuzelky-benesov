@@ -5,6 +5,11 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
+import {
+  doc,
+  getDoc
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
 const loginBox = document.getElementById("loginBox");
 const appBox = document.getElementById("appBox");
 
