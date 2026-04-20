@@ -24,6 +24,13 @@ function yesNoHome(v) {
   return "—";
 }
 
+function linkHtml(url, text) {
+  if (!url) return "";
+  const safe = esc(url);
+  const label = esc(text || "Otevřít");
+  return `<a href="${safe}" target="_blank" rel="noopener">${label}</a>`;
+}
+
 function renderMatch(boxEl, match, emptyText) {
   if (!boxEl) return;
 
@@ -54,14 +61,14 @@ function renderMatch(boxEl, match, emptyText) {
         <span style="font-weight:bold;">Skóre:</span> ${score}
         ${pins ? ` • <span style="font-weight:bold;">Kuželky:</span> ${pins}` : ""}
       </div>
-      ${link ? `<div style="margin-top:8px;"><a href="${esc(link)}" target="_blank" rel="noopener">Detail zdroje</a></div>` : ""}
+      ${link ? `<div style="margin-top:8px;">${linkHtml(link, "Detail zdroje")}</div>` : ""}
     </div>
   `;
 }
 
 /**
  * Tabulka (A/B/C) – dynamicky podle columns a rows (array-of-arrays).
- * Zvýrazní Benešov přes window.__teamKey.
+ * Zvýrazní Benešov přes window.__teamKey (název družstva).
  */
 function renderTable(table) {
   if (!elTable) return;
@@ -96,172 +103,4 @@ function renderTable(table) {
 }
 
 /**
- * ✅ Dorost záložky 1–8 z Firestore mapy bulletins:
- * bulletins: { "1": {title,url}, "2": {title,url}, ... }
- */
-function renderDorostTabs(bulletinsMap) {
-  if (!elBulletins) return;
-
-  if (!bulletinsMap || typeof bulletinsMap !== "object" || Object.keys(bulletinsMap).length === 0) {
-    elBulletins.innerHTML = `<p><em>Zatím nejsou zveřejněné žádné zpravodaje.</em></p>`;
-    return;
-  }
-
-  const rounds = Object.keys(bulletinsMap)
-    .filter(k => /^\d+$/.test(k))
-    .map(k => Number(k))
-    .sort((a, b) => a - b);
-
-  // vytvoř tlačítka záložek
-  const tabButtons = rounds.map(r => {
-    return `<button type="button" class="btn-soft dorost-tab" data-round="${r}">${r}. kolo</button>`;
-  }).join("");
-
-  // výchozí obsah = první kolo
-  const first = rounds[0];
-  const firstItem = bulletinsMap[String(first)] || {};
-  const firstUrl = firstItem.url || "";
-  const firstTitle = firstItem.title || `${first}. kolo`;
-
-  elBulletins.innerHTML = `
-    <div class="toolrow" style="gap:8px;">
-      ${tabButtons}
-    </div>
-    <div class="card" style="margin-top:10px;">
-      <h4 style="margin:0 0 6px 0; color:#ffd700;" id="dorostTabTitle">${esc(firstTitle)}</h4>
-      <div id="dorostTabBody">
-        ${firstUrl ? `<a href="${esc(firstUrl)}" target="_blank" rel="noopener">Otevřít PDF</a>` : `<em>Chybí URL</em>`}
-      </div>
-    </div>
-  `;
-
-  // aktivní styl tlačítka
-  function setActive(round) {
-    document.querySelectorAll(".dorost-tab").forEach(btn => {
-      btn.style.opacity = (btn.dataset.round === String(round)) ? "1" : "0.7";
-    });
-  }
-  setActive(first);
-
-  // klikání na záložky
-  document.querySelectorAll(".dorost-tab").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const r = btn.dataset.round;
-      const it = bulletinsMap[String(r)] || {};
-      const url = it.url || "";
-      const title = it.title || `${r}. kolo`;
-
-      const titleEl = document.getElementById("dorostTabTitle");
-      const bodyEl = document.getElementById("dorostTabBody");
-
-      if (titleEl) titleEl.textContent = title;
-      if (bodyEl) bodyEl.innerHTML = url
-        ? `<a href="${esc(url)}" target="_blank" rel="noopener">Otevřít PDF</a>`
-        : `<em>Chybí URL</em>`;
-
-      setActive(r);
-    });
-  });
-}
-
-async function loadJsonTeam(teamId) {
-  const res = await fetch(`./data/teams/${teamId}.json?v=${Date.now()}`, { cache: "no-store" });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return await res.json();
-}
-
-function render(feed) {
-  const label = feed?.label || `Tým ${TEAM_ID}`;
-  if (elTitle) elTitle.textContent = label;
-
-  if (elUpdated) elUpdated.textContent = feed?.updatedAt ? `Aktualizováno: ${feed.updatedAt}` : "";
-
-  // teamKey pro zvýraznění Benešova v tabulce
-  window.__teamKey = feed?.source?.teamKey || "";
-
-  const isDorost = (TEAM_ID === "DOROST");
-
-  if (isDorost) {
-    if (elLast) elLast.style.display = "none";
-    if (elNext) elNext.style.display = "none";
-    if (elTable) elTable.style.display = "none";
-    if (elBulletins) elBulletins.style.display = "";
-
-    // feed dorostu očekává { bulletinsMap }
-    // vytvoř tlačítka záložek (stejný styl jako zbytek webu)
-  const tabButtons = rounds.map(r => {
-    return `<button type="button" class="btn-soft dorost-tab" data-round="${r}">${r}. kolo</button>`;
-  }).join("");
-
-  elBulletins.innerHTML = `
-    <div class="toolrow" style="gap:8px;">
-      ${tabButtons}
-    </div>
-    <div class="card" style="margin-top:10px;">
-      <h4 style="margin:0 0 6px 0; color:#ffd700;" id="dorostTabTitle">${esc(firstTitle)}</h4>
-      <div id="dorostTabBody">
-        ${firstUrl ? `<a href="${esc(firstUrl)}" target="_blank" rel="noopener">Otevřít PDF</a>` : `<em>Chybí URL</em>`}
-      </div>
-    </div>
-  `;
-
-  // aktivní tlačítko bude mít stejný styl jako ostatní primární tlačítka
-  function setActive(round) {
-    document.querySelectorAll(".dorost-tab").forEach(btn => {
-      const isActive = (btn.dataset.round === String(round));
-      btn.classList.toggle("btn-primary", isActive);
-      btn.classList.toggle("btn-soft", !isActive);
-    });
-  }
-  }
-
-  if (elLast) elLast.style.display = "";
-  if (elNext) elNext.style.display = "";
-  if (elTable) elTable.style.display = "";
-  if (elBulletins) elBulletins.style.display = "none";
-
-  renderMatch(elLast, feed?.lastMatch, "Poslední zápas zatím není naimportován.");
-  renderMatch(elNext, feed?.nextMatch, "Následující zápas zatím není naimportován.");
-  renderTable(feed?.table);
-}
-
-async function init() {
-  if (!TEAM_ID) {
-    if (elTitle) elTitle.textContent = "Chybí parametr ?team=";
-    return;
-  }
-
-  // ✅ Dorost: načti z Firestore team_manual/DOROST
-  if (TEAM_ID === "DOROST") {
-    try {
-      const ref = doc(db, "team_manual", "DOROST");
-      const snap = await getDoc(ref);
-
-      // když dokument neexistuje nebo je prázdný, zobraz prázdno
-      const data = snap.exists() ? snap.data() : {};
-      const bulletinsMap = (data.bulletins && typeof data.bulletins === "object") ? data.bulletins : {};
-
-      render({
-        label: "Dorost",
-        updatedAt: data.updatedAt || null,
-        bulletinsMap
-      });
-    } catch (e) {
-      console.error(e);
-      if (elTitle) elTitle.textContent = "Chyba načítání dorost zpravodajů (Firestore).";
-      if (elBulletins) elBulletins.innerHTML = `<p><em>Nelze načíst zpravodaje.</em></p>`;
-    }
-    return;
-  }
-
-  // A/B/C: zůstává JSON
-  try {
-    const feed = await loadJsonTeam(TEAM_ID);
-    render(feed);
-  } catch (e) {
-    console.error(e);
-    if (elTitle) elTitle.textContent = "Chyba načítání JSON (data/teams).";
-  }
-}
-
-init();
+ * ✅ Dorost – záložky podle kol z Firestore mapy bulletins:
