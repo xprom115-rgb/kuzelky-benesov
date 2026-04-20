@@ -169,10 +169,19 @@ btnSaveDorostPdf?.addEventListener("click", async () => {
     const data = snap.exists() ? snap.data() : {};
 
     const bulletins = (data.bulletins && typeof data.bulletins === "object") ? data.bulletins : {};
-    bulletins[String(round)] = {
-      title: `${round}. kolo`,
-      url
-    };
+    bulletins[String(round)] = { title: `${round}. kolo`, url };
+
+    await setDoc(ref, { updatedAt: new Date().toISOString(), bulletins }, { merge: true });
+
+    await loadDorostBulletins();
+
+    if (dorostPdfUrl) dorostPdfUrl.value = "";
+    setDorostMsg(`✅ Uloženo: ${round}. kolo`);
+  } catch (e) {
+    console.error(e);
+    setDorostMsg("❌ Uložení selhalo (zkontroluj Rules / přihlášení).");
+  }
+});
 
     await setDoc(ref, {
       updatedAt: new Date().toISOString(),
