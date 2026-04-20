@@ -118,7 +118,6 @@ async function loadDorostBulletins() {
   setDorostMsg("✅ Dokument vytvořen. Zatím nejsou uložené žádné zpravodaje.");
   return;
 }
-    }
 
     const data = snap.data();
     renderDorostList(data.bulletins);
