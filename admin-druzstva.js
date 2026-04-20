@@ -1,4 +1,4 @@
-import { auth, db } from "./firebase-config.js";
+import { auth, db, storage } from "./firebase-config.js";
 import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
@@ -10,6 +10,12 @@ import {
   getDoc,
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
 
 const loginBox = document.getElementById("loginBox");
 const appBox = document.getElementById("appBox");
@@ -132,8 +138,62 @@ async function loadDorostBulletins() {
 btnLoadDorostPdfs?.addEventListener("click", loadDorostBulletins);
 
 // (zatím neděláme uložení ani mazání – to bude další krok)
-btnSaveDorostPdf?.addEventListener("click", () => {
-  setDorostMsg("ℹ️ Uložení PDF bude v dalším kroku (zatím jen načítání).");
+btnSaveDorostPdf?.addEventListener("click", async () => {
+  try {
+    const round = dorostRound?.value || "1";
+    const file = dorostPdf?.files?.[0];
+
+    if (!file) {
+      setDorostMsg("⚠️ Vyber PDF soubor.");
+      return;
+    }
+    if (file.type !== "application/pdf") {
+      setDorostMsg("⚠️ Soubor musí být PDF.");
+      return;
+    }
+    if (Number(round) < 1 || Number(round) > 8) {
+      setDorostMsg("⚠️ Kolo musí být 1–8.");
+      return;
+    }
+
+    setDorostMsg("⏳ Nahrávám PDF do Storage…");
+
+    // Cesta ve Storage: dorost/bulletins/kolo-<round>.pdf
+    // (přepsání stejného kola je OK – vždy bude poslední verze)
+    const path = `dorost/bulletins/kolo-${round}.pdf`;
+    const fileRef = storageRef(storage, path);
+
+    await uploadBytes(fileRef, file);
+    const url = await getDownloadURL(fileRef);
+
+    setDorostMsg("⏳ Ukládám odkaz do Firestore…");
+
+    const ref = doc(db, "team_manual", "DOROST");
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : {};
+
+    const bulletins = (data.bulletins && typeof data.bulletins === "object") ? data.bulletins : {};
+    bulletins[String(round)] = {
+      title: `${round}. kolo`,
+      url
+    };
+
+    await setDoc(ref, {
+      updatedAt: new Date().toISOString(),
+      bulletins
+    }, { merge: true });
+
+    // refresh list
+    await loadDorostBulletins();
+
+    // vyčistit input (nepovinné)
+    if (dorostPdf) dorostPdf.value = "";
+
+    setDorostMsg(`✅ Uloženo: ${round}. kolo`);
+  } catch (e) {
+    console.error(e);
+    setDorostMsg("❌ Uložení selhalo (Rules/Storage).");
+  }
 });
 
 btnClearDorostPdfs?.addEventListener("click", () => {
