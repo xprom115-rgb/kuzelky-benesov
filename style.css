@@ -87,7 +87,28 @@ main {
     margin-top: 0;
     color: #ffd700;
 }
+/* Tlačítko "Otevřít"  */
+.btn-open {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 2px solid #ffd700;
+  background: #1e235c;
+  color: #ffd700;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1;
+}
 
+.btn-open:hover {
+  background: #ffd700;
+  color: #1e235c;
+}
+
+.btn-open:active {
+  transform: translateY(1px);
+}
 /* ============================= */
 /* FORM PRVKY (date, inputy, selecty) */
 /* ============================= */
