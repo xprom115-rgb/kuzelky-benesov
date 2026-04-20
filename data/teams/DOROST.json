@@ -4,39 +4,7 @@
     "type": "skks",
     "url": "https://www.skks-kuzelky.cz/index.php/souteze/stredocesky-pohar-mladeze"
   },
-  "updatedAt": "2026-04-19T21:26:16+00:00",
-  "bulletins": [
-    {
-      "title": "Krajský přebor dorostu - finále",
-      "url": "https://www.skks-kuzelky.cz/dokumenty/archiv/2017-2018/KPD/Zpravodaj%20SP%20mladeze%20jednotlivci_final.pdf"
-    },
-    {
-      "title": "1. kolo",
-      "url": "https://www.skks-kuzelky.cz/dokumenty/2025-2026/SP%20mladeze/zpravodaje/Zpravodaj_SP_mladeze_1_kolo.pdf"
-    },
-    {
-      "title": "2. kolo",
-      "url": "https://www.skks-kuzelky.cz/dokumenty/2025-2026/SP%20mladeze/zpravodaje/Zpravodaj_SP_mladeze_2_kolo.pdf"
-    },
-    {
-      "title": "3. kolo",
-      "url": "https://www.skks-kuzelky.cz/dokumenty/2025-2026/SP%20mladeze/zpravodaje/Zpravodaj_SP_mladeze_3_kolo.pdf"
-    },
-    {
-      "title": "4. kolo",
-      "url": "https://www.skks-kuzelky.cz/dokumenty/2025-2026/SP%20mladeze/zpravodaje/Zpravodaj_SP_mladeze_4_kolo.pdf"
-    },
-    {
-      "title": "5. kolo",
-      "url": "https://www.skks-kuzelky.cz/dokumenty/2025-2026/SP%20mladeze/zpravodaje/Zpravodaj_SP_mladeze_5_kolo.pdf"
-    },
-    {
-      "title": "6. kolo",
-      "url": "https://www.skks-kuzelky.cz/dokumenty/2025-2026/SP%20mladeze/zpravodaje/Zpravodaj_SP_mladeze_6_kolo.pdf"
-    },
-    {
-      "title": "7. kolo",
-      "url": "https://www.skks-kuzelky.cz/dokumenty/2025-2026/SP%20mladeze/zpravodaje/Zpravodaj_SP_mladeze_7_kolo.pdf"
-    }
-  ]
+  "updatedAt": null,
+  "bulletins": []
 }
+
