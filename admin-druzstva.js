@@ -158,7 +158,7 @@ if (m) url = m[0].trim();
     }
 
     // jednoduchá kontrola, že to vypadá jako odkaz na PDF
-    if (!/^https?:\/\/.+/i.test(url) || !url.toLowerCase().includes(".pdf")) {
+   if (!/^https?:\/\/.+/i.test(url) || !/\.pdf(\?|$)/i.test(url)) {
       setDorostMsg("⚠️ Odkaz musí být platná URL a ideálně končit na .pdf");
       return;
     }
