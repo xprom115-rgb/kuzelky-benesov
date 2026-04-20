@@ -58,7 +58,41 @@
     <div id="appBox" class="card" style="display:none;">
       <h2 style="margin:0;">Správa družstev</h2>
       <div class="small">Zatím prázdné – v dalším kroku doplníme Dorost zpravodaje (ručně).</div>
+<hr style="margin:16px 0;">
 
+<div class="card" id="dorostCard" style="margin:0;">
+  <h3 style="margin:0 0 10px 0;">Dorost – zpravodaje (ručně)</h3>
+  <div class="small" style="opacity:0.85;">
+    Vyber kolo (1–8), nahraj PDF a ulož. Na dorost.html?team=DOROST pak vzniknou záložky podle kol.
+  </div>
+
+  <div class="toolrow" style="margin-top:10px;">
+    <label for="dorostRound"><strong>Kolo:</strong></label>
+    <select id="dorostRound">
+      <option value="1">1. kolo</option>
+      <option value="2">2. kolo</option>
+      <option value="3">3. kolo</option>
+      <option value="4">4. kolo</option>
+      <option value="5">5. kolo</option>
+      <option value="6">6. kolo</option>
+      <option value="7">7. kolo</option>
+      <option value="8">8. kolo</option>
+    </select>
+
+    <label for="dorostPdf"><strong>PDF:</strong></label>
+    <input id="dorostPdf" type="file" accept="application/pdf">
+
+    <button id="btnSaveDorostPdf" class="btn-primary" type="button">Uložit zpravodaj</button>
+  </div>
+
+  <div class="toolrow">
+    <button id="btnLoadDorostPdfs" class="btn-soft" type="button">Načíst uložené</button>
+    <button id="btnClearDorostPdfs" class="btn-danger" type="button">Vymazat vše (test)</button>
+  </div>
+
+  <div id="dorostMsg" class="small" style="margin-top:10px;"></div>
+  <div id="dorostList" class="small" style="margin-top:6px;"></div>
+</div>
       <div class="toolrow" style="justify-content:space-between; margin-top:12px;">
         <button id="btnLogout" class="btn-soft" type="button">Odhlásit</button>
       </div>
