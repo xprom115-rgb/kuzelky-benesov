@@ -19,7 +19,7 @@ import {
 
 const loginBox = document.getElementById("loginBox");
 const appBox = document.getElementById("appBox");
-
+const dorostPdfUrl = document.getElementById("dorostPdfUrl");
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
 const btnLogin = document.getElementById("btnLogin");
