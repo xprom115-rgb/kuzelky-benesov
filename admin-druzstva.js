@@ -108,9 +108,16 @@ async function loadDorostBulletins() {
     const snap = await getDoc(ref);
 
     if (!snap.exists()) {
-      renderDorostList(null);
-      setDorostMsg("ℹ️ Dokument team_manual/DOROST zatím neexistuje.");
-      return;
+  // ✅ auto-vytvoř prázdný dokument, aby už to příště nehlásilo "neexistuje"
+  await setDoc(ref, {
+    updatedAt: new Date().toISOString(),
+    bulletins: {}
+  }, { merge: true });
+
+  renderDorostList({});
+  setDorostMsg("✅ Dokument vytvořen. Zatím nejsou uložené žádné zpravodaje.");
+  return;
+}
     }
 
     const data = snap.data();
