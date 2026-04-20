@@ -1,1 +1,74 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Družstva</title>
 
+  <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    .toolrow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:10px 0;}
+    .toolrow input,.toolrow select{padding:10px 12px;border-radius:10px;border:1px solid #bbb;font-size:15px;}
+
+    .btn-primary{padding:10px 14px;border-radius:10px;border:0;background:#1e235c;color:#ffd700;font-weight:bold;cursor:pointer;}
+    .btn-soft{padding:10px 14px;border-radius:10px;border:0;background:#ececec;font-weight:bold;cursor:pointer;}
+    .btn-danger{padding:10px 14px;border-radius:10px;border:0;background:#ffdddd;font-weight:bold;cursor:pointer;}
+
+    .card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px;margin:12px 0;}
+    .small{font-size:13px;opacity:0.85;}
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo">
+  </div>
+  <div class="header-title">Admin – Družstva</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="admin.html">Administrace</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+
+    <!-- LOGIN -->
+    <div id="loginBox" class="card">
+      <h2>Přihlášení admina</h2>
+      <p class="small">Přihlášení probíhá přes Firebase Authentication (Email/Password).</p>
+
+      <div class="toolrow">
+        <input id="email" type="email" placeholder="Email admina" style="min-width:240px;">
+        <input id="pass" type="password" placeholder="Heslo" style="min-width:200px;">
+        <button id="btnLogin" class="btn-primary" type="button">Přihlásit</button>
+      </div>
+
+      <div id="loginMsg" class="small"></div>
+    </div>
+
+    <!-- APP (zatím prázdné – doplníme v dalším kroku dorost zpravodaje) -->
+    <div id="appBox" class="card" style="display:none;">
+      <h2 style="margin:0;">Správa družstev</h2>
+      <div class="small">Zatím prázdné – v dalším kroku doplníme Dorost zpravodaje (ručně).</div>
+
+      <div class="toolrow" style="justify-content:space-between; margin-top:12px;">
+        <button id="btnLogout" class="btn-soft" type="button">Odhlásit</button>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<!-- ZATÍM žádný JS – přidáme v dalším kroku admin-druzstva.js -->
+</body>
+</html>
