@@ -141,11 +141,11 @@ btnLoadDorostPdfs?.addEventListener("click", loadDorostBulletins);
 btnSaveDorostPdf?.addEventListener("click", async () => {
   try {
     const round = dorostRound?.value || "1";
-   let url = (dorostPdfUrl?.value || "").trim();
+    let url = (dorostPdfUrl?.value || "").trim();
 
-// ✅ auto-očištění: když někdo vloží chrome-extension://.../https://... tak vezmeme jen část od https://
-const m = url.match(/https?:\/\/.+/i);
-if (m) url = m[0].trim();
+    // auto-očištění: když někdo vloží chrome-extension://.../https://...pdf → vezmeme jen https část
+    const m = url.match(/https?:\/\/.+/i);
+    if (m) url = m[0].trim();
 
     if (Number(round) < 1 || Number(round) > 8) {
       setDorostMsg("⚠️ Kolo musí být 1–8.");
@@ -156,6 +156,38 @@ if (m) url = m[0].trim();
       setDorostMsg("⚠️ Vlož odkaz na PDF.");
       return;
     }
+
+    if (!/^https?:\/\/.+/i.test(url) || !/\.pdf(\?|$)/i.test(url)) {
+      setDorostMsg("⚠️ Odkaz musí být platná URL a ideálně končit na .pdf");
+      return;
+    }
+
+    setDorostMsg("⏳ Ukládám odkaz do Firestore…");
+
+    const ref = doc(db, "team_manual", "DOROST");
+    const snap = await getDoc(ref);
+    const data = snap.exists() ? snap.data() : {};
+
+    const bulletins = (data.bulletins && typeof data.bulletins === "object") ? data.bulletins : {};
+    bulletins[String(round)] = {
+      title: `${round}. kolo`,
+      url
+    };
+
+    await setDoc(ref, {
+      updatedAt: new Date().toISOString(),
+      bulletins
+    }, { merge: true });
+
+    await loadDorostBulletins();
+
+    if (dorostPdfUrl) dorostPdfUrl.value = "";
+    setDorostMsg(`✅ Uloženo: ${round}. kolo`);
+  } catch (e) {
+    console.error(e);
+    setDorostMsg("❌ Uložení selhalo (zkontroluj Rules / přihlášení).");
+  }
+});
 
     // jednoduchá kontrola, že to vypadá jako odkaz na PDF
    if (!/^https?:\/\/.+/i.test(url) || !/\.pdf(\?|$)/i.test(url)) {
