@@ -7,7 +7,8 @@ import {
 
 import {
   doc,
-  getDoc
+  getDoc,
+  setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 const loginBox = document.getElementById("loginBox");
