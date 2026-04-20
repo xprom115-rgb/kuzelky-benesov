@@ -188,8 +188,31 @@ function render(feed) {
     if (elBulletins) elBulletins.style.display = "";
 
     // feed dorostu očekává { bulletinsMap }
-    renderDorostTabs(feed?.bulletinsMap);
-    return;
+    // vytvoř tlačítka záložek (stejný styl jako zbytek webu)
+  const tabButtons = rounds.map(r => {
+    return `<button type="button" class="btn-soft dorost-tab" data-round="${r}">${r}. kolo</button>`;
+  }).join("");
+
+  elBulletins.innerHTML = `
+    <div class="toolrow" style="gap:8px;">
+      ${tabButtons}
+    </div>
+    <div class="card" style="margin-top:10px;">
+      <h4 style="margin:0 0 6px 0; color:#ffd700;" id="dorostTabTitle">${esc(firstTitle)}</h4>
+      <div id="dorostTabBody">
+        ${firstUrl ? `<a href="${esc(firstUrl)}" target="_blank" rel="noopener">Otevřít PDF</a>` : `<em>Chybí URL</em>`}
+      </div>
+    </div>
+  `;
+
+  // aktivní tlačítko bude mít stejný styl jako ostatní primární tlačítka
+  function setActive(round) {
+    document.querySelectorAll(".dorost-tab").forEach(btn => {
+      const isActive = (btn.dataset.round === String(round));
+      btn.classList.toggle("btn-primary", isActive);
+      btn.classList.toggle("btn-soft", !isActive);
+    });
+  }
   }
 
   if (elLast) elLast.style.display = "";
