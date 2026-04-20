@@ -28,7 +28,7 @@ function linkHtml(url, text) {
   if (!url) return "";
   const safe = esc(url);
   const label = esc(text || "Otevřít");
-  return `<a href="${safe}" target="_blank" rel="noopener">${label}</a>`;
+  return `<a class="btn-open" href="${safe}" target="_blank" rel="noopener">${label}</a>`;
 }
 
 function renderMatch(boxEl, match, emptyText) {
