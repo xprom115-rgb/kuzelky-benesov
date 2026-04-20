@@ -1,4 +1,5 @@
-import { auth, db, storage } from "./firebase-config.js";
+import { auth, db } from "./firebase-config.js";
+
 import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
@@ -11,15 +12,13 @@ import {
   setDoc
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-import {
-  ref as storageRef,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-storage.js";
+/* ---------------------------
+   LOGIN (Auth)
+---------------------------- */
 
 const loginBox = document.getElementById("loginBox");
 const appBox = document.getElementById("appBox");
-const dorostPdfUrl = document.getElementById("dorostPdfUrl");
+
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("pass");
 const btnLogin = document.getElementById("btnLogin");
@@ -27,7 +26,7 @@ const btnLogout = document.getElementById("btnLogout");
 
 const loginMsg = document.getElementById("loginMsg");
 
-function setMsg(txt) {
+function setLoginMsg(txt) {
   if (loginMsg) loginMsg.textContent = txt || "";
 }
 
@@ -41,17 +40,17 @@ btnLogin?.addEventListener("click", async () => {
   const pass = passEl?.value || "";
 
   if (!email || !pass) {
-    setMsg("⚠️ Zadej email i heslo.");
+    setLoginMsg("⚠️ Zadej email i heslo.");
     return;
   }
 
   try {
-    setMsg("⏳ Přihlašuji…");
+    setLoginMsg("⏳ Přihlašuji…");
     await signInWithEmailAndPassword(auth, email, pass);
-    setMsg("✅ Přihlášeno.");
+    setLoginMsg("✅ Přihlášeno.");
   } catch (e) {
     console.error(e);
-    setMsg("❌ Přihlášení se nepovedlo (zkontroluj email/heslo).");
+    setLoginMsg("❌ Přihlášení se nepovedlo (zkontroluj email/heslo).");
   }
 });
 
@@ -65,15 +64,28 @@ btnLogout?.addEventListener("click", async () => {
 
 onAuthStateChanged(auth, (user) => {
   showApp(!!user);
-  if (!user) setMsg("");
+  if (!user) setLoginMsg("");
 });
 
-// ---- DOROST: načítání zpravodajů (KROK 5) ----
+/* ---------------------------
+   DOROST: ZPRAVODAJE (URL)
+   Ukládá se do Firestore:
+   team_manual/DOROST
+   {
+     bulletins: {
+       "1": { title:"1. kolo", url:"https://...pdf" },
+       ...
+     }
+   }
+---------------------------- */
+
 const dorostRound = document.getElementById("dorostRound");
-const dorostPdf = document.getElementById("dorostPdf");
+const dorostPdfUrl = document.getElementById("dorostPdfUrl");
+
 const btnSaveDorostPdf = document.getElementById("btnSaveDorostPdf");
 const btnLoadDorostPdfs = document.getElementById("btnLoadDorostPdfs");
 const btnClearDorostPdfs = document.getElementById("btnClearDorostPdfs");
+
 const dorostMsg = document.getElementById("dorostMsg");
 const dorostList = document.getElementById("dorostList");
 
@@ -89,20 +101,19 @@ function renderDorostList(bulletinsMap) {
     return;
   }
 
-  const rounds = Object.keys(bulletinsMap)
-    .sort((a, b) => Number(a) - Number(b));
-
+  const rounds = Object.keys(bulletinsMap).sort((a, b) => Number(a) - Number(b));
   if (rounds.length === 0) {
     dorostList.innerHTML = "<em>Zatím nejsou uložené žádné zpravodaje.</em>";
     return;
   }
 
-  dorostList.innerHTML = rounds.map(r => {
+  dorostList.innerHTML = rounds.map((r) => {
     const it = bulletinsMap[r] || {};
     const title = it.title || `${r}. kolo`;
     const url = it.url || "";
+
     if (!url) return `<div>${r}. kolo: <em>(bez URL)</em></div>`;
-    return `<div>${r}. kolo: <a href="${url}" target="_blank" rel="noopener">${title}</a></div>`;
+    return `<div>${r}. kolo: <a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a></div>`;
   }).join("");
 }
 
@@ -114,16 +125,16 @@ async function loadDorostBulletins() {
     const snap = await getDoc(ref);
 
     if (!snap.exists()) {
-  // ✅ auto-vytvoř prázdný dokument, aby už to příště nehlásilo "neexistuje"
-  await setDoc(ref, {
-    updatedAt: new Date().toISOString(),
-    bulletins: {}
-  }, { merge: true });
+      // auto-vytvoř prázdný dokument
+      await setDoc(ref, {
+        updatedAt: new Date().toISOString(),
+        bulletins: {}
+      }, { merge: true });
 
-  renderDorostList({});
-  setDorostMsg("✅ Dokument vytvořen. Zatím nejsou uložené žádné zpravodaje.");
-  return;
-}
+      renderDorostList({});
+      setDorostMsg("✅ Dokument vytvořen. Zatím nejsou uložené žádné zpravodaje.");
+      return;
+    }
 
     const data = snap.data();
     renderDorostList(data.bulletins);
@@ -134,144 +145,8 @@ async function loadDorostBulletins() {
   }
 }
 
-// tlačítko „Načíst uložené“
 btnLoadDorostPdfs?.addEventListener("click", loadDorostBulletins);
 
-// (zatím neděláme uložení ani mazání – to bude další krok)
 btnSaveDorostPdf?.addEventListener("click", async () => {
   try {
     const round = dorostRound?.value || "1";
-    let url = (dorostPdfUrl?.value || "").trim();
-
-    // auto-očištění: když někdo vloží chrome-extension://.../https://...pdf → vezmeme jen https část
-    const m = url.match(/https?:\/\/.+/i);
-    if (m) url = m[0].trim();
-
-    if (Number(round) < 1 || Number(round) > 8) {
-      setDorostMsg("⚠️ Kolo musí být 1–8.");
-      return;
-    }
-
-    if (!url) {
-      setDorostMsg("⚠️ Vlož odkaz na PDF.");
-      return;
-    }
-
-    if (!/^https?:\/\/.+/i.test(url) || !/\.pdf(\?|$)/i.test(url)) {
-      setDorostMsg("⚠️ Odkaz musí být platná URL a ideálně končit na .pdf");
-      return;
-    }
-
-    setDorostMsg("⏳ Ukládám odkaz do Firestore…");
-
-    const ref = doc(db, "team_manual", "DOROST");
-    const snap = await getDoc(ref);
-    const data = snap.exists() ? snap.data() : {};
-
-    const bulletins = (data.bulletins && typeof data.bulletins === "object") ? data.bulletins : {};
-    bulletins[String(round)] = { title: `${round}. kolo`, url };
-
-    await setDoc(ref, { updatedAt: new Date().toISOString(), bulletins }, { merge: true });
-
-    await loadDorostBulletins();
-
-    if (dorostPdfUrl) dorostPdfUrl.value = "";
-    setDorostMsg(`✅ Uloženo: ${round}. kolo`);
-  catch (e) {
-    console.error(e);
-    setDorostMsg("❌ Uložení selhalo (zkontroluj Rules / přihlášení).");
-  }
-});
-
-    await setDoc(ref, {
-      updatedAt: new Date().toISOString(),
-      bulletins
-    }, { merge: true });
-
-    await loadDorostBulletins();
-
-    if (dorostPdfUrl) dorostPdfUrl.value = "";
-    setDorostMsg(`✅ Uloženo: ${round}. kolo`);
-  } catch (e) {
-    console.error(e);
-    setDorostMsg("❌ Uložení selhalo (zkontroluj Rules / přihlášení).");
-  }
-});
-
-    // jednoduchá kontrola, že to vypadá jako odkaz na PDF
-   if (!/^https?:\/\/.+/i.test(url) || !/\.pdf(\?|$)/i.test(url)) {
-      setDorostMsg("⚠️ Odkaz musí být platná URL a ideálně končit na .pdf");
-      return;
-    }
-
-    setDorostMsg("⏳ Ukládám odkaz do Firestore…");
-
-    const ref = doc(db, "team_manual", "DOROST");
-    const snap = await getDoc(ref);
-    const data = snap.exists() ? snap.data() : {};
-
-    const bulletins = (data.bulletins && typeof data.bulletins === "object") ? data.bulletins : {};
-    bulletins[String(round)] = {
-      title: `${round}. kolo`,
-      url
-    };
-
-    await setDoc(ref, {
-      updatedAt: new Date().toISOString(),
-      bulletins
-    }, { merge: true });
-
-    // refresh list
-    await loadDorostBulletins();
-
-    // volitelně vyčistit pole
-    if (dorostPdfUrl) dorostPdfUrl.value = "";
-
-    setDorostMsg(`✅ Uloženo: ${round}. kolo`);
-  } catch (e) {
-    console.error(e);
-    setDorostMsg("❌ Uložení selhalo (zkontroluj Rules / přihlášení).");
-  }
-});
-
-    // Cesta ve Storage: dorost/bulletins/kolo-<round>.pdf
-    // (přepsání stejného kola je OK – vždy bude poslední verze)
-    const path = `dorost/bulletins/kolo-${round}.pdf`;
-    const fileRef = storageRef(storage, path);
-
-    await uploadBytes(fileRef, file);
-    const url = await getDownloadURL(fileRef);
-
-    setDorostMsg("⏳ Ukládám odkaz do Firestore…");
-
-    const ref = doc(db, "team_manual", "DOROST");
-    const snap = await getDoc(ref);
-    const data = snap.exists() ? snap.data() : {};
-
-    const bulletins = (data.bulletins && typeof data.bulletins === "object") ? data.bulletins : {};
-    bulletins[String(round)] = {
-      title: `${round}. kolo`,
-      url
-    };
-
-    await setDoc(ref, {
-      updatedAt: new Date().toISOString(),
-      bulletins
-    }, { merge: true });
-
-    // refresh list
-    await loadDorostBulletins();
-
-    // vyčistit input (nepovinné)
-    if (dorostPdf) dorostPdf.value = "";
-
-    setDorostMsg(`✅ Uloženo: ${round}. kolo`);
-  } catch (e) {
-    console.error(e);
-    setDorostMsg("❌ Uložení selhalo (Rules/Storage).");
-  }
-});
-
-btnClearDorostPdfs?.addEventListener("click", () => {
-  setDorostMsg("ℹ️ Mazání bude v dalším kroku (zatím jen načítání).");
-});
