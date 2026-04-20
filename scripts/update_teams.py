@@ -357,12 +357,7 @@ def main() -> None:
             failures += 1
             print(f"ERROR: {team_id} failed: {e}")
 
-    try:
-        update_dorost()
-    except Exception as e:
-        failures += 1
-        print(f"ERROR: DOROST failed: {e}")
-
+  
     # ✅ když spadne všechno, tak fail (aby sis toho všiml)
     # ✅ když spadne jen něco, workflow necháme projít, data zůstanou stará
     if failures >= 4:
