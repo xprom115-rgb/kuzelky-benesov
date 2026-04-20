@@ -141,7 +141,7 @@ btnLoadDorostPdfs?.addEventListener("click", loadDorostBulletins);
 btnSaveDorostPdf?.addEventListener("click", async () => {
   try {
     const round = dorostRound?.value || "1";
-    const url = (dorostPdfUrl?.value || "").trim();
+    let url = (dorostPdfUrl?.value || "").trim();
 
     if (Number(round) < 1 || Number(round) > 8) {
       setDorostMsg("⚠️ Kolo musí být 1–8.");
