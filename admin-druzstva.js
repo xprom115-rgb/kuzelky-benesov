@@ -177,7 +177,7 @@ btnSaveDorostPdf?.addEventListener("click", async () => {
 
     if (dorostPdfUrl) dorostPdfUrl.value = "";
     setDorostMsg(`✅ Uloženo: ${round}. kolo`);
-  } catch (e) {
+  catch (e) {
     console.error(e);
     setDorostMsg("❌ Uložení selhalo (zkontroluj Rules / přihlášení).");
   }
