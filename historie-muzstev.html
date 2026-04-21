@@ -3,16 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <title>Historie mužstev – Kuželky Benešov</title>
-   <link rel="stylesheet" href="./style.css?v=500">
+
+  <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    /* dlaždice ve stejném stylu jako admin */
+    .hist-tile {
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .hist-tile h3 { margin:0; color:#ffd700; }
+    .hist-tile .desc { font-size:13px; opacity:0.9; margin-top:6px; }
+  </style>
 </head>
+
 <body>
 
-</head>
-
-<body>
 <header>
   <div class="header-left">
-    <img src="logo.jpg" class="logo" alt="Logo">
+    <img src="./logo.jpg" alt="Logo" style="height:48px;">
   </div>
   <div class="header-title">Kuželky Benešov</div>
   <div class="header-right"></div>
@@ -20,7 +37,7 @@
 
 <nav>
   <ul>
-  <li><a href="index.html">Domů</a></li>
+    <li><a href="index.html">Domů</a></li>
     <li><a href="aktuality.html">Aktuality</a></li>
     <li><a href="historie.html">Historie</a></li>
     <li><a href="druzstva.html">Družstva</a></li>
@@ -34,16 +51,24 @@
 <main>
   <div class="content-box">
     <h2>Historie mužstev</h2>
-    <div style="margin-top:14px;">
-  historie-dorost.html</a>
-</div>
+    <p class="small">Archiv týmů a sezón (zpravodaje uložené u nás).</p>
 
-<div class="small" style="margin-top:8px; opacity:0.85;">
-  Archiv sezón dorostu (zpravodaje uložené u nás).
-</div>
+    <!-- DLAŽDICE: Dorost -->
+    <div class="hist-tile">
+      <div>
+        <h3>Dorost</h3>
+        <div class="desc">Archiv sezón dorostu (souhrnný zpravodaj – 8. kolo).</div>
+      </div>
+
+      <a class="btn-primary" href="historie-dorost.html">Otevřít</a>
+    </div>
+
+    <!-- sem můžeš později přidat další dlaždice (A/B/C, atd.) -->
   </div>
 </main>
 
 <footer>© Kuželky Benešov – 2026</footer>
+
 </body>
 </html>
+``
