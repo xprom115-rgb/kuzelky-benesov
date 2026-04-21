@@ -267,3 +267,61 @@ btnDorostToHistory?.addEventListener("click", async () => {
     setDorostMsg("❌ Přenos do historie selhal (zkontroluj Rules / přihlášení).");
   }
 });
+// ====== DOROST: Přenést souhrn (8. kolo) do historie – pojistný handler ======
+const dorostSeason2 = document.getElementById("dorostSeason");
+const btnDorostToHistory2 = document.getElementById("btnDorostToHistory");
+
+btnDorostToHistory2?.addEventListener("click", async () => {
+  // ✅ okamážitá hláška = důkaz, že klik funguje
+  setDorostMsg("🟡 Klik zachycen – přenáším do historie…");
+
+  try {
+    const seasonId = (dorostSeason2?.value || "").trim();
+    if (!seasonId) {
+      setDorostMsg("⚠️ Vyplň sezónu (např. 2025-2026).");
+      return;
+    }
+
+    // načti ručně spravované zpravodaje
+    const srcRef = doc(db, "team_manual", "DOROST");
+    const srcSnap = await getDoc(srcRef);
+
+    if (!srcSnap.exists()) {
+      setDorostMsg("⚠️ Neexistuje team_manual/DOROST – nejdřív ulož zpravodaj 8. kola.");
+      return;
+    }
+
+    const src = srcSnap.data();
+    const bulletins = (src.bulletins && typeof src.bulletins === "object") ? src.bulletins : {};
+    const b8 = bulletins["8"];
+
+    if (!b8 || !b8.url) {
+      setDorostMsg("⚠️ Chybí zpravodaj 8. kola (bulletins['8']). Nejdřív ulož 8. kolo.");
+      return;
+    }
+
+    // cíl historie
+    const histRef = doc(db, "team_history", "DOROST", "seasons", seasonId);
+    const histSnap = await getDoc(histRef);
+
+    if (histSnap.exists()) {
+      setDorostMsg("ℹ️ Historie pro tuto sezónu už existuje. Nepřepisuji.");
+      return;
+    }
+
+    await setDoc(histRef, {
+      seasonId,
+      createdAt: new Date().toISOString(),
+      summaryBulletin: {
+        round: 8,
+        title: b8.title || "8. kolo (souhrn)",
+        url: b8.url
+      }
+    });
+
+    setDorostMsg(`✅ Uloženo do historie: Dorost / ${seasonId} (jen 8. kolo).`);
+  } catch (e) {
+    console.error("DorostToHistory error:", e);
+    setDorostMsg("❌ Přenos do historie selhal – koukni do Console (F12).");
+  }
+});
