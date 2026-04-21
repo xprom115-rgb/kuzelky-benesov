@@ -426,3 +426,85 @@ a, a:visited, a:hover, a:focus, a:active {
 u {
   text-decoration: none !important;
 }
+/* =========================================
+   UNIFIKOVANÝ DESIGN TLAČÍTEK (pill)
+   - platí pro všechny tvoje třídy:
+     .btn-primary, .btn-soft, .btn-danger, .btn-open
+   - a i pro <button> a <a> s těmito třídami
+   ========================================= */
+
+.btn-primary,
+.btn-soft,
+.btn-danger,
+.btn-open,
+a.btn-primary,
+a.btn-soft,
+a.btn-danger,
+a.btn-open,
+button.btn-primary,
+button.btn-soft,
+button.btn-danger,
+button.btn-open {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 14px;
+  border: 2px solid #ffd700;
+  background: #1e235c;
+  color: #ffd700;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.05s ease;
+}
+
+/* hover efekt jako na obrázku */
+.btn-primary:hover,
+.btn-soft:hover,
+.btn-danger:hover,
+.btn-open:hover,
+a.btn-primary:hover,
+a.btn-soft:hover,
+a.btn-danger:hover,
+a.btn-open:hover,
+button.btn-primary:hover,
+button.btn-soft:hover,
+button.btn-danger:hover,
+button.btn-open:hover {
+  background: #ffd700;
+  color: #1e235c;
+}
+
+/* aktivní stisk */
+.btn-primary:active,
+.btn-soft:active,
+.btn-danger:active,
+.btn-open:active,
+a.btn-primary:active,
+a.btn-soft:active,
+a.btn-danger:active,
+a.btn-open:active,
+button.btn-primary:active,
+button.btn-soft:active,
+button.btn-danger:active,
+button.btn-open:active {
+  transform: translateY(1px);
+}
+
+/* aby tlačítka nepřebírala default outline nevzhledně */
+.btn-primary:focus,
+.btn-soft:focus,
+.btn-danger:focus,
+.btn-open:focus,
+a.btn-primary:focus,
+a.btn-soft:focus,
+a.btn-danger:focus,
+a.btn-open:focus,
+button.btn-primary:focus,
+button.btn-soft:focus,
+button.btn-danger:focus,
+button.btn-open:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.25);
+}
+``
