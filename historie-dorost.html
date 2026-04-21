@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <title>Historie dorostu – Kuželky Benešov</title>
+
+  <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    .history-wrap {
+      margin-top: 14px;
+    }
+    .history-card {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .history-card h3 {
+      margin: 0;
+      color: #ffd700;
+    }
+    .history-card .small {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-left">
+    <img src="logo.jpg" alt="logo" style="height:52px;">
+  </div>
+  <div class="header-title">Kuželky Benešov</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+    <h2>Historie dorostu</h2>
+    <p class="small">Zde budou uložené sezóny dorostu a souhrnný zpravodaj (8. kolo).</p>
+
+    <div id="dorostHistoryList" class="history-wrap">
+      <p><em>Zatím prázdné – v dalším kroku sem doplníme načítání historie ze Firestore.</em></p>
+    </div>
+
+    <div style="margin-top:14px;">
+      <a class="btn-soft" href="historie-muzstev.html">Zpět na Historie mužstev</a>
+    </div>
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+</body>
+</html>
+``
