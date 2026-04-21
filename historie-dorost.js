@@ -1,8 +1,5 @@
 import { db } from "./firebase-config.js";
-import {
-  collection,
-  getDocs
-} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 const listEl = document.getElementById("dorostHistoryList");
 
@@ -17,7 +14,7 @@ function buttonLink(url, text) {
   if (!url) return `<em>Bez odkazu</em>`;
   const safeUrl = esc(url);
   const label = esc(text || "Otevřít");
-  return `<a class="btn-primary" href="${safeUrl}" target="_blank" rel="noopener">${label}</a>`;
+  return `<a class="btn-primary" href="${safeUrl}" target="_blank" rel="noopener noreferrer">${label}</a>`;
 }
 
 function renderEmpty(msg) {
@@ -35,8 +32,8 @@ function renderSeasons(seasons) {
 
   const html = seasons.map(s => {
     const seasonTitle = s.seasonId || s.id || "Sezóna";
-    const url = s.summaryBulletin?.url || "";
     const title = s.summaryBulletin?.title || "Souhrnný zpravodaj (8. kolo)";
+    const url = s.summaryBulletin?.url || "";
 
     return `
       <div class="hist-tile">
@@ -71,3 +68,8 @@ async function loadDorostHistory() {
     renderSeasons(seasons);
   } catch (e) {
     console.error(e);
+    renderEmpty("Nelze načíst historii (zkontroluj Firestore Rules pro team_history).");
+  }
+}
+
+loadDorostHistory();
