@@ -545,11 +545,67 @@ btnTeamsEditor?.addEventListener("click", () => {
   }
 });
 
-// zatím jen informace – aby tlačítka nekončila "nic se neděje"
-btnTeamsSave?.addEventListener("click", () => {
-  setTeamsMsg("ℹ️ Ukládání seznamu týmů doděláme v dalším kroku.");
+btnTeamsSave?.addEventListener("click", async () => {
+  try {
+    const teamId = document.getElementById("abcTeam")?.value || "A";
+    const raw = (teamsTextarea?.value || "");
+
+    // rozsekej na řádky, ořízni, vyhoď prázdné, odduplikuj
+    const lines = raw
+      .split(/\r?\n/)
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const unique = Array.from(new Set(lines));
+
+    if (unique.length === 0) {
+      setTeamsMsg("⚠️ Seznam je prázdný – vlož alespoň 1 tým.");
+      return;
+    }
+
+    setTeamsMsg(`⏳ Ukládám ${unique.length} týmů do team_current/${teamId}…`);
+
+    const ref = doc(db, "team_current", teamId);
+    await setDoc(ref, {
+      updatedAt: new Date().toISOString(),
+      teams: unique
+    }, { merge: true });
+
+    setTeamsMsg(`✅ Uloženo: ${unique.length} týmů (team_current/${teamId}.teams).`);
+  } catch (e) {
+    console.error(e);
+    setTeamsMsg("❌ Uložení selhalo (zkontroluj přihlášení / Rules).");
+  }
 });
-btnTeamsLoad?.addEventListener("click", () => {
-  setTeamsMsg("ℹ️ Načítání seznamu týmů doděláme v dalším kroku.");
+
+btnTeamsLoad?.addEventListener("click", async () => {
+  try {
+    const teamId = document.getElementById("abcTeam")?.value || "A";
+
+    setTeamsMsg(`⏳ Načítám team_current/${teamId}.teams…`);
+
+    const ref = doc(db, "team_current", teamId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      setTeamsMsg(`⚠️ team_current/${teamId} neexistuje.`);
+      return;
+    }
+
+    const data = snap.data();
+    const teams = Array.isArray(data.teams) ? data.teams : [];
+
+    if (!teams.length) {
+      setTeamsMsg("ℹ️ Nejsou uložené žádné týmy (teams je prázdné).");
+      if (teamsTextarea) teamsTextarea.value = "";
+      return;
+    }
+
+    if (teamsTextarea) teamsTextarea.value = teams.join("\n");
+    setTeamsMsg(`✅ Načteno: ${teams.length} týmů.`);
+  } catch (e) {
+    console.error(e);
+    setTeamsMsg("❌ Načtení selhalo (zkontroluj přihlášení / Rules).");
+  }
 });
 
