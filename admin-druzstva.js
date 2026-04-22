@@ -351,3 +351,110 @@ btnDorostGuide?.addEventListener("click", async () => {
     dorostGuideBox.textContent = "Nelze načíst dorost-navod.txt (zkontroluj, že soubor existuje v repu).";
   }
 });
+// ====== A/B/C: sezóna + načítání / vytvoření sezóny (KROK 3) ======
+const abcTeam = document.getElementById("abcTeam");
+const abcSeason = document.getElementById("abcSeason");
+const btnAbcLoad = document.getElementById("btnAbcLoad");
+const btnAbcNewSeason = document.getElementById("btnAbcNewSeason");
+const btnAbcClearSeason = document.getElementById("btnAbcClearSeason");
+
+const btnSaveFuture = document.getElementById("btnSaveFuture");
+const btnSavePast = document.getElementById("btnSavePast");
+const btnAbcToHistory = document.getElementById("btnAbcToHistory");
+const btnAbcGuide = document.getElementById("btnAbcGuide");
+
+const abcMsg = document.getElementById("abcMsg");
+const abcGuideBox = document.getElementById("abcGuideBox");
+
+function setAbcMsg(txt) {
+  if (abcMsg) abcMsg.textContent = txt || "";
+}
+
+function countKeys(obj) {
+  return obj && typeof obj === "object" ? Object.keys(obj).length : 0;
+}
+
+async function loadAbcCurrent(teamId) {
+  setAbcMsg("⏳ Načítám…");
+  try {
+    const ref = doc(db, "team_current", teamId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      setAbcMsg(`ℹ️ Dokument team_current/${teamId} neexistuje.`);
+      return;
+    }
+
+    const data = snap.data();
+    if (abcSeason) abcSeason.value = data.seasonId || (abcSeason.value || "");
+
+    const fCount = countKeys(data.future);
+    const pCount = countKeys(data.past);
+    setAbcMsg(`✅ Načteno: sezóna ${data.seasonId || "?"} | budoucí kola: ${fCount} | minulá kola: ${pCount}`);
+  } catch (e) {
+    console.error(e);
+    setAbcMsg("❌ Načtení selhalo (zkontroluj přihlášení / Rules).");
+  }
+}
+
+async function createNewAbcSeason(teamId, seasonId) {
+  if (!seasonId) {
+    setAbcMsg("⚠️ Vyplň název sezóny (např. 2025-2026).");
+    return;
+  }
+
+  setAbcMsg("⏳ Vytvářím novou sezónu (vyčistím future/past)…");
+  try {
+    const ref = doc(db, "team_current", teamId);
+    await setDoc(ref, {
+      seasonId,
+      updatedAt: new Date().toISOString(),
+      future: {},
+      past: {}
+    }, { merge: true });
+
+    setAbcMsg(`✅ Nová sezóna vytvořena: ${teamId} / ${seasonId}`);
+  } catch (e) {
+    console.error(e);
+    setAbcMsg("❌ Vytvoření sezóny selhalo (zkontroluj přihlášení / Rules).");
+  }
+}
+
+// --- eventy ---
+btnAbcLoad?.addEventListener("click", () => {
+  const teamId = abcTeam?.value || "A";
+  loadAbcCurrent(teamId);
+});
+
+btnAbcNewSeason?.addEventListener("click", () => {
+  const teamId = abcTeam?.value || "A";
+  const seasonId = (abcSeason?.value || "").trim();
+  if (!confirm(`Vytvořit novou sezónu pro ${teamId} (${seasonId})?\nVymaže future/past v team_current/${teamId}.`)) return;
+  createNewAbcSeason(teamId, seasonId);
+});
+
+// zatím stuby (další kroky)
+btnAbcClearSeason?.addEventListener("click", () => {
+  setAbcMsg("ℹ️ Mazání sezóny doděláme v dalším kroku (teď jen Načíst + Nová sezóna).");
+});
+
+btnSaveFuture?.addEventListener("click", () => {
+  setAbcMsg("ℹ️ Uložení budoucího kola doděláme v dalším kroku.");
+});
+
+btnSavePast?.addEventListener("click", () => {
+  setAbcMsg("ℹ️ Uložení minulého kola doděláme v dalším kroku.");
+});
+
+btnAbcToHistory?.addEventListener("click", () => {
+  setAbcMsg("ℹ️ Přenos do historie doděláme v dalším kroku (snapshot).");
+});
+
+btnAbcGuide?.addEventListener("click", () => {
+  if (!abcGuideBox) return;
+  abcGuideBox.style.display = (abcGuideBox.style.display === "none" || !abcGuideBox.style.display) ? "block" : "none";
+  if (abcGuideBox.style.display === "block") {
+    abcGuideBox.textContent = "Návod pro A/B/C doplníme v dalším kroku (stejně jako dorost).";
+  }
+});
+``
