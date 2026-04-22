@@ -325,3 +325,29 @@ btnDorostToHistory2?.addEventListener("click", async () => {
     setDorostMsg("❌ Přenos do historie selhal – koukni do Console (F12).");
   }
 });
+// ---- Dorost návod (načtení z dorost-navod.txt) ----
+const btnDorostGuide = document.getElementById("btnDorostGuide");
+const dorostGuideBox = document.getElementById("dorostGuideBox");
+
+btnDorostGuide?.addEventListener("click", async () => {
+  if (!dorostGuideBox) return;
+
+  // toggle: když je vidět, schovej
+  if (dorostGuideBox.style.display !== "none") {
+    dorostGuideBox.style.display = "none";
+    return;
+  }
+
+  dorostGuideBox.style.display = "block";
+  dorostGuideBox.textContent = "Načítám návod…";
+
+  try {
+    const res = await fetch("./dorost-navod.txt?v=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const txt = await res.text();
+    dorostGuideBox.textContent = txt;
+  } catch (e) {
+    console.error(e);
+    dorostGuideBox.textContent = "Nelze načíst dorost-navod.txt (zkontroluj, že soubor existuje v repu).";
+  }
+});
