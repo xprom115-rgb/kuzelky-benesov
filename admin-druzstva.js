@@ -517,33 +517,122 @@ btnAbcGuide?.addEventListener("click", () => {
     abcGuideBox.textContent = "Návod pro A/B/C doplníme v dalším kroku (stejně jako dorost).";
   }
 });
-// ====== A/B/C: editor seznamu týmů – pouze rozbalení/sbalení (KROK) ======
+// ====== A/B/C: editor seznamu týmů + naplnění roletek (1:1 blok) ======
 const btnTeamsEditor = document.getElementById("btnTeamsEditor");
 const teamsEditorBox = document.getElementById("teamsEditorBox");
-const teamsTextarea = document.getElementById("teamsTextarea");
-const btnTeamsSave = document.getElementById("btnTeamsSave");
-const btnTeamsLoad = document.getElementById("btnTeamsLoad");
-const teamsMsg = document.getElementById("teamsMsg");
+const teamsTextarea  = document.getElementById("teamsTextarea");
+const btnTeamsSave   = document.getElementById("btnTeamsSave");
+const btnTeamsLoad   = document.getElementById("btnTeamsLoad");
+const teamsMsg       = document.getElementById("teamsMsg");
 
 function setTeamsMsg(txt) {
   if (teamsMsg) teamsMsg.textContent = txt || "";
 }
 
+// Naplní roletky fHome/fAway/pHome/pAway z pole teams[]
+function fillTeamSelects(teams) {
+  const fHomeSel = document.getElementById("fHome");
+  const fAwaySel = document.getElementById("fAway");
+  const pHomeSel = document.getElementById("pHome");
+  const pAwaySel = document.getElementById("pAway");
+
+  const selects = [fHomeSel, fAwaySel, pHomeSel, pAwaySel].filter(Boolean);
+
+  // reset
+  for (const sel of selects) {
+    sel.innerHTML = "";
+    sel.appendChild(new Option("— vyber tým —", ""));
+  }
+
+  if (!Array.isArray(teams) || teams.length === 0) return;
+
+  // options
+  for (const t of teams) {
+    const name = (t || "").trim();
+    if (!name) continue;
+    for (const sel of selects) {
+      sel.appendChild(new Option(name, name));
+    }
+  }
+}
+
+// Toggle editoru
 btnTeamsEditor?.addEventListener("click", () => {
   if (!teamsEditorBox) return;
 
-  // přepínač zobrazení
   const isHidden = (teamsEditorBox.style.display === "none" || teamsEditorBox.style.display === "");
   teamsEditorBox.style.display = isHidden ? "block" : "none";
 
   if (isHidden) {
-    setTeamsMsg("ℹ️ Editor otevřen. (Ukládání/načítání doděláme v dalším kroku.)");
-    // focus do textarea (komfort)
+    setTeamsMsg("ℹ️ Editor otevřen.");
     setTimeout(() => teamsTextarea?.focus(), 0);
   } else {
     setTeamsMsg("");
   }
 });
+
+// Uložit seznam týmů do team_current/{A|B|C}.teams
+btnTeamsSave?.addEventListener("click", async () => {
+  try {
+    const teamId = document.getElementById("abcTeam")?.value || "A";
+    const raw = (teamsTextarea?.value || "");
+
+    // 1 tým na řádek
+    const lines = raw
+      .split(/\r?\n/)
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const unique = Array.from(new Set(lines));
+
+    if (unique.length === 0) {
+      setTeamsMsg("⚠️ Seznam je prázdný – vlož alespoň 1 tým.");
+      return;
+    }
+
+    setTeamsMsg(`⏳ Ukládám ${unique.length} týmů do team_current/${teamId}…`);
+
+    const ref = doc(db, "team_current", teamId);
+    await setDoc(ref, {
+      updatedAt: new Date().toISOString(),
+      teams: unique
+    }, { merge: true });
+
+    setTeamsMsg(`✅ Uloženo: ${unique.length} týmů.`);
+    fillTeamSelects(unique);
+  } catch (e) {
+    console.error(e);
+    setTeamsMsg("❌ Uložení selhalo (zkontroluj přihlášení / Rules).");
+  }
+});
+
+// Načíst seznam týmů z team_current/{A|B|C}.teams
+btnTeamsLoad?.addEventListener("click", async () => {
+  try {
+    const teamId = document.getElementById("abcTeam")?.value || "A";
+    setTeamsMsg(`⏳ Načítám team_current/${teamId}.teams…`);
+
+    const ref = doc(db, "team_current", teamId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      setTeamsMsg(`⚠️ team_current/${teamId} neexistuje.`);
+      return;
+    }
+
+    const data = snap.data();
+    const teams = Array.isArray(data.teams) ? data.teams : [];
+
+    if (teamsTextarea) teamsTextarea.value = teams.join("\n");
+    fillTeamSelects(teams);
+
+    setTeamsMsg(teams.length ? `✅ Načteno: ${teams.length} týmů.` : "ℹ️ Nejsou uložené žádné týmy.");
+  } catch (e) {
+    console.error(e);
+    setTeamsMsg("❌ Načtení selhalo (zkontroluj přihlášení / Rules).");
+  }
+});
+``
 
 function fillTeamSelects(teams) {
   const fHomeSel = document.getElementById("fHome");
