@@ -1,0 +1,51 @@
+DOROST – POSTUP NA SEZÓNU (zpravodaje 1–7 ze SKKS, zpravodaj 8 u nás)
+
+KDE SE CO UKLÁDÁ:
+- Aktuální zpravodaje (klikací záložky na dorost.html):
+  Firestore: team_manual/DOROST
+  Pole: bulletins["1".."8"] = { title, url }
+
+- Historie dorostu (archiv sezón, pouze souhrn 8. kolo):
+  Firestore: team_history/DOROST/seasons/{SEZONA}
+  Pole: summaryBulletin = { round: 8, title, url }
+
+DŮLEŽITÉ PRAVIDLO:
+- Kola 1–7: URL může být přímo ze SKKS (https://www.skks-kuzelky.cz/...pdf)
+- Kolo 8 (souhrn sezóny): PDF musí být uložené U NÁS (GitHub Pages), ne na SKKS
+
+
+A) ZAČÁTEK NOVÉ SEZÓNY (např. 2026-2027)
+1) (volitelné) vytvoř si složku v repu pro souhrn:
+   assets/dorost/2026-2027/
+
+2) Admin → Admin družstva → Dorost:
+   - pro kola 1–7 budeš zadávat URL ze SKKS
+   - pro kolo 8 budeš zadávat URL na naše PDF v GitHubu
+
+B) ZADÁNÍ ZPRAVODAJŮ 1–7 (ze SKKS)
+Pro každé kolo 1 až 7:
+1) vyber kolo (1..7)
+2) vlož URL na PDF ze SKKS (čisté https://...pdf; nepoužívat chrome-extension://...)
+3) klikni "Uložit zpravodaj"
+4) klikni "Načíst uložené" pro kontrolu
+
+C) ZPRAVODAJ 8 (souhrn) – U NÁS V GITHUBU
+1) Nahraj PDF souhrnu do repa, např.:
+   assets/dorost/2026-2027/zpravodaj-8.pdf
+
+2) Ověř, že soubor jde otevřít:
+   https://xprom115-rgb.github.io/kuzelky-benesov/assets/dorost/2026-2027/zpravodaj-8.pdf
+
+3) Admin → Dorost:
+   - vyber "8. kolo"
+   - vlož URL na naše PDF (GitHub Pages)
+   - klikni "Uložit zpravodaj"
+
+D) PŘENOS DO HISTORIE (archivuje se pouze 8. kolo)
+1) Do pole "Sezóna" napiš např. 2026-2027
+2) Klikni "Přenést zpravodaje do historie"
+3) Kontrola: historie-dorost.html ukáže sezónu a tlačítko "Otevřít" (souhrn)
+
+POZNÁMKA:
+- Pokud historie pro sezónu už existuje, nepřepisuje se.
+  Řešení: použij novou sezónu (např. 2026-2027_v2) nebo smaž dokument v team_history/DOROST/seasons/{SEZONA}.
