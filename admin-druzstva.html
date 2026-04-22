@@ -180,6 +180,7 @@
           <label>Kolo:</label><input id="fRound" type="number" min="1" style="width:90px;">
           <label>Datum:</label><input id="fDate" type="date">
         </div>
+       
         <div class="toolrow">
          <label>Domácí:</label>
 <select id="fHome" style="min-width:240px;">
@@ -203,8 +204,15 @@
           <label>Datum:</label><input id="pDate" type="date">
         </div>
         <div class="toolrow">
-          <label>Domácí:</label><input id="pHome" type="text" placeholder="např. SK Verneřice" style="min-width:240px;">
-          <label>Hosté:</label><input id="pAway" type="text" placeholder="např. TJ Sokol Benešov" style="min-width:240px;">
+          <label>Domácí:</label>
+<select id="pHome" style="min-width:240px;">
+  <option value="">— vyber tým —</option>
+</select>
+
+<label>Hosté:</label>
+<select id="pAway" style="min-width:240px;">
+  <option value="">— vyber tým —</option>
+</select>
         </div>
         <div class="toolrow">
           <label>Výsledek:</label><input id="pResult" type="text" placeholder="např. 6:2" style="width:120px;">
