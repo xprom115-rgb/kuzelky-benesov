@@ -632,6 +632,33 @@ btnTeamsLoad?.addEventListener("click", async () => {
   }
 });
 // ====== END SINGLE BLOCK ======
+// Načíst seznam týmů z team_current/{A|B|C}.teams
+btnTeamsLoad?.addEventListener("click", async () => {
+  try {
+    const teamId = document.getElementById("abcTeam")?.value || "A";
+    setTeamsMsg(`⏳ Načítám team_current/${teamId}.teams…`);
+
+    const ref = doc(db, "team_current", teamId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      setTeamsMsg(`⚠️ team_current/${teamId} neexistuje.`);
+      return;
+    }
+
+    const data = snap.data();
+    const teams = Array.isArray(data.teams) ? data.teams : [];
+
+    if (teamsTextarea) teamsTextarea.value = teams.join("\n");
+    fillTeamSelects(teams);
+
+    setTeamsMsg(teams.length ? `✅ Načteno: ${teams.length} týmů.` : "ℹ️ Nejsou uložené žádné týmy.");
+  } catch (e) {
+    console.error(e);
+    setTeamsMsg("❌ Načtení selhalo (zkontroluj přihlášení / Rules).");
+  }
+});
+// ====== END SINGLE BLOCK ======
 
 
 // Načíst seznam týmů z team_current/{A|B|C}.teams
