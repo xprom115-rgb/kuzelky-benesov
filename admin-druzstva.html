@@ -8,12 +8,9 @@
 
   <style>
     .toolrow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:10px 0;}
-    .toolrow input,.toolrow select{padding:10px 12px;border-radius:10px;border:1px solid #bbb;font-size:15px;}
-
-    .btn-primary{padding:10px 14px;border-radius:10px;border:0;background:#1e235c;color:#ffd700;font-weight:bold;cursor:pointer;}
-    .btn-soft{padding:10px 14px;border-radius:10px;border:0;background:#ececec;font-weight:bold;cursor:pointer;}
-    .btn-danger{padding:10px 14px;border-radius:10px;border:0;background:#ffdddd;font-weight:bold;cursor:pointer;}
-
+    .toolrow input,.toolrow select{
+      padding:10px 12px;border-radius:10px;border:1px solid #bbb;font-size:15px;
+    }
     .card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px;margin:12px 0;}
     .small{font-size:13px;opacity:0.85;}
   </style>
@@ -23,7 +20,7 @@
 
 <header>
   <div class="header-left">
-    <img src="logo.jpg" class="logo" alt="Logo">
+    <img src="./logo.jpg" alt="Kuželky Benešov" style="max-height:64px;">
   </div>
   <div class="header-title">Admin – Družstva</div>
   <div class="header-right"></div>
@@ -54,170 +51,157 @@
       <div id="loginMsg" class="small"></div>
     </div>
 
-    
-  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-  <h2 style="margin:0;">Správa družstev</h2>
-  <button id="btnLogout" class="btn-soft" type="button">Odhlásit</button>
-</div>
+    <!-- APP (všechno admin až po přihlášení) -->
+    <div id="appBox" class="card" style="display:none;">
 
-!-- APP (všechno admin až po odhlášení) -->
-<div id="appBox" class="card" style="display:none;">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Správa družstev</h2>
+        <button id="btnLogout" class="btn-soft" type="button">Odhlásit</button>
+      </div>
 
-  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-    <h2 style="margin:0;">Správa družstev</h2>
-    <button id="btnLogout" class="btn-soft" type="button">Odhlásit</button>
-  </div>
-        
-      <!-- dorost -->     
-<hr style="margin:16px 0;">
+      <!-- =======================
+           DOROST (zpravodaje)
+           ======================= -->
+      <hr style="margin:16px 0;">
 
-<div class="card" id="dorostCard" style="margin:0;">
-  <h3 style="margin:0 0 10px 0;">Dorost – zpravodaje (ručně)</h3>
-  <div class="small" style="opacity:0.85;">
-    Vyber kolo (1–8), nahraj odkaz 1 - 7 z skks, 8 z github
-  </div>
+      <div class="card" id="dorostCard" style="margin:0;">
+        <h3 style="margin:0 0 10px 0; color:#ffd700;">Dorost – zpravodaje (ručně)</h3>
+        <div class="small" style="opacity:0.85;">
+          Vyber kolo (1–8). Odkaz 1–7 může být ze SKKS, 8. kolo (souhrn) dávej do GitHubu.
+        </div>
 
-  <div class="toolrow" style="margin-top:10px;">
-    <label for="dorostRound"><strong>Kolo:</strong></label>
-    <select id="dorostRound">
-      <option value="1">1. kolo</option>
-      <option value="2">2. kolo</option>
-      <option value="3">3. kolo</option>
-      <option value="4">4. kolo</option>
-      <option value="5">5. kolo</option>
-      <option value="6">6. kolo</option>
-      <option value="7">7. kolo</option>
-      <option value="8">8. kolo</option>
-    </select>
+        <div class="toolrow" style="margin-top:10px;">
+          <label for="dorostRound"><strong>Kolo:</strong></label>
+          <select id="dorostRound">
+            <option value="1">1. kolo</option>
+            <option value="2">2. kolo</option>
+            <option value="3">3. kolo</option>
+            <option value="4">4. kolo</option>
+            <option value="5">5. kolo</option>
+            <option value="6">6. kolo</option>
+            <option value="7">7. kolo</option>
+            <option value="8">8. kolo (souhrn)</option>
+          </select>
 
-    <label for="dorostPdf"><strong>PDF:</strong></label>
-    <input id="dorostPdfUrl" type="url" placeholder="Vlož odkaz na PDF (GitHub Pages)" style="min-width:360px;">
+          <label for="dorostPdfUrl"><strong>PDF URL:</strong></label>
+          <input id="dorostPdfUrl" type="url" placeholder="Vlož odkaz na PDF" style="min-width:360px;">
 
+          <button id="btnSaveDorostPdf" class="btn-primary" type="button">Uložit zpravodaj</button>
+        </div>
 
-    <button id="btnSaveDorostPdf" class="btn-primary" type="button">Uložit zpravodaj</button>
-  </div>
+        <div class="toolrow">
+          <button id="btnLoadDorostPdfs" class="btn-soft" type="button">Načíst uložené</button>
+          <button id="btnClearDorostPdfs" class="btn-danger" type="button">Vymazat vše (test)</button>
+        </div>
 
-  <div class="toolrow">
-    <button id="btnLoadDorostPdfs" class="btn-soft" type="button">Načíst uložené</button>
-    <button id="btnClearDorostPdfs" class="btn-danger" type="button">Vymazat vše (test)</button>
-<hr style="margin:14px 0;">
+        <hr style="margin:14px 0;">
 
-<div class="toolrow">
-  <label for="dorostSeason"><strong>Sezóna:</strong></label>
-  <input id="dorostSeason" type="text" value="2025-2026" style="min-width:140px;">
+        <div class="toolrow">
+          <label for="dorostSeason"><strong>Sezóna:</strong></label>
+          <input id="dorostSeason" type="text" value="2025-2026" style="min-width:140px;">
 
-  <button id="btnDorostToHistory" class="btn-primary" type="button">
-    Přenést zpravodaje do historie
-  </button>
-</div>
+          <button id="btnDorostToHistory" class="btn-primary" type="button">
+            Přenést zpravodaje do historie (jen 8. kolo)
+          </button>
+        </div>
 
-<div class="small" style="opacity:0.85;">
-  
-  
-</div>
-  <div class="toolrow">
-  <button id="btnDorostGuide" class="btn-soft" type="button">Návod</button>
-</div>
+        <div class="small" style="opacity:0.85;">
+          Archivuje se pouze souhrnný zpravodaj 8. kola. Historie se nepřepisuje.
+        </div>
 
-<pre id="dorostGuideBox" style="display:none; white-space:pre-wrap; margin-top:10px;"></pre>  
-  </div>
+        <div class="toolrow" style="margin-top:10px;">
+          <button id="btnDorostGuide" class="btn-soft" type="button">Návod</button>
+        </div>
 
-  <div id="dorostMsg" class="small" style="margin-top:10px;"></div>
-  <div id="dorostList" class="small" style="margin-top:6px;"></div>
-</div>
-  
-<!-- A,B,C -->  
-<div class="card" id="abcCard" style="margin:0;">
-  <h3 style="margin:0 0 10px 0;">Družstva A/B/C – sezóna a zápasy (ručně)</h3>
-  <div class="small" style="opacity:0.85;">
-    Zápasy řadíme podle kola. Tabulka se tahá automaticky, ale do historie se uloží snapshot.
-  </div>
+        <pre id="dorostGuideBox" style="display:none; white-space:pre-wrap; margin-top:10px;"></pre>
 
-  <div class="toolrow" style="margin-top:10px;">
-    <label for="abcTeam"><strong>Družstvo:</strong></label>
-    <select id="abcTeam">
-      <option value="A">A (TJ Sokol Benešov)</option>
-      <option value="B">B (TJ Sokol Benešov B)</option>
-      <option value="C">C (TJ Sokol Benešov C)</option>
-    </select>
-
-    <label for="abcSeason"><strong>Sezóna:</strong></label>
-    <input id="abcSeason" type="text" value="2025-2026" style="min-width:140px;">
-
-    <button id="btnAbcLoad" class="btn-soft" type="button">Načíst</button>
-  </div>
-  
-<div class="toolrow">
-  <button id="btnAbcNewSeason" class="btn-primary" type="button">Vytvořit novou sezónu</button>
-  <button id="btnAbcClearSeason" class="btn-danger" type="button">Smazat sezónu (vyčistit)</button>
-  <button id="btnTeamsEditor" class="btn-soft" type="button">Zadání týmů</button>
-</div>
+        <div id="dorostMsg" class="small" style="margin-top:10px;"></div>
+        <div id="dorostList" class="small" style="margin-top:6px;"></div>
+      </div>
 
 
-  <div class="small" style="opacity:0.85;">
-    „Smazat sezónu“ vyčistí: tabulku cache, budoucí zápasy a minulé zápasy. Historii to nebude mazat.
-  </div>
- 
-<hr style="margin:14px 0;">
+      <!-- =======================
+           A / B / C
+           ======================= -->
+      <hr style="margin:16px 0;">
 
-<div id="teamsEditorBox" style="display:none;">
-  <div class="toolrow">
-    <textarea id="teamsTextarea" rows="10" style="width:100%; max-width:760px;"
-      placeholder="Např.&#10;SK Verneřice&#10;TJ Sokol Benešov&#10;TJ Sokol Benešov B&#10;..."></textarea>
-  </div>
+      <div class="card" id="abcCard" style="margin:0;">
+        <h3 style="margin:0 0 10px 0; color:#ffd700;">Družstva A/B/C – sezóna a zápasy (ručně)</h3>
+        <div class="small" style="opacity:0.85;">
+          Zápasy řadíme podle kola. Tabulka se tahá automaticky, do historie se uloží snapshot.
+        </div>
 
-  <div class="toolrow">
-    <button id="btnTeamsSave" class="btn-primary" type="button">Uložit seznam týmů</button>
-    <button id="btnTeamsLoad" class="btn-soft" type="button">Načíst seznam týmů</button>
-    <span id="teamsMsg" class="small"></span>
-  </div>
-</div>
-  <h4 style="margin:0 0 8px 0; color:#ffd700;">Budoucí zápas (future)</h4>
-  <div class="toolrow">
-    <label>Kolo:</label><input id="fRound" type="number" min="1" style="width:90px;">
-    <label>Datum:</label><input id="fDate" type="date">
-  </div>
-  <div class="toolrow">
-    <label>Domácí:</label><input id="fHome" type="text" placeholder="např. SK Verneřice" style="min-width:240px;">
-    <label>Hosté:</label><input id="fAway" type="text" placeholder="např. TJ Sokol Benešov" style="min-width:240px;">
-  </div>
-  <div class="toolrow">
-    <button id="btnSaveFuture" class="btn-primary" type="button">Uložit budoucí kolo</button>
-  </div>
+        <div class="toolrow" style="margin-top:10px;">
+          <label for="abcTeam"><strong>Družstvo:</strong></label>
+          <select id="abcTeam">
+            <option value="A">A (TJ Sokol Benešov)</option>
+            <option value="B">B (TJ Sokol Benešov B)</option>
+            <option value="C">C (TJ Sokol Benešov C)</option>
+          </select>
 
-  <hr style="margin:14px 0;">
+          <label for="abcSeason"><strong>Sezóna:</strong></label>
+          <input id="abcSeason" type="text" value="2025-2026" style="min-width:140px;">
 
-  <h4 style="margin:0 0 8px 0; color:#ffd700;">Minulý zápas (past)</h4>
-  <div class="toolrow">
-    <label>Kolo:</label><input id="pRound" type="number" min="1" style="width:90px;">
-    <label>Datum:</label><input id="pDate" type="date">
-  </div>
-  <div class="toolrow">
-    <label>Domácí:</label><input id="pHome" type="text" placeholder="např. SK Verneřice" style="min-width:240px;">
-    <label>Hosté:</label><input id="pAway" type="text" placeholder="např. TJ Sokol Benešov" style="min-width:240px;">
-  </div>
-  <div class="toolrow">
-    <label>Výsledek:</label><input id="pResult" type="text" placeholder="např. 6:2" style="width:120px;">
-    <label>Kuželky:</label><input id="pPins" type="text" placeholder="např. 3404:3247" style="width:160px;">
-  </div>
-  <div class="toolrow">
-    <button id="btnSavePast" class="btn-primary" type="button">Uložit minulé kolo</button>
-  </div>
+          <button id="btnAbcLoad" class="btn-soft" type="button">Načíst</button>
+        </div>
 
-  <hr style="margin:14px 0;">
+        <div class="toolrow">
+          <button id="btnAbcNewSeason" class="btn-primary" type="button">Vytvořit novou sezónu</button>
+          <button id="btnAbcClearSeason" class="btn-danger" type="button">Smazat sezónu (vyčistit)</button>
+        </div>
 
-  <div class="toolrow">
-    <button id="btnAbcToHistory" class="btn-primary" type="button">Přenést do historie (snapshot)</button>
-    <button id="btnAbcGuide" class="btn-soft" type="button">Návod</button>
-  </div>
+        <div class="small" style="opacity:0.85;">
+          „Smazat sezónu“ vyčistí: tabulku cache, budoucí zápasy a minulé zápasy. Historii to nebude mazat.
+        </div>
 
-  <div id="abcMsg" class="small" style="margin-top:10px;"></div>
-  <pre id="abcGuideBox" style="display:none; white-space:pre-wrap; margin-top:10px;"></pre>
-</div>
+        <hr style="margin:14px 0;">
 
-    </div>
+        <h4 style="margin:0 0 8px 0; color:#ffd700;">Budoucí zápas (future)</h4>
+        <div class="toolrow">
+          <label>Kolo:</label><input id="fRound" type="number" min="1" style="width:90px;">
+          <label>Datum:</label><input id="fDate" type="date">
+        </div>
+        <div class="toolrow">
+          <label>Domácí:</label><input id="fHome" type="text" placeholder="např. SK Verneřice" style="min-width:240px;">
+          <label>Hosté:</label><input id="fAway" type="text" placeholder="např. TJ Sokol Benešov" style="min-width:240px;">
+        </div>
+        <div class="toolrow">
+          <button id="btnSaveFuture" class="btn-primary" type="button">Uložit budoucí kolo</button>
+        </div>
 
-   
+        <hr style="margin:14px 0;">
+
+        <h4 style="margin:0 0 8px 0; color:#ffd700;">Minulý zápas (past)</h4>
+        <div class="toolrow">
+          <label>Kolo:</label><input id="pRound" type="number" min="1" style="width:90px;">
+          <label>Datum:</label><input id="pDate" type="date">
+        </div>
+        <div class="toolrow">
+          <label>Domácí:</label><input id="pHome" type="text" placeholder="např. SK Verneřice" style="min-width:240px;">
+          <label>Hosté:</label><input id="pAway" type="text" placeholder="např. TJ Sokol Benešov" style="min-width:240px;">
+        </div>
+        <div class="toolrow">
+          <label>Výsledek:</label><input id="pResult" type="text" placeholder="např. 6:2" style="width:120px;">
+          <label>Kuželky:</label><input id="pPins" type="text" placeholder="např. 3404:3247" style="width:160px;">
+        </div>
+        <div class="toolrow">
+          <button id="btnSavePast" class="btn-primary" type="button">Uložit minulé kolo</button>
+        </div>
+
+        <hr style="margin:14px 0;">
+
+        <div class="toolrow">
+          <button id="btnAbcToHistory" class="btn-primary" type="button">Přenést do historie (snapshot)</button>
+          <button id="btnAbcGuide" class="btn-soft" type="button">Návod</button>
+        </div>
+
+        <div id="abcMsg" class="small" style="margin-top:10px;"></div>
+        <pre id="abcGuideBox" style="display:none; white-space:pre-wrap; margin-top:10px;"></pre>
+      </div>
+
+    </div><!-- /appBox -->
+
+  </div><!-- /content-box -->
 </main>
 
 <footer>© Kuželky Benešov – 2026</footer>
