@@ -149,7 +149,26 @@
           <button id="btnAbcNewSeason" class="btn-primary" type="button">Vytvořit novou sezónu</button>
           <button id="btnAbcClearSeason" class="btn-danger" type="button">Smazat sezónu (vyčistit)</button>
         </div>
+<div class="toolrow">
+  <button id="btnTeamsEditor" class="btn-soft" type="button">Zadat týmy</button>
+</div>
 
+<div id="teamsEditorBox" style="display:none;">
+  <div class="small" style="opacity:0.85; margin-bottom:6px;">
+    Sem vlož seznam týmů v soutěži (1 tým na řádek). Slouží pro rychlý výběr domácí/hosté.
+  </div>
+
+  <div class="toolrow">
+    <textarea id="teamsTextarea" rows="10" style="width:100%; max-width:760px;"
+      placeholder="Např.&#10;SK Verneřice&#10;TJ Sokol Benešov&#10;TJ Sokol Benešov B&#10;..."></textarea>
+  </div>
+
+  <div class="toolrow">
+    <button id="btnTeamsSave" class="btn-primary" type="button">Uložit seznam týmů</button>
+    <button id="btnTeamsLoad" class="btn-soft" type="button">Načíst seznam týmů</button>
+    <span id="teamsMsg" class="small"></span>
+  </div>
+</div>
         <div class="small" style="opacity:0.85;">
           „Smazat sezónu“ vyčistí: tabulku cache, budoucí zápasy a minulé zápasy. Historii to nebude mazat.
         </div>
