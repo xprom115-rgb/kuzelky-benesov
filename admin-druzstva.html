@@ -181,8 +181,15 @@
           <label>Datum:</label><input id="fDate" type="date">
         </div>
         <div class="toolrow">
-          <label>Domácí:</label><input id="fHome" type="text" placeholder="např. SK Verneřice" style="min-width:240px;">
-          <label>Hosté:</label><input id="fAway" type="text" placeholder="např. TJ Sokol Benešov" style="min-width:240px;">
+         <label>Domácí:</label>
+<select id="fHome" style="min-width:240px;">
+  <option value="">— vyber tým —</option>
+</select>
+
+<label>Hosté:</label>
+<select id="fAway" style="min-width:240px;">
+  <option value="">— vyber tým —</option>
+</select>
         </div>
         <div class="toolrow">
           <button id="btnSaveFuture" class="btn-primary" type="button">Uložit budoucí kolo</button>
