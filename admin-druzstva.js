@@ -517,4 +517,39 @@ btnAbcGuide?.addEventListener("click", () => {
     abcGuideBox.textContent = "Návod pro A/B/C doplníme v dalším kroku (stejně jako dorost).";
   }
 });
-``
+// ====== A/B/C: editor seznamu týmů – pouze rozbalení/sbalení (KROK) ======
+const btnTeamsEditor = document.getElementById("btnTeamsEditor");
+const teamsEditorBox = document.getElementById("teamsEditorBox");
+const teamsTextarea = document.getElementById("teamsTextarea");
+const btnTeamsSave = document.getElementById("btnTeamsSave");
+const btnTeamsLoad = document.getElementById("btnTeamsLoad");
+const teamsMsg = document.getElementById("teamsMsg");
+
+function setTeamsMsg(txt) {
+  if (teamsMsg) teamsMsg.textContent = txt || "";
+}
+
+btnTeamsEditor?.addEventListener("click", () => {
+  if (!teamsEditorBox) return;
+
+  // přepínač zobrazení
+  const isHidden = (teamsEditorBox.style.display === "none" || teamsEditorBox.style.display === "");
+  teamsEditorBox.style.display = isHidden ? "block" : "none";
+
+  if (isHidden) {
+    setTeamsMsg("ℹ️ Editor otevřen. (Ukládání/načítání doděláme v dalším kroku.)");
+    // focus do textarea (komfort)
+    setTimeout(() => teamsTextarea?.focus(), 0);
+  } else {
+    setTeamsMsg("");
+  }
+});
+
+// zatím jen informace – aby tlačítka nekončila "nic se neděje"
+btnTeamsSave?.addEventListener("click", () => {
+  setTeamsMsg("ℹ️ Ukládání seznamu týmů doděláme v dalším kroku.");
+});
+btnTeamsLoad?.addEventListener("click", () => {
+  setTeamsMsg("ℹ️ Načítání seznamu týmů doděláme v dalším kroku.");
+});
+
