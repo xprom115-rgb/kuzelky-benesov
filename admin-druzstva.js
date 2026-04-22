@@ -545,6 +545,38 @@ btnTeamsEditor?.addEventListener("click", () => {
   }
 });
 
+function fillTeamSelects(teams) {
+  const fHomeSel = document.getElementById("fHome");
+  const fAwaySel = document.getElementById("fAway");
+  const pHomeSel = document.getElementById("pHome");
+  const pAwaySel = document.getElementById("pAway");
+
+  const selects = [fHomeSel, fAwaySel, pHomeSel, pAwaySel].filter(Boolean);
+
+  // reset na výchozí stav
+  selects.forEach(sel => {
+    const current = sel.value; // necháme si případný aktuální výběr
+    sel.innerHTML = `<option value="">— vyber tým —</option>`;
+    sel.value = ""; // reset
+    sel.dataset.prev = current; // uložíme pro případné obnovení
+  });
+
+  if (!Array.isArray(teams) || teams.length === 0) return;
+
+  // doplnění možností
+  const optionsHtml = teams.map(t => {
+    const safe = (t || "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+    return `<option value="${safe}">${safe}</option>`;
+  }).join("");
+
+  selects.forEach(sel => {
+    sel.insertAdjacentHTML("beforeend", optionsHtml);
+
+    // když byl dřív vybraný tým, zkus ho obnovit
+    const prev = sel.dataset.prev || "";
+    if (prev && teams.includes(prev)) sel.value = prev;
+  });
+}
 btnTeamsSave?.addEventListener("click", async () => {
   try {
     const teamId = document.getElementById("abcTeam")?.value || "A";
