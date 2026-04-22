@@ -604,6 +604,7 @@ btnTeamsSave?.addEventListener("click", async () => {
     }, { merge: true });
 
     setTeamsMsg(`✅ Uloženo: ${unique.length} týmů (team_current/${teamId}.teams).`);
+    fillTeamSelects(unique);
   } catch (e) {
     console.error(e);
     setTeamsMsg("❌ Uložení selhalo (zkontroluj přihlášení / Rules).");
@@ -625,7 +626,7 @@ btnTeamsLoad?.addEventListener("click", async () => {
     }
 
     const data = snap.data();
-    const teams = Array.isArray(data.teams) ? data.teams : [];
+    if (Array.isArray(data.teams)) fillTeamSelects(data.teams);
 
     if (!teams.length) {
       setTeamsMsg("ℹ️ Nejsou uložené žádné týmy (teams je prázdné).");
@@ -635,6 +636,7 @@ btnTeamsLoad?.addEventListener("click", async () => {
 
     if (teamsTextarea) teamsTextarea.value = teams.join("\n");
     setTeamsMsg(`✅ Načteno: ${teams.length} týmů.`);
+    fillTeamSelects(teams);
   } catch (e) {
     console.error(e);
     setTeamsMsg("❌ Načtení selhalo (zkontroluj přihlášení / Rules).");
