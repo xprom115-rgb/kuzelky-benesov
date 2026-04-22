@@ -34,7 +34,6 @@ function showApp(isLoggedIn) {
   if (loginBox) loginBox.style.display = isLoggedIn ? "none" : "";
   if (appBox) appBox.style.display = isLoggedIn ? "" : "none";
 }
-showApp(false); // ✅ při načtení stránky vždy schovej administraci a ukaž login
 
 btnLogin?.addEventListener("click", async () => {
   const email = (emailEl?.value || "").trim();
