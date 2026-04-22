@@ -517,7 +517,7 @@ btnAbcGuide?.addEventListener("click", () => {
     abcGuideBox.textContent = "Návod pro A/B/C doplníme v dalším kroku (stejně jako dorost).";
   }
 });
-// ====== A/B/C: editor seznamu týmů + naplnění roletek (1:1 blok) ======
+// ====== A/B/C: editor seznamu týmů + naplnění roletek (SINGLE BLOCK) ======
 const btnTeamsEditor = document.getElementById("btnTeamsEditor");
 const teamsEditorBox = document.getElementById("teamsEditorBox");
 const teamsTextarea  = document.getElementById("teamsTextarea");
@@ -577,7 +577,6 @@ btnTeamsSave?.addEventListener("click", async () => {
     const teamId = document.getElementById("abcTeam")?.value || "A";
     const raw = (teamsTextarea?.value || "");
 
-    // 1 tým na řádek
     const lines = raw
       .split(/\r?\n/)
       .map(s => s.trim())
@@ -605,6 +604,35 @@ btnTeamsSave?.addEventListener("click", async () => {
     setTeamsMsg("❌ Uložení selhalo (zkontroluj přihlášení / Rules).");
   }
 });
+
+// Načíst seznam týmů z team_current/{A|B|C}.teams
+btnTeamsLoad?.addEventListener("click", async () => {
+  try {
+    const teamId = document.getElementById("abcTeam")?.value || "A";
+    setTeamsMsg(`⏳ Načítám team_current/${teamId}.teams…`);
+
+    const ref = doc(db, "team_current", teamId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      setTeamsMsg(`⚠️ team_current/${teamId} neexistuje.`);
+      return;
+    }
+
+    const data = snap.data();
+    const teams = Array.isArray(data.teams) ? data.teams : [];
+
+    if (teamsTextarea) teamsTextarea.value = teams.join("\n");
+    fillTeamSelects(teams);
+
+    setTeamsMsg(teams.length ? `✅ Načteno: ${teams.length} týmů.` : "ℹ️ Nejsou uložené žádné týmy.");
+  } catch (e) {
+    console.error(e);
+    setTeamsMsg("❌ Načtení selhalo (zkontroluj přihlášení / Rules).");
+  }
+});
+// ====== END SINGLE BLOCK ======
+
 
 // Načíst seznam týmů z team_current/{A|B|C}.teams
 btnTeamsLoad?.addEventListener("click", async () => {
