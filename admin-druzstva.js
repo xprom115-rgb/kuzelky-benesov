@@ -612,9 +612,35 @@ btnTeamsSave?.addEventListener("click", async () => {
 });
 
 btnTeamsLoad?.addEventListener("click", async () => {
+ function fillTeamSelects(teams) {
+  const fHomeSel = document.getElementById("fHome");
+  const fAwaySel = document.getElementById("fAway");
+  const pHomeSel = document.getElementById("pHome");
+  const pAwaySel = document.getElementById("pAway");
+
+  const selects = [fHomeSel, fAwaySel, pHomeSel, pAwaySel].filter(Boolean);
+
+  // vyčisti roletky
+  for (const sel of selects) {
+    sel.innerHTML = "";
+    sel.appendChild(new Option("— vyber tým —", ""));
+  }
+
+  if (!Array.isArray(teams) || teams.length === 0) return;
+
+  // přidej možnosti (bez HTML escapování, přes DOM API)
+  for (const t of teams) {
+    const name = (t || "").trim();
+    if (!name) continue;
+    for (const sel of selects) {
+      sel.appendChild(new Option(name, name));
+    }
+  }
+}
+
+btnTeamsLoad?.addEventListener("click", async () => {
   try {
     const teamId = document.getElementById("abcTeam")?.value || "A";
-
     setTeamsMsg(`⏳ Načítám team_current/${teamId}.teams…`);
 
     const ref = doc(db, "team_current", teamId);
@@ -624,6 +650,21 @@ btnTeamsLoad?.addEventListener("click", async () => {
       setTeamsMsg(`⚠️ team_current/${teamId} neexistuje.`);
       return;
     }
+
+    const data = snap.data();
+    const teams = Array.isArray(data.teams) ? data.teams : [];
+
+    if (teamsTextarea) teamsTextarea.value = teams.join("\n");
+
+    // ✅ TADY je klíč: naplň roletky
+    fillTeamSelects(teams);
+
+    setTeamsMsg(teams.length ? `✅ Načteno: ${teams.length} týmů.` : "ℹ️ Nejsou uložené žádné týmy (teams je prázdné).");
+  } catch (e) {
+    console.error(e);
+    setTeamsMsg("❌ Načtení selhalo (zkontroluj přihlášení / Rules).");
+  }
+});
 
     const data = snap.data();
     if (Array.isArray(data.teams)) fillTeamSelects(data.teams);
