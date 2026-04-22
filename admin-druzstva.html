@@ -146,8 +146,28 @@
     „Smazat sezónu“ vyčistí: tabulku cache, budoucí zápasy a minulé zápasy. Historii to nebude mazat.
   </div>
 
-  <hr style="margin:14px 0;">
+ 
+<hr style="margin:14px 0;">
 
+<div class="toolrow">
+  <button id="btnTeamsEditor" class="btn-soft" type="button">Zadání týmů</button>
+  <div class="small" style="opacity:0.85;">
+    Jeden tým na řádek. Použije se jako roletka/našeptávač pro „Domácí / Hosté“.
+  </div>
+</div>
+
+<div id="teamsEditorBox" style="display:none;">
+  <div class="toolrow">
+    <textarea id="teamsTextarea" rows="10" style="width:100%; max-width:760px;"
+      placeholder="Např.&#10;SK Verneřice&#10;TJ Sokol Benešov&#10;TJ Sokol Benešov B&#10;..."></textarea>
+  </div>
+
+  <div class="toolrow">
+    <button id="btnTeamsSave" class="btn-primary" type="button">Uložit seznam týmů</button>
+    <button id="btnTeamsLoad" class="btn-soft" type="button">Načíst seznam týmů</button>
+    <span id="teamsMsg" class="small"></span>
+  </div>
+</div>
   <h4 style="margin:0 0 8px 0; color:#ffd700;">Budoucí zápas (future)</h4>
   <div class="toolrow">
     <label>Kolo:</label><input id="fRound" type="number" min="1" style="width:90px;">
