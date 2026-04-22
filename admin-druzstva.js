@@ -351,6 +351,7 @@ btnDorostGuide?.addEventListener("click", async () => {
     dorostGuideBox.textContent = "Nelze načíst dorost-navod.txt (zkontroluj, že soubor existuje v repu).";
   }
 });
+
 // ====== A/B/C: sezóna + načítání / vytvoření sezóny (KROK 3) ======
 const abcTeam = document.getElementById("abcTeam");
 const abcSeason = document.getElementById("abcSeason");
@@ -365,6 +366,11 @@ const btnAbcGuide = document.getElementById("btnAbcGuide");
 
 const abcMsg = document.getElementById("abcMsg");
 const abcGuideBox = document.getElementById("abcGuideBox");
+
+const fRound = document.getElementById("fRound");
+const fDate  = document.getElementById("fDate");
+const fHome  = document.getElementById("fHome");
+const fAway  = document.getElementById("fAway");
 
 function setAbcMsg(txt) {
   if (abcMsg) abcMsg.textContent = txt || "";
@@ -438,9 +444,63 @@ btnAbcClearSeason?.addEventListener("click", () => {
   setAbcMsg("ℹ️ Mazání sezóny doděláme v dalším kroku (teď jen Načíst + Nová sezóna).");
 });
 
-btnSaveFuture?.addEventListener("click", () => {
-  setAbcMsg("ℹ️ Uložení budoucího kola doděláme v dalším kroku.");
+btnSaveFuture?.addEventListener("click", async () => {
+  try {
+    const teamId = abcTeam?.value || "A";
+
+    const roundNum = Number(fRound?.value || "");
+    const roundKey = String(roundNum);
+
+    const date = (fDate?.value || "").trim();
+    const home = (fHome?.value || "").trim();
+    const away = (fAway?.value || "").trim();
+
+    if (!roundNum || roundNum < 1 || !Number.isFinite(roundNum)) {
+      setAbcMsg("⚠️ Vyplň kolo (číslo >= 1).");
+      return;
+    }
+    if (!date) {
+      setAbcMsg("⚠️ Vyplň datum.");
+      return;
+    }
+    if (!home || !away) {
+      setAbcMsg("⚠️ Vyplň domácí i hosté.");
+      return;
+    }
+
+    setAbcMsg(`⏳ Ukládám budoucí kolo ${roundKey} pro ${teamId}…`);
+
+    const ref = doc(db, "team_current", teamId);
+
+    // ✅ merge: přidá/aktualizuje future["kolo"] bez smazání ostatních kol
+    await setDoc(ref, {
+      updatedAt: new Date().toISOString(),
+      future: {
+        [roundKey]: {
+          round: roundNum,
+          date,
+          home,
+          away
+        }
+      }
+    }, { merge: true });
+
+    setAbcMsg(`✅ Uloženo: ${roundKey}. kolo (${date}) ${home} - ${away}`);
+
+    // volitelně vyčistit inputy
+    if (fRound) fRound.value = "";
+    if (fDate) fDate.value = "";
+    if (fHome) fHome.value = "";
+    if (fAway) fAway.value = "";
+
+    // ať hned vidíš počet kol
+    await loadAbcCurrent(teamId);
+  } catch (e) {
+    console.error(e);
+    setAbcMsg("❌ Uložení budoucího kola selhalo (zkontroluj přihlášení / Rules).");
+  }
 });
+``
 
 btnSavePast?.addEventListener("click", () => {
   setAbcMsg("ℹ️ Uložení minulého kola doděláme v dalším kroku.");
