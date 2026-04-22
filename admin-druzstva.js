@@ -453,9 +453,84 @@ btnSaveFuture?.addEventListener("click", async () => {
   }
 });
 
-// zatím stuby
-btnSavePast?.addEventListener("click", () => {
-  setAbcMsg("ℹ️ Uložení minulého kola doděláme v dalším kroku.");
+
+btnSavePast?.addEventListener("click", async () => {
+  try {
+    const teamId = abcTeam?.value || "A";
+
+    const roundNum = Number(pRound?.value || "");
+    const roundKey = String(roundNum);
+
+    const date = (pDate?.value || "").trim();
+    const home = (pHome?.value || "").trim(); // select
+    const away = (pAway?.value || "").trim(); // select
+    const result = (pResult?.value || "").trim(); // např. 6:2
+    const pins = (pPins?.value || "").trim();     // např. 3404:3247
+
+    if (!roundNum || roundNum < 1 || !Number.isFinite(roundNum)) {
+      setAbcMsg("⚠️ Vyplň kolo (číslo >= 1).");
+      return;
+    }
+    if (!date) {
+      setAbcMsg("⚠️ Vyplň datum.");
+      return;
+    }
+    if (!home || !away) {
+      setAbcMsg("⚠️ Vyber domácí i hosté (roletky).");
+      return;
+    }
+    if (!result) {
+      setAbcMsg("⚠️ Vyplň výsledek (např. 6:2).");
+      return;
+    }
+    if (!pins) {
+      setAbcMsg("⚠️ Vyplň kuželky (např. 3404:3247).");
+      return;
+    }
+
+    // jednoduchá kontrola formátu (kvůli překlepům)
+    if (!/^\d+(?:[.,]\d+)?:\d+(?:[.,]\d+)?$/.test(result.replace(/\s+/g, ""))) {
+      setAbcMsg("⚠️ Výsledek má špatný formát (např. 6:2 nebo 5,5:2,5).");
+      return;
+    }
+    if (!/^\d{3,4}:\d{3,4}$/.test(pins.replace(/\s+/g, ""))) {
+      setAbcMsg("⚠️ Kuželky mají špatný formát (např. 3404:3247).");
+      return;
+    }
+
+    setAbcMsg(`⏳ Ukládám minulý zápas ${roundKey}. kolo pro ${teamId}…`);
+
+    const ref = doc(db, "team_current", teamId);
+
+    // ✅ uloží past[roundKey] bez smazání ostatních kol
+    await setDoc(ref, {
+      updatedAt: new Date().toISOString(),
+      past: {
+        [roundKey]: {
+          round: roundNum,
+          date,
+          home,
+          away,
+          result: result.replace(/\s+/g, ""),
+          pins: pins.replace(/\s+/g, "")
+        }
+      }
+    }, { merge: true });
+
+    setAbcMsg(`✅ Uloženo: ${roundKey}. kolo (${date}) ${home} - ${away} ${result} ${pins}`);
+
+    // volitelně vyčistit vstupy
+    if (pRound) pRound.value = "";
+    if (pDate) pDate.value = "";
+    if (pResult) pResult.value = "";
+    if (pPins) pPins.value = "";
+
+    // načti zpět a ukaž počty kol
+    await loadAbcCurrent(teamId);
+  } catch (e) {
+    console.error(e);
+    setAbcMsg("❌ Uložení minulého kola selhalo (zkontroluj přihlášení / Rules).");
+  }
 });
 btnAbcToHistory?.addEventListener("click", () => {
   setAbcMsg("ℹ️ Přenos do historie doděláme v dalším kroku (snapshot).");
