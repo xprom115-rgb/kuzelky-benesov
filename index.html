@@ -12,3 +12,60 @@
 
 <header>
   <div class="header-left">
+    <img src="./logo.jpg" alt="Kuželky Benešov" style="max-height:64px;">
+  </div>
+  <div class="header-title">Kuželky Benešov</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+
+    <h2>Vítejte</h2>
+    <p class="small">Oficiální web oddílu kuželek TJ Sokol Benešov.</p>
+
+    <!-- DLAŽDICE: Zápasy (budoucí) -->
+    <div style="
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    ">
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <h3 style="margin:0; color:#ffd700;">Zápasy</h3>
+        <span class="small" style="opacity:0.85;">Budoucí utkání A/B/C</span>
+      </div>
+
+      <div id="matchesTile" class="small" style="margin-top:10px;">
+        <em>Načítám…</em>
+      </div>
+    </div>
+
+    <!-- Sem si můžeš vrátit další svoje dlaždice/obsah, pokud něco máš -->
+    <!--
+    <div style="margin-top:14px;">...</div>
+    -->
+
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<!-- načtení dlaždice Zápasy (Firestore -> team_current/A,B,C.future) -->
+<script type="module" src="./index-matches.js?v=1"></script>
+</body>
+</html>
