@@ -532,9 +532,57 @@ btnSavePast?.addEventListener("click", async () => {
     setAbcMsg("❌ Uložení minulého kola selhalo (zkontroluj přihlášení / Rules).");
   }
 });
-btnAbcToHistory?.addEventListener("click", () => {
-  setAbcMsg("ℹ️ Přenos do historie doděláme v dalším kroku (snapshot).");
+btnAbcToHistory?.addEventListener("click", async () => {
+  try {
+    const teamId = abcTeam?.value || "A";
+    const seasonId = (abcSeason?.value || "").trim();
+
+    if (!seasonId) {
+      setAbcMsg("⚠️ Vyplň sezónu (např. 2025-2026).");
+      return;
+    }
+
+    setAbcMsg("⏳ Archivuju tabulku do historie…");
+
+    // 1) Načti aktuální tabulku z JSON (GitHub Pages / stejná doména)
+    const res = await fetch(`./data/teams/${teamId}.json?v=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) {
+      setAbcMsg(`❌ Nelze načíst data/teams/${teamId}.json (HTTP ${res.status}).`);
+      return;
+    }
+    const feed = await res.json();
+    const table = feed?.table;
+
+    if (!table || !Array.isArray(table.columns) || !Array.isArray(table.rows) || table.rows.length === 0) {
+      setAbcMsg("⚠️ Tabulka v JSON je prázdná – nejdřív musí být načtená tabulka.");
+      return;
+    }
+
+    // 2) Historie: create-only (nepřepisovat)
+    const histRef = doc(db, "team_history", teamId, "seasons", seasonId);
+    const histSnap = await getDoc(histRef);
+    if (histSnap.exists()) {
+      setAbcMsg("ℹ️ Historie pro tuto sezónu už existuje. Nepřepisuji.");
+      return;
+    }
+
+    // 3) Ulož snapshot tabulky (nezávislé na kuzelky.cz)
+    await setDoc(histRef, {
+      seasonId,
+      archivedAt: new Date().toISOString(),
+      finalTable: {
+        columns: table.columns,
+        rows: table.rows
+      }
+    });
+
+    setAbcMsg(`✅ Uloženo do historie: ${teamId} / ${seasonId} (snapshot tabulky).`);
+  } catch (e) {
+    console.error(e);
+    setAbcMsg("❌ Archivace tabulky selhala (koukni do Console F12).");
+  }
 });
+
 btnAbcGuide?.addEventListener("click", () => {
   if (!abcGuideBox) return;
   abcGuideBox.style.display = (abcGuideBox.style.display === "none" || !abcGuideBox.style.display) ? "block" : "none";
