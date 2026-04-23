@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Historie týmu – Kuželky Benešov</title>
+  <link rel="stylesheet" href="./style.css?v=1">
+  <style>
+    .hist-tile {
+      margin-top:14px;
+      padding:14px 16px;
+      border-radius:14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .hist-tile h3 { margin:0; color:#ffd700; }
+    .hist-tile .desc { font-size:13px; opacity:0.9; margin-top:6px; }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="header-left">
+    <img src="./logo.jpg" alt="Kuželky Benešov" style="max-height:64px;">
+  </div>
+  <div class="header-title">Kuželky Benešov</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+    <h2 id="histTitle">Historie</h2>
+    <p class="small" id="histSubtitle">Načítám…</p>
+
+    <div id="seasonsWrap">
+      <p><em>Načítám sezóny…</em></p>
+    </div>
+
+    <div id="seasonDetail" style="margin-top:16px;"></div>
+
+    <div style="margin-top:14px;">
+      <a class="btn-soft" href="historie-muzstev.html">Zpět na historii mužstev</a>
+    </div>
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<script type="module" src="./historie-tym.js?v=1"></script>
+</body>
+</html>
