@@ -612,16 +612,30 @@ btnAbcToHistory?.addEventListener("click", async () => {
   }
 });
 
-
-
-
-btnAbcGuide?.addEventListener("click", () => {
+// ---- A/B/C návod (načtení z abc-navod.txt) ----
+btnAbcGuide?.addEventListener("click", async () => {
   if (!abcGuideBox) return;
-  abcGuideBox.style.display = (abcGuideBox.style.display === "none" || !abcGuideBox.style.display) ? "block" : "none";
-  if (abcGuideBox.style.display === "block") {
-    abcGuideBox.textContent = "Návod pro A/B/C doplníme v dalším kroku (stejně jako dorost).";
+
+  // toggle: když je vidět, schovej
+  if (abcGuideBox.style.display !== "none" && abcGuideBox.style.display !== "") {
+    abcGuideBox.style.display = "none";
+    return;
+  }
+
+  abcGuideBox.style.display = "block";
+  abcGuideBox.textContent = "Načítám návod…";
+
+  try {
+    const res = await fetch("./abc-navod.txt?v=" + Date.now(), { cache: "no-store" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    const txt = await res.text();
+    abcGuideBox.textContent = txt;
+  } catch (e) {
+    console.error(e);
+    abcGuideBox.textContent = "Nelze načíst abc-navod.txt (zkontroluj, že soubor existuje v repu).";
   }
 });
+
 
 /* =========================================================
    A/B/C: editor seznamu týmů + naplnění roletek (SINGLE BLOCK)
