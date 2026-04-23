@@ -46,12 +46,11 @@ async function loadTeamDoc(teamId) {
   };
 }
 
+/* ===== Budoucí: nejbližší podle data ===== */
 function pickNextByDateFromMap(mapObj) {
-  // mapObj: { "1": {...}, "2": {...} }
-  // vrátí nejbližší budoucí zápas (dt >= dnes), při shodě menší kolo
   const today = todayMidnight();
-
   let best = null; // { dt, round, it }
+
   for (const k of Object.keys(mapObj || {})) {
     const it = mapObj[k] || {};
     const round = Number(it.round ?? k);
@@ -59,25 +58,38 @@ function pickNextByDateFromMap(mapObj) {
 
     const dt = toDate(it.date);
     if (!dt || dt < today) continue;
-
     if (!it.home || !it.away) continue;
 
-    const candidate = { dt, round, it };
+    const cand = { dt, round, it };
 
     if (!best) {
-      best = candidate;
+      best = cand;
       continue;
     }
 
     const bd = best.dt.getTime();
-    const cd = candidate.dt.getTime();
+    const cd = cand.dt.getTime();
 
-    if (cd < bd) best = candidate;
-    else if (cd === bd && candidate.round < best.round) best = candidate;
+    if (cd < bd) best = cand;
+    else if (cd === bd && cand.round < best.round) best = cand;
   }
 
   return best ? { round: best.round, it: best.it } : null;
 }
+
+/* ===== Minulé: poslední odehrané = nejvyšší kolo ===== */
+function pickMaxRoundFromMap(mapObj, validFn) {
+  let best = null; // { round, it }
+  for (const k of Object.keys(mapObj || {})) {
+    const it = mapObj[k] || {};
+    const round = Number(it.round ?? k);
+    if (!round || !Number.isFinite(round)) continue;
+    if (validFn && !validFn(it)) continue;
+    if (!best || round > best.round) best = { round, it };
+  }
+  return best;
+}
+
 function renderLineFuture(teamId, m) {
   const it = m.it;
   return `<div style="margin:2px 0;">
@@ -112,14 +124,12 @@ async function init() {
       loadTeamDoc("C")
     ]);
 
-    const today = todayMidnight();
-
-    
+    // Budoucí: nejbližší podle data
     const futureA = pickNextByDateFromMap(A.future);
     const futureB = pickNextByDateFromMap(B.future);
     const futureC = pickNextByDateFromMap(C.future);
 
-    // Poslední (odehrané): vyber max kolo z past
+    // Poslední: nejvyšší kolo z past
     const pastA = pickMaxRoundFromMap(A.past, (it) => it.date && it.home && it.away && it.result && it.pins);
     const pastB = pickMaxRoundFromMap(B.past, (it) => it.date && it.home && it.away && it.result && it.pins);
     const pastC = pickMaxRoundFromMap(C.past, (it) => it.date && it.home && it.away && it.result && it.pins);
@@ -138,7 +148,7 @@ async function init() {
 
     el.innerHTML = `
       <div style="margin-top:6px;">
-        <div style="font-weight:bold; color:#ffd700;">Budoucí zápas (nejvyšší kolo)</div>
+        <div style="font-weight:bold; color:#ffd700;">Nejbližší zápas</div>
         <div style="margin-top:6px;">${futureLines}</div>
       </div>
 
@@ -154,3 +164,4 @@ async function init() {
 }
 
 init();
+``
