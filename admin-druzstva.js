@@ -594,14 +594,6 @@ btnAbcToHistory?.addEventListener("click", async () => {
     setAbcMsg("❌ Archivace tabulky selhala (koukni do Console F12).");
   }
 });
-``
-
-    setAbcMsg(`✅ Uloženo do historie: ${teamId} / ${seasonId} (snapshot tabulky).`);
-  } catch (e) {
-    console.error(e);
-    setAbcMsg("❌ Archivace tabulky selhala (koukni do Console F12).");
-  }
-});
 
 btnAbcGuide?.addEventListener("click", () => {
   if (!abcGuideBox) return;
