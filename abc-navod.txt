@@ -1,0 +1,72 @@
+A/B/C – NÁVOD (sezóna, týmy, budoucí a minulé zápasy, index, historie)
+
+KDE SE CO UKLÁDÁ:
+1) Aktuální data (živá sezóna) – Firestore
+   team_current/A
+   team_current/B
+   team_current/C
+
+   Pole:
+   - seasonId: "2025-2026" (název sezóny)
+   - teams: [ ... seznam týmů v soutěži ... ] (fixní na začátku sezóny)
+   - future: { "kolo": { round, date, home, away } }
+   - past:   { "kolo": { round, date, home, away, result, pins } }
+
+2) Historie (archiv, neměnný snapshot) – Firestore
+   team_history/A/seasons/{SEZONA}
+   team_history/B/seasons/{SEZONA}
+   team_history/C/seasons/{SEZONA}
+
+   Pole:
+   - finalTable: uložený snapshot tabulky (columns + rows)
+   - pastList: uložený snapshot zápasů (pole objektů)
+
+DŮLEŽITÉ:
+- Kola se řadí podle čísla kola (1,2,3…).
+- future zobrazuje jen zápasy s datem >= dnes (odehrané se skrývají).
+- Historie se NEPŘEPISUJE: pokud sezóna existuje, archivace ji nezmění.
+
+
+A) ZAČÁTEK NOVÉ SEZÓNY
+1) V adminu vyber tým (A/B/C).
+2) Do pole Sezóna zadej např. 2026-2027.
+3) Klikni „Vytvořit novou sezónu“ (vyčistí future a past).
+
+B) ZADÁNÍ SEZNAMU TÝMŮ (jen jednou na začátku sezóny)
+1) Klikni „Zadat týmy“.
+2) Vlož seznam týmů – 1 tým na řádek (bez ručního dopisování).
+3) Klikni „Uložit seznam týmů“.
+4) Klikni „Načíst seznam týmů“ – ověření.
+5) Po načtení se naplní roletky Domácí/Hosté u future/past.
+
+C) BUDOUCÍ ZÁPAS (future)
+1) Vyplň Kolo + Datum.
+2) Vyber Domácí + Hosté z roletek.
+3) Klikni „Uložit budoucí kolo“.
+4) Kontrola:
+   - na index.html v dlaždici „Zápasy“ se ukáže nejbližší zápas
+   - na stránce družstva (A/B/C) v „Budoucí zápasy“ se ukáže seznam podle kol
+
+D) MINULÝ ZÁPAS (past)
+1) Vyplň Kolo + Datum.
+2) Vyber Domácí + Hosté z roletek.
+3) Vyplň Výsledek (např. 6:2) a Kuželky (např. 3404:3247).
+4) Klikni „Uložit minulé kolo“.
+5) Kontrola:
+   - na index.html v dlaždici „Zápasy“ se ukáže „Poslední zápas“
+   - na stránce družstva (A/B/C) v „Minulé zápasy“ se ukáže seznam podle kol
+
+E) ARCHIVACE DO HISTORIE (snapshot tabulky + zápasy)
+1) Zkontroluj, že máš zadané past zápasy (aspoň co chceš archivovat).
+2) Vyber správné družstvo (A/B/C) a sezónu (např. 2025-2026).
+3) Klikni „Přenést do historie (snapshot)“.
+4) Kontrola:
+   - historie-muzstev.html → klikni tým → sezóna → Otevřít
+   - zobrazí se tabulka + zápasy pod ní
+
+POZNÁMKA K OPRAVÁM:
+- Když už sezóna v historii existuje, nepřepíše se.
+  Řešení:
+  a) použij novou sezónu (např. 2025-2026_v2), nebo
+  b) smaž dokument v Firestore: team_history/{A|B|C}/seasons/{SEZONA} a archivuj znovu.
+``
