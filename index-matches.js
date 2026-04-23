@@ -46,19 +46,38 @@ async function loadTeamDoc(teamId) {
   };
 }
 
-function pickMaxRoundFromMap(mapObj, filterFn) {
+function pickNextByDateFromMap(mapObj) {
   // mapObj: { "1": {...}, "2": {...} }
-  let best = null;
+  // vrátí nejbližší budoucí zápas (dt >= dnes), při shodě menší kolo
+  const today = todayMidnight();
+
+  let best = null; // { dt, round, it }
   for (const k of Object.keys(mapObj || {})) {
     const it = mapObj[k] || {};
     const round = Number(it.round ?? k);
     if (!round || !Number.isFinite(round)) continue;
-    if (filterFn && !filterFn(it, round)) continue;
-    if (!best || round > best.round) best = { round, it };
-  }
-  return best; // {round, it} | null
-}
 
+    const dt = toDate(it.date);
+    if (!dt || dt < today) continue;
+
+    if (!it.home || !it.away) continue;
+
+    const candidate = { dt, round, it };
+
+    if (!best) {
+      best = candidate;
+      continue;
+    }
+
+    const bd = best.dt.getTime();
+    const cd = candidate.dt.getTime();
+
+    if (cd < bd) best = candidate;
+    else if (cd === bd && candidate.round < best.round) best = candidate;
+  }
+
+  return best ? { round: best.round, it: best.it } : null;
+}
 function renderLineFuture(teamId, m) {
   const it = m.it;
   return `<div style="margin:2px 0;">
@@ -95,19 +114,10 @@ async function init() {
 
     const today = todayMidnight();
 
-    // Budoucí: jen datum >= dnes a vyber max kolo
-    const futureA = pickMaxRoundFromMap(A.future, (it) => {
-      const dt = toDate(it.date);
-      return dt && dt >= today && it.home && it.away;
-    });
-    const futureB = pickMaxRoundFromMap(B.future, (it) => {
-      const dt = toDate(it.date);
-      return dt && dt >= today && it.home && it.away;
-    });
-    const futureC = pickMaxRoundFromMap(C.future, (it) => {
-      const dt = toDate(it.date);
-      return dt && dt >= today && it.home && it.away;
-    });
+    
+    const futureA = pickNextByDateFromMap(A.future);
+    const futureB = pickNextByDateFromMap(B.future);
+    const futureC = pickNextByDateFromMap(C.future);
 
     // Poslední (odehrané): vyber max kolo z past
     const pastA = pickMaxRoundFromMap(A.past, (it) => it.date && it.home && it.away && it.result && it.pins);
