@@ -132,10 +132,9 @@ async function init() {
     const seasons = await loadSeasons(teamId);
     renderSeasons(teamId, seasons);
 
-    // Volitelně: když existuje sezóna, zobraz první automaticky
-    if (seasons.length) {
-      await showSeasonDetail(teamId, seasons[0].id);
-    }
+
+if (detailEl) detailEl.innerHTML = "";
+
   } catch (e) {
     console.error(e);
     seasonsWrap.innerHTML = `<p><em>Nelze načíst sezóny (zkontroluj Firestore Rules pro team_history).</em></p>`;
