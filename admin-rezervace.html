@@ -28,23 +28,25 @@
 
 <main>
   <div class="content-box">
+<!-- LOGIN (Firebase Email/Password) -->
+<div id="loginBox" class="card">
+  <h2>Přihlášení admina</h2>
+  <p class="small">Přihlášení probíhá přes Firebase Authentication (Email/Password).</p>
 
-    <!-- LOGIN -->
-    <div id="admin-login">
-      <h2>Admin – přihlášení</h2>
-      <p>Zadejte heslo pro vstup do administrace rezervací.</p>
+  <div class="toolrow">
+    <input id="email" type="email" placeholder="Email admina" style="min-width:240px;">
+    <input id="pass" type="password" placeholder="Heslo" style="min-width:200px;">
+    <button id="btnLogin" class="btn-primary" type="button">Přihlásit</button>
+  </div>
 
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <input id="admin-pass" type="password" placeholder="Heslo"
-               style="padding:10px 12px; border-radius:10px; border:1px solid #bbb; min-width:220px;">
-        <button id="admin-login-btn"
-                style="padding:10px 14px; border-radius:10px; border:0; background:#1e235c; color:#ffd700; font-weight:bold; cursor:pointer;">
-          Přihlásit
-        </button>
-      </div>
+  <div id="loginMsg" class="small"></div>
+</div>
 
-      <p id="admin-login-msg" style="margin-top:10px;"></p>
-    </div>
+div id="appBox" class="card" style="display:none;">
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+    <h2 style="margin:0;">Admin rezervace</h2>
+    <button id="btnLogout" class="btn-soft" type="button">Odhlásit</button>
+  </div>
 
     <!-- PANEL -->
     <div id="admin-panel" style="display:none;">
@@ -81,7 +83,7 @@
 
       <div id="admin-list" style="margin-top:16px;"></div>
     </div>
-
+</div><!-- /appBox -->
   </div>
 </main>
 
