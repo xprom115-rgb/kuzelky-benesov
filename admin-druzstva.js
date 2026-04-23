@@ -532,6 +532,8 @@ btnSavePast?.addEventListener("click", async () => {
     setAbcMsg("❌ Uložení minulého kola selhalo (zkontroluj přihlášení / Rules).");
   }
 });
+
+// ====== A/B/C: Archivace do historie (tabulka + zápasy) ======
 btnAbcToHistory?.addEventListener("click", async () => {
   try {
     const teamId = abcTeam?.value || "A";
@@ -544,7 +546,7 @@ btnAbcToHistory?.addEventListener("click", async () => {
 
     setAbcMsg("⏳ Archivuju tabulku + zápasy do historie…");
 
-    // 1) Načti aktuální tabulku z JSON
+    // 1) Načti aktuální tabulku z JSON (GitHub Pages)
     const res = await fetch(`./data/teams/${teamId}.json?v=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) {
       setAbcMsg(`❌ Nelze načíst data/teams/${teamId}.json (HTTP ${res.status}).`);
@@ -558,7 +560,7 @@ btnAbcToHistory?.addEventListener("click", async () => {
       return;
     }
 
-    // 2) Firestore neumí uložit array-of-arrays → převedeme rows na array-of-objects
+    // 2) Firestore neumí array-of-arrays -> rows převedeme na array-of-objects {c0,c1,...}
     const cols = table.columns;
     const rowsObjects = table.rows.map((row, idx) => {
       const obj = { _i: idx };
@@ -573,7 +575,6 @@ btnAbcToHistory?.addEventListener("click", async () => {
     const curData = curSnap.exists() ? curSnap.data() : {};
     const pastMap = (curData.past && typeof curData.past === "object") ? curData.past : {};
 
-    // pastList = pole objektů (Firestore to umí), řadíme podle kola
     const pastList = Object.keys(pastMap).map(k => {
       const it = pastMap[k] || {};
       return {
@@ -585,7 +586,7 @@ btnAbcToHistory?.addEventListener("click", async () => {
         pins: it.pins || ""
       };
     })
-    .filter(m => m.round && m.date && m.home && m.away) // základní validace
+    .filter(m => m.round && m.date && m.home && m.away)
     .sort((a, b) => (a.round ?? 0) - (b.round ?? 0));
 
     // 4) Historie: nepřepisovat
@@ -596,12 +597,12 @@ btnAbcToHistory?.addEventListener("click", async () => {
       return;
     }
 
-    // 5) Ulož snapshot tabulky + snapshot zápasů
+    // 5) Ulož snapshot tabulky + zápasů
     await setDoc(histRef, {
       seasonId,
       archivedAt: new Date().toISOString(),
       finalTable: { columns: cols, rows: rowsObjects },
-      pastList // ✅ zápasy pod tabulkou
+      pastList
     });
 
     setAbcMsg(`✅ Uloženo do historie: ${teamId} / ${seasonId} (tabulka + zápasy).`);
@@ -611,31 +612,8 @@ btnAbcToHistory?.addEventListener("click", async () => {
   }
 });
 
-    // 3) Historie: nepřepisovat
-    const histRef = doc(db, "team_history", teamId, "seasons", seasonId);
-    const histSnap = await getDoc(histRef);
-    if (histSnap.exists()) {
-      setAbcMsg("ℹ️ Historie pro tuto sezónu už existuje. Nepřepisuji.");
-      return;
-    }
 
-    // 4) Ulož snapshot tabulky
-    await setDoc(histRef, {
-      seasonId,
-      archivedAt: new Date().toISOString(),
-      finalTable: {
-        columns: cols,
-        // ✅ rows uložené jako array-of-objects (bez vnořených polí)
-        rows: rowsObjects
-      }
-    });
 
-    setAbcMsg(`✅ Uloženo do historie: ${teamId} / ${seasonId} (snapshot tabulky).`);
-  } catch (e) {
-    console.error(e);
-    setAbcMsg("❌ Archivace tabulky selhala (koukni do Console F12).");
-  }
-});
 
 btnAbcGuide?.addEventListener("click", () => {
   if (!abcGuideBox) return;
