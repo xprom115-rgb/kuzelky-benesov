@@ -11,19 +11,16 @@ function esc(s) {
 }
 
 function fmtDate(iso) {
-  // YYYY-MM-DD -> D.M.YYYY
   if (!iso) return "";
   const [y, m, d] = iso.split("-");
   return `${Number(d)}.${Number(m)}.${y}`;
 }
 
 function getTeamId() {
-  // preferujeme ?team=A|B|C
   const p = new URLSearchParams(location.search);
   const t = (p.get("team") || "").toUpperCase();
   if (["A", "B", "C"].includes(t)) return t;
 
-  // fallback podle názvu souboru
   const path = (location.pathname || "").toLowerCase();
   if (path.includes("druzstvo-a")) return "A";
   if (path.includes("druzstvo-b")) return "B";
@@ -31,9 +28,20 @@ function getTeamId() {
   return null;
 }
 
+function toDate(iso) {
+  return iso ? new Date(iso + "T00:00:00") : null;
+}
+
+function todayMidnight() {
+  const t = new Date();
+  t.setHours(0, 0, 0, 0);
+  return t;
+}
+
 function normalizeFuture(futureMap) {
-  // futureMap: { "1": {round,date,home,away}, ... }
   const out = [];
+  const today = todayMidnight();
+
   for (const key of Object.keys(futureMap || {})) {
     const it = futureMap[key] || {};
     const round = Number(it.round ?? key);
@@ -43,8 +51,13 @@ function normalizeFuture(futureMap) {
 
     if (!round || !date || !home || !away) continue;
 
+    // ✅ skryj odehrané: datum < dnes
+    const dt = toDate(date);
+    if (!dt || dt < today) continue;
+
     out.push({ round, date, home, away });
   }
+
   // řazení podle kola
   out.sort((a, b) => (a.round ?? 0) - (b.round ?? 0));
   return out;
