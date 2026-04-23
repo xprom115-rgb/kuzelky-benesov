@@ -1,5 +1,21 @@
-import { db } from "./firebase-config.js";
-import { ADMIN_PASSWORD_HASH } from "./admin-config.js";
+// =========================================================
+// admin.js (Admin rezervace) – sjednoceno na Firebase Auth
+//
+// CO TO DĚLÁ:
+// 1) Login přes email+heslo (Firebase Authentication)
+// 2) Po přihlášení:
+//    - zobrazí admin panel
+//    - spustí realtime načítání rezervací (onSnapshot)
+// 3) Po odhlášení:
+//    - schová panel
+//    - zastaví realtime listener
+// 4) UI funkce:
+//    - filtr podle data
+//    - smazání jedné rezervace
+//    - úklid "do včerejška" (batch delete)
+// =========================================================
+
+import { db, auth } from "./firebase-config.js";
 
 import {
   collection,
@@ -9,29 +25,42 @@ import {
   writeBatch
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// prvky
-const loginBox = document.getElementById("admin-login");
-const panelBox = document.getElementById("admin-panel");
-const passInput = document.getElementById("admin-pass");
-const loginBtn = document.getElementById("admin-login-btn");
-const loginMsg = document.getElementById("admin-login-msg");
-const logoutBtn = document.getElementById("admin-logout-btn");
+import {
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
-const listEl = document.getElementById("admin-list");
-const filterDate = document.getElementById("filter-date");
+// =========================================================
+// DOM prvky – používáme ID z admin-rezervace.html
+// =========================================================
+
+// login
+const loginBox   = document.getElementById("admin-login");
+const emailInput = document.getElementById("admin-email");
+const passInput  = document.getElementById("admin-pass");
+const loginBtn   = document.getElementById("admin-login-btn");
+const loginMsg   = document.getElementById("admin-login-msg");
+
+// panel
+const panelBox   = document.getElementById("admin-panel");
+const logoutBtn  = document.getElementById("admin-logout-btn");
+
+// list + nástroje
+const listEl      = document.getElementById("admin-list");
+const filterDate  = document.getElementById("filter-date");
 const filterClear = document.getElementById("filter-clear");
-const cleanupBtn = document.getElementById("cleanup-old");
+const cleanupBtn  = document.getElementById("cleanup-old");
 
-let unsubscribe = null;
-let allRows = []; // [{ docId, data }]
+// =========================================================
+// Realtime data
+// =========================================================
+let unsubscribe = null;          // funkce, která odpojí onSnapshot
+let allRows = [];               // [{ docId, data }]
 
-// SHA-256 v prohlížeči
-async function sha256(text){
-  const enc = new TextEncoder().encode(text);
-  const hashBuf = await crypto.subtle.digest("SHA-256", enc);
-  const hashArr = Array.from(new Uint8Array(hashBuf));
-  return hashArr.map(b => b.toString(16).padStart(2,"0")).join("");
-}
+// =========================================================
+// Helpery
+// =========================================================
 
 function todayIso() {
   const d = new Date();
@@ -41,47 +70,48 @@ function todayIso() {
   return `${y}-${m}-${day}`;
 }
 
-function setLoggedIn(on){
-  if (on){
-    sessionStorage.setItem("admin_ok", "1");
-    loginBox.style.display = "none";
-    panelBox.style.display = "block";
-    startRealtime();
-  } else {
-    sessionStorage.removeItem("admin_ok");
-    loginBox.style.display = "block";
-    panelBox.style.display = "none";
-    stopRealtime();
-  }
+function setMsg(text) {
+  if (loginMsg) loginMsg.textContent = text || "";
 }
 
-function stopRealtime(){
-  if (unsubscribe){
+function showLoggedInUI(on) {
+  if (loginBox) loginBox.style.display = on ? "none" : "";
+  if (panelBox) panelBox.style.display = on ? "block" : "none";
+}
+
+function stopRealtime() {
+  if (unsubscribe) {
     unsubscribe();
     unsubscribe = null;
   }
 }
 
-function sortKey(r){
+function sortKey(r) {
   const date = r.date || "9999-99-99";
   const start = r.start || "99:99";
-  const lane = String(r.lane ?? 9).padStart(2,"0");
+  const lane = String(r.lane ?? 9).padStart(2, "0");
   return `${date} ${start} ${lane}`;
 }
 
-function formatDate(iso){
+function formatDate(iso) {
   if (!iso || iso.length < 10) return iso || "";
-  const [y,m,d] = iso.split("-");
+  const [y, m, d] = iso.split("-");
   return `${d}.${m}.${y}`;
 }
 
-function render(){
+// =========================================================
+// Render seznamu rezervací
+// =========================================================
+
+function render() {
+  if (!listEl) return;
+
   const fd = filterDate?.value || "";
 
   const rows = (fd ? allRows.filter(x => x.data.date === fd) : allRows.slice())
-    .sort((a,b) => sortKey(a.data).localeCompare(sortKey(b.data)));
+    .sort((a, b) => sortKey(a.data).localeCompare(sortKey(b.data)));
 
-  if (!rows.length){
+  if (!rows.length) {
     listEl.innerHTML = "<p><em>Žádné rezervace.</em></p>";
     return;
   }
@@ -101,7 +131,9 @@ function render(){
         </div>
         <div>
           <button data-del="${docId}"
-            style="padding:8px 12px; border-radius:10px; border:0; background:#ffdddd; cursor:pointer;">
+            class="btn-danger"
+            type="button"
+            style="padding:8px 12px; border-radius:10px; border:0; cursor:pointer;">
             Smazat
           </button>
         </div>
@@ -111,7 +143,7 @@ function render(){
 
   listEl.innerHTML = html;
 
-  // delete tlačítka
+  // napoj "Smazat"
   listEl.querySelectorAll("button[data-del]").forEach(btn => {
     btn.addEventListener("click", async () => {
       const docId = btn.getAttribute("data-del");
@@ -119,9 +151,9 @@ function render(){
 
       if (!confirm("Opravdu chcete rezervaci smazat?")) return;
 
-      try{
+      try {
         await deleteDoc(doc(db, "reservations", docId));
-      }catch(e){
+      } catch (e) {
         console.error(e);
         alert("Nepodařilo se smazat rezervaci.");
       }
@@ -129,20 +161,32 @@ function render(){
   });
 }
 
-function startRealtime(){
+// =========================================================
+// Realtime načítání rezervací (Firestore onSnapshot)
+// =========================================================
+
+function startRealtime() {
   stopRealtime();
-  unsubscribe = onSnapshot(collection(db, "reservations"), (snap) => {
-    allRows = snap.docs.map(d => ({ docId: d.id, data: d.data() }));
-    render();
-  }, (err) => {
-    console.error(err);
-    listEl.innerHTML = "<p><strong>Chyba načítání rezervací.</strong></p>";
-  });
+
+  unsubscribe = onSnapshot(
+    collection(db, "reservations"),
+    (snap) => {
+      allRows = snap.docs.map(d => ({ docId: d.id, data: d.data() }));
+      render();
+    },
+    (err) => {
+      console.error(err);
+      if (listEl) listEl.innerHTML = "<p><strong>Chyba načítání rezervací.</strong></p>";
+    }
+  );
 }
 
-// ✅ ÚKLID: smaže vše do včerejška (date < today)
+// =========================================================
+// ÚKLID: smaže vše do včerejška (date < today)
+// =========================================================
+
 async function cleanupToYesterday() {
-  if (sessionStorage.getItem("admin_ok") !== "1") {
+  if (!auth.currentUser) {
     alert("Nejste přihlášen.");
     return;
   }
@@ -153,10 +197,7 @@ async function cleanupToYesterday() {
     return;
   }
 
-  const toDelete = allRows.filter(item => {
-    const r = item.data;
-    return r?.date && r.date < today;
-  });
+  const toDelete = allRows.filter(item => item?.data?.date && item.data.date < today);
 
   if (toDelete.length === 0) {
     alert("Žádné staré rezervace k mazání.");
@@ -186,31 +227,65 @@ async function cleanupToYesterday() {
   }
 }
 
-// login
-loginBtn?.addEventListener("click", async () => {
-  loginMsg.textContent = "";
-  const pass = passInput.value || "";
-  if (!pass){ loginMsg.textContent = "Zadejte heslo."; return; }
+// =========================================================
+// Login / Logout – Firebase Auth
+// =========================================================
 
-  const h = await sha256(pass);
-  if (h === ADMIN_PASSWORD_HASH){
-    setLoggedIn(true);
-  } else {
-    loginMsg.textContent = "Nesprávné heslo.";
+loginBtn?.addEventListener("click", async () => {
+  setMsg("");
+  const email = (emailInput?.value || "").trim();
+  const pass  = (passInput?.value || "");
+
+  if (!email || !pass) {
+    setMsg("Zadejte email i heslo.");
+    return;
+  }
+
+  try {
+    setMsg("⏳ Přihlašuji…");
+    await signInWithEmailAndPassword(auth, email, pass);
+    setMsg("✅ Přihlášeno.");
+  } catch (e) {
+    console.error(e);
+    setMsg("Nesprávný email nebo heslo.");
   }
 });
 
-// logout
-logoutBtn?.addEventListener("click", () => setLoggedIn(false));
+logoutBtn?.addEventListener("click", async () => {
+  try {
+    await signOut(auth);
+  } catch (e) {
+    console.error(e);
+  }
+});
 
-// filtr
+// =========================================================
+// Filtr UI
+// =========================================================
+
 filterDate?.addEventListener("change", render);
-filterClear?.addEventListener("click", () => { filterDate.value = ""; render(); });
+filterClear?.addEventListener("click", () => {
+  if (filterDate) filterDate.value = "";
+  render();
+});
 
-// úklid tlačítko
 cleanupBtn?.addEventListener("click", cleanupToYesterday);
 
-// auto login (session)
-if (sessionStorage.getItem("admin_ok") === "1"){
-  setLoggedIn(true);
-}
+// =========================================================
+// Auth state: tady se rozhoduje, zda se panel ukáže a zda běží realtime
+// =========================================================
+
+onAuthStateChanged(auth, (user) => {
+  showLoggedInUI(!!user);
+
+  if (user) {
+    // po přihlášení začneme načítat rezervace
+    startRealtime();
+  } else {
+    // po odhlášení vše vypneme
+    stopRealtime();
+    allRows = [];
+    if (listEl) listEl.innerHTML = "<p><em>Žádné rezervace.</em></p>";
+  }
+});
+``
