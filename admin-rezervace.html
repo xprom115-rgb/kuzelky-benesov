@@ -2,15 +2,24 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin – Rezervace</title>
+
   <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    /* drobné lokální styly – zbytek bere z style.css */
+    .toolrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px;margin:12px 0;}
+    .small{font-size:13px;opacity:0.85;}
+  </style>
 </head>
 
 <body>
 
 <header>
   <div class="header-left">
-    <img src="logo.jpg" class="logo" alt="Logo">
+    <img src="./logo.jpg" class="logo" alt="Logo">
   </div>
   <div class="header-title">Kuželky Benešov – Admin</div>
   <div class="header-right"></div>
@@ -28,34 +37,37 @@
 
 <main>
   <div class="content-box">
-<!-- LOGIN (Firebase Email/Password) -->
-<div id="loginBox" class="card">
-  <h2>Přihlášení admina</h2>
-  <p class="small">Přihlášení probíhá přes Firebase Authentication (Email/Password).</p>
 
-  <div class="toolrow">
-    <input id="email" type="email" placeholder="Email admina" style="min-width:240px;">
-    <input id="pass" type="password" placeholder="Heslo" style="min-width:200px;">
-    <button id="btnLogin" class="btn-primary" type="button">Přihlásit</button>
-  </div>
+    <!-- =========================================================
+         LOGIN (nově Firebase Auth: Email/Password)
+         - po přihlášení se schová a zobrazí se #admin-panel
+         ========================================================= -->
+    <div id="admin-login" class="card">
+      <h2>Admin – přihlášení</h2>
+      <p class="small">Přihlášení probíhá přes Firebase Authentication (Email/Password).</p>
 
-  <div id="loginMsg" class="small"></div>
-</div>
+      <div class="toolrow">
+        <input id="admin-email" type="email" placeholder="Email admina"
+               style="padding:10px 12px; border-radius:10px; border:1px solid #bbb; min-width:240px;">
+        <input id="admin-pass" type="password" placeholder="Heslo"
+               style="padding:10px 12px; border-radius:10px; border:1px solid #bbb; min-width:220px;">
 
-div id="appBox" class="card" style="display:none;">
-  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-    <h2 style="margin:0;">Admin rezervace</h2>
-    <button id="btnLogout" class="btn-soft" type="button">Odhlásit</button>
-  </div>
+        <button id="admin-login-btn" class="btn-primary" type="button">Přihlásit</button>
+      </div>
 
-    <!-- PANEL -->
-    <div id="admin-panel" style="display:none;">
+      <p id="admin-login-msg" class="small" style="margin-top:10px;"></p>
+    </div>
+
+    <!-- =========================================================
+         PANEL 
+         ========================================================= -->
+    <div id="admin-panel" class="card" style="display:none;">
+
       <div style="display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;">
         <h2 style="margin:0;">Admin – Rezervace</h2>
-        <button id="admin-logout-btn"
-                style="padding:8px 12px; border-radius:10px; border:0; background:#ececec; cursor:pointer;">
-          Odhlásit
-        </button>
+
+        <!-- Odhlášení – ponechávám tvé ID, aby šlo snadno napojit -->
+        <button id="admin-logout-btn" class="btn-soft" type="button">Odhlásit</button>
       </div>
 
       <hr style="margin:14px 0;">
@@ -64,37 +76,34 @@ div id="appBox" class="card" style="display:none;">
         <label for="filter-date"><strong>Filtr data:</strong></label>
         <input id="filter-date" type="date"
                style="padding:8px 10px; border-radius:10px; border:1px solid #bbb;">
-        <button id="filter-clear"
-                style="padding:8px 12px; border-radius:10px; border:0; background:#ececec; cursor:pointer;">
-          Zrušit filtr
-        </button>
+
+        <button id="filter-clear" class="btn-soft" type="button">Zrušit filtr</button>
       </div>
 
       <!-- ✅ ÚKLID DO VČEREJŠKA -->
       <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
-        <button id="cleanup-old"
-                style="padding:10px 14px; border-radius:10px; border:0; background:#ffdddd; cursor:pointer; font-weight:bold;">
+        <button id="cleanup-old" class="btn-danger" type="button" style="font-weight:700;">
           Smazat rezervace do včerejška
         </button>
-        <span style="opacity:0.85; font-size:14px;">
+
+        <span class="small">
           (smaže všechny rezervace se dnem menším než dnešní datum)
         </span>
       </div>
 
       <div id="admin-list" style="margin-top:16px;"></div>
     </div>
-</div><!-- /appBox -->
+
   </div>
 </main>
 
 <footer>© Kuželky Benešov – 2026</footer>
 
-<!-- JS moduly (jen jednou, na konci body) -->
-<script type="module" src="./config.js?v=1"></script>
-<script type="module" src="./firebase-config.js?v=1"></script>
-<script type="module" src="./admin-config.js?v=1"></script>
+<!-- =========================================================
+     Nový login skript (Firebase email/password)
+     ========================================================= -->
+<script type="module" src="./admin-rezervace.js?v=2"></script>
 <script type="module" src="./admin.js?v=1"></script>
-  <script type="module" src="./admin-rezervace.js?v=1"></script>
 
 </body>
 </html>
