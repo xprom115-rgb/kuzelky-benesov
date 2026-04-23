@@ -544,7 +544,7 @@ btnAbcToHistory?.addEventListener("click", async () => {
 
     setAbcMsg("⏳ Archivuju tabulku do historie…");
 
-    // 1) Načti aktuální tabulku z JSON (GitHub Pages / stejná doména)
+    // 1) Načti aktuální tabulku z JSON
     const res = await fetch(`./data/teams/${teamId}.json?v=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) {
       setAbcMsg(`❌ Nelze načíst data/teams/${teamId}.json (HTTP ${res.status}).`);
@@ -558,7 +558,18 @@ btnAbcToHistory?.addEventListener("click", async () => {
       return;
     }
 
-    // 2) Historie: create-only (nepřepisovat)
+    // 2) Firestore neumí uložit array-of-arrays → převedeme rows na array-of-objects
+    const cols = table.columns;
+    const rowsObjects = table.rows.map((row, idx) => {
+      const obj = { _i: idx }; // index řádku (pro jistotu)
+      const arr = Array.isArray(row) ? row : [];
+      for (let i = 0; i < cols.length; i++) {
+        obj["c" + i] = (arr[i] ?? "").toString();
+      }
+      return obj;
+    });
+
+    // 3) Historie: nepřepisovat
     const histRef = doc(db, "team_history", teamId, "seasons", seasonId);
     const histSnap = await getDoc(histRef);
     if (histSnap.exists()) {
@@ -566,15 +577,24 @@ btnAbcToHistory?.addEventListener("click", async () => {
       return;
     }
 
-    // 3) Ulož snapshot tabulky (nezávislé na kuzelky.cz)
+    // 4) Ulož snapshot tabulky
     await setDoc(histRef, {
       seasonId,
       archivedAt: new Date().toISOString(),
       finalTable: {
-        columns: table.columns,
-        rows: table.rows
+        columns: cols,
+        // ✅ rows uložené jako array-of-objects (bez vnořených polí)
+        rows: rowsObjects
       }
     });
+
+    setAbcMsg(`✅ Uloženo do historie: ${teamId} / ${seasonId} (snapshot tabulky).`);
+  } catch (e) {
+    console.error(e);
+    setAbcMsg("❌ Archivace tabulky selhala (koukni do Console F12).");
+  }
+});
+``
 
     setAbcMsg(`✅ Uloženo do historie: ${teamId} / ${seasonId} (snapshot tabulky).`);
   } catch (e) {
