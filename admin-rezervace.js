@@ -1,3 +1,10 @@
+// =========================================================
+// admin-rezervace.js
+// - Firebase Authentication (Email/Password)
+// - po přihlášení zobrazí #admin-panel a schová #admin-login
+// - po odhlášení naopak
+// =========================================================
+
 import { auth } from "./firebase-config.js";
 import {
   signInWithEmailAndPassword,
@@ -5,31 +12,45 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
-const loginBox = document.getElementById("loginBox");
-const appBox = document.getElementById("appBox");
+// ---------------------------------------------------------
+// DOM: login formulář
+// ---------------------------------------------------------
+const loginBox = document.getElementById("admin-login");
+const emailEl  = document.getElementById("admin-email");
+const passEl   = document.getElementById("admin-pass");
+const btnLogin = document.getElementById("admin-login-btn");
+const loginMsg = document.getElementById("admin-login-msg");
 
-const emailEl = document.getElementById("email");
-const passEl = document.getElementById("pass");
-const btnLogin = document.getElementById("btnLogin");
-const btnLogout = document.getElementById("btnLogout");
+// ---------------------------------------------------------
+// DOM: admin panel rezervací (tvůj původní obsah)
+// ---------------------------------------------------------
+const panelBox  = document.getElementById("admin-panel");
+const btnLogout = document.getElementById("admin-logout-btn");
 
-const loginMsg = document.getElementById("loginMsg");
-
-function setMsg(txt) {
-  if (loginMsg) loginMsg.textContent = txt || "";
+// ---------------------------------------------------------
+// Helper: zpráva pod loginem
+// ---------------------------------------------------------
+function setMsg(text) {
+  if (loginMsg) loginMsg.textContent = text || "";
 }
 
-function showApp(isLoggedIn) {
+// ---------------------------------------------------------
+// Helper: přepínání UI podle přihlášení
+// ---------------------------------------------------------
+function showPanel(isLoggedIn) {
   if (loginBox) loginBox.style.display = isLoggedIn ? "none" : "";
-  if (appBox) appBox.style.display = isLoggedIn ? "" : "none";
+  if (panelBox) panelBox.style.display = isLoggedIn ? "" : "none";
 }
 
-// schovej app hned po načtení (aby nebyl "flash")
-showApp(false);
+// schovej panel okamžitě při načtení stránky (aby nebyl „flash“)
+showPanel(false);
 
+// ---------------------------------------------------------
+// LOGIN: klik na Přihlásit
+// ---------------------------------------------------------
 btnLogin?.addEventListener("click", async () => {
   const email = (emailEl?.value || "").trim();
-  const pass = passEl?.value || "";
+  const pass  = (passEl?.value || "");
 
   if (!email || !pass) {
     setMsg("⚠️ Zadej email i heslo.");
@@ -40,12 +61,16 @@ btnLogin?.addEventListener("click", async () => {
     setMsg("⏳ Přihlašuji…");
     await signInWithEmailAndPassword(auth, email, pass);
     setMsg("✅ Přihlášeno.");
+    // Zobrazení panelu se udělá přes onAuthStateChanged níže
   } catch (e) {
     console.error(e);
     setMsg("❌ Přihlášení se nepovedlo (zkontroluj email/heslo).");
   }
 });
 
+// ---------------------------------------------------------
+// LOGOUT: klik na Odhlásit
+// ---------------------------------------------------------
 btnLogout?.addEventListener("click", async () => {
   try {
     await signOut(auth);
@@ -54,8 +79,10 @@ btnLogout?.addEventListener("click", async () => {
   }
 });
 
+// ---------------------------------------------------------
+// AUTH STATE: kdykoli se změní stav přihlášení
+// ---------------------------------------------------------
 onAuthStateChanged(auth, (user) => {
-  showApp(!!user);
+  showPanel(!!user);
   if (!user) setMsg("");
 });
-``
