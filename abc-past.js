@@ -56,3 +56,50 @@ function render(list) {
   if (!el) return;
 
   if (!list.length) {
+    el.innerHTML = `<p><em>Zatím nejsou zadané žádné výsledky.</em></p>`;
+    return;
+  }
+
+  el.innerHTML = list.map(m => {
+    return `<div style="margin:2px 0;">
+      <strong>${esc(m.round)}. kolo</strong>
+      ${esc(fmtDate(m.date))}
+      ${esc(m.home)} - ${esc(m.away)}
+      <strong>${esc(m.result)}</strong>
+      ${esc(m.pins)}
+    </div>`;
+  }).join("");
+}
+
+async function init() {
+  if (!el) return;
+
+  const teamId = getTeamId();
+  if (!teamId) {
+    el.innerHTML = `<p><em>Chybí identifikace týmu (A/B/C).</em></p>`;
+    return;
+  }
+
+  try {
+    el.innerHTML = `<p><em>Načítám…</em></p>`;
+
+    const ref = doc(db, "team_current", teamId);
+    const snap = await getDoc(ref);
+
+    if (!snap.exists()) {
+      el.innerHTML = `<p><em>Neexistuje team_current/${esc(teamId)}.</em></p>`;
+      return;
+    }
+
+    const data = snap.data();
+    const past = (data.past && typeof data.past === "object") ? data.past : {};
+    const list = normalizePast(past);
+
+    render(list);
+  } catch (e) {
+    console.error(e);
+    el.innerHTML = `<p><em>Nelze načíst minulé zápasy (zkontroluj Firestore Rules pro team_current).</em></p>`;
+  }
+}
+
+init();
