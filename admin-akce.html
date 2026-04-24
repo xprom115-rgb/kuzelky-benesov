@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin – Zápasy / Turnaje</title>
+
+  <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    /* malé pomocné styly, ať to ladí s ostatními adminy */
+    .toolrow{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin:10px 0;}
+    .toolrow input,.toolrow select{padding:10px 12px;border-radius:10px;border:1px solid #bbb;font-size:15px;}
+    .card{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:14px;padding:14px;margin:12px 0;}
+    .small{font-size:13px;opacity:0.85;}
+    .rowline{padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.15);display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap;}
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-left">
+    <img src="./logo.jpg" alt="Kuželky Benešov" style="max-height:64px;">
+  </div>
+  <div class="header-title">Kuželky Benešov – Admin</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+
+    <!-- =========================================================
+         LOGIN BOX
+         - zobrazí se po otevření stránky
+         - po přihlášení se schová a ukáže se appBox
+         ========================================================= -->
+    <div id="loginBox" class="card">
+      <h2>Přihlášení admina</h2>
+      <p class="small">Přihlášení probíhá přes Firebase Authentication (Email/Password).</p>
+
+      <div class="toolrow">
+        <input id="email" type="email" placeholder="Email admina" style="min-width:240px;">
+        <input id="pass" type="password" placeholder="Heslo" style="min-width:200px;">
+        <button id="btnLogin" class="btn-primary" type="button">Přihlásit</button>
+      </div>
+
+      <div id="loginMsg" class="small"></div>
+    </div>
+
+    <!-- =========================================================
+         APP BOX (ADMIN UI)
+         - zobrazí se až po přihlášení
+         ========================================================= -->
+    <div id="appBox" class="card" style="display:none;">
+
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <h2 style="margin:0;">Zadávání zápasů / turnajů</h2>
+        <button id="btnLogout" class="btn-soft" type="button">Odhlásit</button>
+      </div>
+
+      <p class="small" style="margin-top:10px;">
+        Akce blokuje <strong>všechny dráhy</strong> v čase <strong>blockStart–blockEnd</strong>.
+        blockStart = start − 30 min, blockEnd = end + 30 min (např. 16:30–20:30 ⇒ 16:00–21:00).
+      </p>
+
+      <hr style="margin:14px 0;">
+
+      <!-- FORMULÁŘ: zadání akce -->
+      <h3 style="margin:0 0 8px 0; color:#ffd700;">Přidat akci</h3>
+
+      <div class="toolrow">
+        <label>Datum:</label>
+        <input id="evDate" type="date">
+
+        <label>Od:</label>
+        <input id="evStart" type="time">
+
+        <label>Do:</label>
+        <input id="evEnd" type="time">
+      </div>
+
+      <div class="toolrow">
+        <label>Typ:</label>
+        <select id="evType">
+          <option value="match">Zápas</option>
+          <option value="tournament">Turnaj / akce</option>
+        </select>
+
+        <!-- jen pro zápas -->
+        <div id="evTeamWrap">
+          <label>Tým:</label>
+          <select id="evTeam">
+            <option value="A">A</option>
+            <option value="B">B</option>
+            <option value="C">C</option>
+            <option value="DOROST">Dorost</option>
+          </select>
+        </div>
+
+        <!-- jen pro turnaj / jinou akci -->
+        <div id="evTitleWrap" style="display:none;">
+          <label>Název:</label>
+          <input id="evTitle" type="text" placeholder="např. Habaďůra / jiný turnaj" style="min-width:260px;">
+        </div>
+      </div>
+
+      <div class="toolrow">
+        <label>Poznámka:</label>
+        <input id="evNote" type="text" placeholder="volitelné" style="min-width:360px;">
+      </div>
+
+      <div class="toolrow">
+        <button id="btnSaveEvent" class="btn-primary" type="button">Uložit akci</button>
+        <span id="evMsg" class="small"></span>
+      </div>
+
+      <hr style="margin:14px 0;">
+
+      <!-- SEZNAM: uložené akce -->
+      <h3 style="margin:0 0 8px 0; color:#ffd700;">Uložené akce</h3>
+
+      <div class="toolrow">
+        <button id="btnLoadEvents" class="btn-soft" type="button">Načíst akce</button>
+        <span class="small">Načítá se z kolekce <code>events</code>.</span>
+      </div>
+
+      <div id="eventsList">
+        <p><em>Zatím nic…</em></p>
+      </div>
+
+    </div><!-- /appBox -->
+
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<!-- Modulový skript (Firebase Auth + Firestore CRUD) -->
+<script type="module" src="./admin-akce.js?v=1"></script>
+</body>
+</html>
