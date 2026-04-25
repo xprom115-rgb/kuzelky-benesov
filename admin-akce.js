@@ -104,17 +104,26 @@ function minutesToTime(mins){
 }
 
 function computeBlockWindow(start, end){
-  // start/end jsou HH:MM, vrací blockStart/blockEnd
+  // start/end jsou HH:MM
+  // blokace na celou hodinu:
+  // - blockStart = zaokrouhlit dolů na hodinu
+  // - blockEnd   = zaokrouhlit nahoru na hodinu
   const s = timeToMinutes(start);
   const e = timeToMinutes(end);
   if (s === null || e === null) return null;
 
-  // blok = start - 30min, end + 30min
+  // floor na hodinu
+  const blockStartMin = Math.floor(s / 60) * 60;
+
+  // ceil na hodinu (pokud už je přesně na hodinu, nech)
+  const blockEndMin = (e % 60 === 0) ? e : (Math.floor(e / 60) + 1) * 60;
+
   return {
-    blockStart: minutesToTime(s - 30),
-    blockEnd: minutesToTime(e + 30)
+    blockStart: minutesToTime(blockStartMin),
+    blockEnd: minutesToTime(blockEndMin)
   };
 }
+
 
 // ------------------------------
 // Helpers: ID dokumentu (aby nevznikaly duplicity)
