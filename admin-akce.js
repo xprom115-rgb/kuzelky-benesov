@@ -1,30 +1,35 @@
 // =========================================================
 // admin-akce.js
-// Admin pro zadávání zápasů/turnajů (akce).
+// Admin pro zadávání zápasů/turnajů (akce) pro blokaci rezervací a výpis v Aktualitách.
 //
 // Ukládá do Firestore kolekce: events
-// Struktura dokumentu:
+// Dokument (events/{eventId}):
 // {
-//   date: "YYYY-MM-DD",
-//   start: "HH:MM",
-//   end: "HH:MM",
-//   blockStart: "HH:MM",   // start - 30 min
-//   blockEnd: "HH:MM",     // end + 30 min
-//   type: "match" | "tournament",
-//   team: "A"|"B"|"C"|"DOROST"|null,
-//   title: string|null,    // u turnaje název
-//   note: string|null,
-//   createdAt: ISO string
+//   date:       "YYYY-MM-DD",          // datum akce
+//   start:      "HH:MM",              // skutečný čas začátku (pro aktuality)
+//   end:        "HH:MM",              // skutečný čas konce (pro aktuality)
+//   blockStart: "HH:MM",              // blokace rezervací (zaokrouhleno na hodinu dolů)
+//   blockEnd:   "HH:MM",              // blokace rezervací (zaokrouhleno na hodinu nahoru)
+//   type:       "match"|"tournament",
+//   team:       "A"|"B"|"C"|"DOROST"|null,  // jen pro match
+//   title:      string|null,            // jen pro tournament
+//   note:       string|null,
+//   createdAt:  ISO string
 // }
+//
+// Pozn.: Turnaje i zápasy blokují vždy všechny dráhy (1–4). To řeší až rezervace-events-block.js.
 // =========================================================
 
 import { auth, db } from "./firebase-config.js";
+
+// ---- Firebase Auth (login/logout) ----
 import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
+// ---- Firestore CRUD ----
 import {
   doc,
   setDoc,
@@ -36,9 +41,9 @@ import {
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// ------------------------------
-// DOM: login
-// ------------------------------
+// =========================================================
+// DOM: Login
+// =========================================================
 const loginBox = document.getElementById("loginBox");
 const appBox   = document.getElementById("appBox");
 const emailEl  = document.getElementById("email");
@@ -47,9 +52,9 @@ const btnLogin = document.getElementById("btnLogin");
 const btnLogout= document.getElementById("btnLogout");
 const loginMsg = document.getElementById("loginMsg");
 
-// ------------------------------
-// DOM: form akce
-// ------------------------------
+// =========================================================
+// DOM: Formulář akce
+// =========================================================
 const evDate = document.getElementById("evDate");
 const evStart = document.getElementById("evStart");
 const evEnd = document.getElementById("evEnd");
@@ -65,15 +70,15 @@ const evNote = document.getElementById("evNote");
 const btnSaveEvent = document.getElementById("btnSaveEvent");
 const evMsg = document.getElementById("evMsg");
 
-// ------------------------------
-// DOM: list
-// ------------------------------
+// =========================================================
+// DOM: Seznam akcí
+// =========================================================
 const btnLoadEvents = document.getElementById("btnLoadEvents");
 const eventsList = document.getElementById("eventsList");
 
-// ------------------------------
-// Helpers: UI
-// ------------------------------
+// =========================================================
+// UI helpery
+// =========================================================
 function setLoginMsg(txt){ if (loginMsg) loginMsg.textContent = txt || ""; }
 function setEvMsg(txt){ if (evMsg) evMsg.textContent = txt || ""; }
 
@@ -82,40 +87,40 @@ function showApp(isLoggedIn){
   if (appBox) appBox.style.display = isLoggedIn ? "" : "none";
 }
 
-// schovej admin část hned po načtení
+// Schovej admin část hned po načtení (ať není „flash“)
 showApp(false);
 
-// ------------------------------
-// Helpers: časové výpočty
-// ------------------------------
+// =========================================================
+// Časové výpočty (blokace na celou hodinu)
+// =========================================================
 function pad2(n){ return String(n).padStart(2,"0"); }
 
 function timeToMinutes(hhmm){
-  const [h,m] = (hhmm || "").split(":").map(Number);
-  if (!Number.isFinite(h) || !Number.isFinite(m)) return null;
-  return h*60 + m;
+  const m = (hhmm || "").match(/^(\d{1,2}):(\d{2})$/);
+  if (!m) return null;
+  const h = Number(m[1]);
+  const mi = Number(m[2]);
+  if (!Number.isFinite(h) || !Number.isFinite(mi)) return null;
+  return h*60 + mi;
 }
 
 function minutesToTime(mins){
-  const m = ((mins % (24*60)) + (24*60)) % (24*60); // normalizace do 0..1439
+  const m = ((mins % (24*60)) + (24*60)) % (24*60);
   const hh = Math.floor(m/60);
   const mm = m % 60;
   return `${pad2(hh)}:${pad2(mm)}`;
 }
 
 function computeBlockWindow(start, end){
-  // start/end jsou HH:MM
-  // blokace na celou hodinu:
-  // - blockStart = zaokrouhlit dolů na hodinu
-  // - blockEnd   = zaokrouhlit nahoru na hodinu
+  // Skutečný start/end zůstává beze změny.
+  // Blokace rezervací je zaokrouhlena na hodiny:
+  // - blockStart = floor(start)
+  // - blockEnd   = ceil(end)
   const s = timeToMinutes(start);
   const e = timeToMinutes(end);
   if (s === null || e === null) return null;
 
-  // floor na hodinu
   const blockStartMin = Math.floor(s / 60) * 60;
-
-  // ceil na hodinu (pokud už je přesně na hodinu, nech)
   const blockEndMin = (e % 60 === 0) ? e : (Math.floor(e / 60) + 1) * 60;
 
   return {
@@ -124,10 +129,9 @@ function computeBlockWindow(start, end){
   };
 }
 
-
-// ------------------------------
-// Helpers: ID dokumentu (aby nevznikaly duplicity)
-// ------------------------------
+// =========================================================
+// ID dokumentu – aby nevznikaly duplicity
+// =========================================================
 function slug(s){
   return (s || "")
     .toString()
@@ -145,9 +149,9 @@ function makeEventId({date,start,type,team,title}){
   return `${date}_${st}_tournament_${slug(title)}`;
 }
 
-// ------------------------------
-// Přepínání formuláře podle typu akce
-// ------------------------------
+// =========================================================
+// Přepínání UI podle typu akce
+// =========================================================
 function updateTypeUI(){
   const t = evType?.value || "match";
   if (t === "match") {
@@ -158,12 +162,13 @@ function updateTypeUI(){
     if (evTitleWrap) evTitleWrap.style.display = "";
   }
 }
+
 evType?.addEventListener("change", updateTypeUI);
 updateTypeUI();
 
-// ------------------------------
+// =========================================================
 // Login / Logout
-// ------------------------------
+// =========================================================
 btnLogin?.addEventListener("click", async () => {
   const email = (emailEl?.value || "").trim();
   const pass = (passEl?.value || "");
@@ -188,9 +193,9 @@ onAuthStateChanged(auth, (user) => {
   if (!user) setLoginMsg("");
 });
 
-// ------------------------------
+// =========================================================
 // Uložení akce do Firestore
-// ------------------------------
+// =========================================================
 btnSaveEvent?.addEventListener("click", async () => {
   try{
     setEvMsg("");
@@ -217,9 +222,7 @@ btnSaveEvent?.addEventListener("click", async () => {
 
     if (type === "match") {
       team = evTeam?.value || "A";
-      title = null;
     } else {
-      team = null;
       title = (evTitle?.value || "").trim();
       if (!title) {
         setEvMsg("⚠️ U turnaje vyplň název.");
@@ -228,12 +231,11 @@ btnSaveEvent?.addEventListener("click", async () => {
     }
 
     const eventId = makeEventId({ date, start, type, team, title });
+    const ref = doc(db, "events", eventId);
 
     setEvMsg("⏳ Ukládám…");
 
-    const ref = doc(db, "events", eventId);
-
-    // Pokud bys nechtěl přepisovat stejný eventId, můžeš to zakázat:
+    // Nechceme přepisovat existující event se stejným ID
     const snap = await getDoc(ref);
     if (snap.exists()) {
       setEvMsg("ℹ️ Tato akce už existuje (stejné datum+čas+typ).");
@@ -254,9 +256,7 @@ btnSaveEvent?.addEventListener("click", async () => {
     });
 
     setEvMsg("✅ Uloženo.");
-
-    // refresh list
-    await loadEvents();
+    await loadEvents(); // refresh list
 
   } catch(e){
     console.error(e);
@@ -264,16 +264,15 @@ btnSaveEvent?.addEventListener("click", async () => {
   }
 });
 
-// ------------------------------
+// =========================================================
 // Načtení a vykreslení akcí
-// ------------------------------
+// =========================================================
 async function loadEvents(){
   if (!eventsList) return;
 
   eventsList.innerHTML = "<p><em>Načítám…</em></p>";
 
   try{
-    // řazení podle date/start
     const q = query(collection(db, "events"), orderBy("date"), orderBy("start"));
     const snap = await getDocs(q);
 
@@ -285,10 +284,7 @@ async function loadEvents(){
     }
 
     const html = items.map(ev => {
-      const label = ev.type === "match"
-        ? `Zápas ${ev.team}`
-        : (ev.title || "Turnaj");
-
+      const label = ev.type === "match" ? `Zápas ${ev.team}` : (ev.title || "Turnaj");
       return `
         <div class="rowline">
           <div>
@@ -310,7 +306,7 @@ async function loadEvents(){
 
     eventsList.innerHTML = html;
 
-    // mazání
+    // Mazání akce
     eventsList.querySelectorAll("button[data-del]").forEach(btn => {
       btn.addEventListener("click", async () => {
         const id = btn.getAttribute("data-del");
