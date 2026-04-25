@@ -182,3 +182,70 @@ async function cleanupToYesterday(){
   }
 
   try{
+    const BATCH_LIMIT = 450; // rezerva (limit 500)
+    let deleted = 0;
+
+    for (let i = 0; i < toDelete.length; i += BATCH_LIMIT){
+      const chunk = toDelete.slice(i, i + BATCH_LIMIT);
+      const batch = writeBatch(db);
+      for (const item of chunk){
+        batch.delete(doc(db, "reservations", item.docId));
+      }
+      await batch.commit();
+      deleted += chunk.length;
+    }
+
+    alert(`Smazáno rezervací do včerejška: ${deleted}`);
+  }catch(e){
+    console.error(e);
+    alert("Nepodařilo se smazat staré rezervace. Podívejte se do konzole.");
+  }
+}
+
+// --------------------
+// UI eventy (filtr, úklid)
+// --------------------
+filterDate?.addEventListener("change", render);
+filterClear?.addEventListener("click", () => { if (filterDate) filterDate.value = ""; render(); });
+cleanupBtn?.addEventListener("click", cleanupToYesterday);
+
+// --------------------
+// Login / Logout (Firebase Auth)
+// --------------------
+loginBtn?.addEventListener("click", async () => {
+  setMsg("");
+  const email = (emailInput?.value || "").trim();
+  const pass  = (passInput?.value || "");
+  if (!email || !pass){ setMsg("Zadejte email i heslo."); return; }
+
+  try{
+    setMsg("⏳ Přihlašuji…");
+    await signInWithEmailAndPassword(auth, email, pass);
+    setMsg("✅ Přihlášeno.");
+  }catch(e){
+    console.error(e);
+    setMsg("Nesprávný email nebo heslo.");
+  }
+});
+
+logoutBtn?.addEventListener("click", async () => {
+  try { await signOut(auth); } catch(e){ console.error(e); }
+});
+
+// --------------------
+// Auth state: přepínání UI + start/stop realtime
+// --------------------
+showLoggedInUI(false);
+
+onAuthStateChanged(auth, (user) => {
+  showLoggedInUI(!!user);
+
+  if (user) {
+    startRealtime();
+  } else {
+    stopRealtime();
+    allRows = [];
+    if (listEl) listEl.innerHTML = "<p><em>Žádné rezervace.</em></p>";
+  }
+});
+``
