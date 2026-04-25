@@ -1,0 +1,44 @@
+NÁVOD: Přesun webu na jiný hosting (a co změnit v kódu)
+=====================================================
+
+Tento projekt je statický web (HTML/CSS/JS) napojený na Firebase (Auth + Firestore).
+Přesun na jiný hosting obvykle znamená:
+- nahrát statické soubory na nový hosting
+- přidat novou doménu do Firebase Auth (Authorized domains)
+- zkontrolovat, že všude používáte relativní cesty (./)
+
+1) Přenos souborů
+- Nahrajte celý obsah webu: *.html, *.js, style.css, logo.jpg, složky data/, assets/.
+
+2) Ověření cest
+- V HTML používejte správné tagy:
+  <link rel="stylesheet" href="./style.css?v=...">
+  <script type="module" src="./soubor.js?v=..."></script>
+- Nepoužívejte řádky typu: ./style.css?v=1 bez <link> (jinak se vypíšou jako text).
+- Pokud by web běžel v podadresáři (např. /kuzelky/), držte se relativních cest "./".
+
+3) Firebase Auth – povolené domény
+Firebase Console → Authentication → Settings → Authorized domains
+- Přidejte novou doménu (např. kuzelky-benesov.cz).
+- Starou doménu ponechte do ověření funkčnosti.
+
+4) Firestore Rules
+- Rules se hostingu netýkají přímo, ale po přesunu se hned projeví, pokud chybí.
+- Zkontrolujte minimálně kolekce:
+  events        (read public, write admin)
+  reservations  (admin má práva mazat; veřejné čtení dle potřeby)
+  team_current  (read public A/B/C, write admin)
+  team_history  (read public A/B/C/DOROST, write admin nebo create-only)
+  team_manual   (read public DOROST, write admin)
+
+5) Absolutní URL
+- Vyhledejte a nahraďte natvrdo zadané URL typu https://xprom115-rgb.github.io/...
+- Doporučení: používat relativní odkazy (./assets/...), aby se hosting měnil bez úprav.
+
+6) Test checklist po přesunu
+- index.html: dlaždice Zápasy (future + poslední) se načte
+- rezervace.html: rezervace fungují + blokace podle events funguje
+- aktuality.html: vypisuje akce events se skutečným časem
+- admin-rezervace.html: login + seznam rezervací + mazání
+- admin-druzstva.html: dorost + A/B/C + historie
+- historie-muzstev.html → historie-tym.html: sezóny + tabulka + zápasy
