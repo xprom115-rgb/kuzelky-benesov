@@ -180,3 +180,111 @@ function applyBlockingToSlots() {
   const candidates = lanesBox.querySelectorAll("button, [role='button'], div");
 
   candidates.forEach(el => {
+    const start = extractStartFromSlot(el);
+    if (!start) return;
+
+    const hit = isStartBlockedByAnyBlock(start);
+
+    // Odznačení
+    el.classList.remove("slot-blocked");
+    el.removeAttribute("aria-disabled");
+    el.removeAttribute("data-block-label");
+
+    if (hit) {
+      el.classList.add("slot-blocked");
+      el.setAttribute("aria-disabled", "true");
+      el.setAttribute("data-block-label", hit.label);
+    }
+  });
+}
+
+// =========================================================
+// EVENTY
+// =========================================================
+
+// 1) změna data => načti blokace a po načtení zkus označit sloty
+dateInput?.addEventListener("change", async () => {
+  selected = { lane: null, start: null };
+  hideBlocked();
+
+  await loadBlocksForDate(dateInput.value);
+
+  // sloty se možná renderují později, proto dáme malý odklad
+  setTimeout(applyBlockingToSlots, 50);
+});
+
+// 2) MutationObserver: když rezervace.js přerenderuje #lanes, znovu aplikuj blokaci
+if (lanesBox) {
+  const obs = new MutationObserver(() => {
+    // aplikuj až po DOM změně
+    applyBlockingToSlots();
+  });
+  obs.observe(lanesBox, { childList: true, subtree: true });
+}
+
+// 3) Klik na slot: pokud je blokovaný, zastav klik a napiš hlášku (modál se neotevře)
+lanesBox?.addEventListener("click", async (evt) => {
+  hideBlocked();
+
+  const dateIso = dateInput?.value || "";
+  if (!dateIso) return;
+
+  // když jsou blocks prázdné/neaktuální, načti
+  if (currentDate !== dateIso) {
+    await loadBlocksForDate(dateIso);
+    applyBlockingToSlots();
+  }
+
+  const target = evt.target instanceof HTMLElement ? evt.target : null;
+  if (!target) return;
+
+  const slotEl = target.closest(".slot-blocked");
+  if (slotEl) {
+    evt.preventDefault();
+    evt.stopPropagation();
+
+    const label = slotEl.getAttribute("data-block-label") || "Akce";
+    showBlocked(`Termín je blokovaný (${label}) – nelze vybrat.`);
+    return false;
+  }
+
+  // pokud není blokovaný, uložíme vybraný start pro kontrolu při submitu
+  const maybeSlot = target.closest("button, [role='button'], div");
+  if (maybeSlot) {
+    const start = extractStartFromSlot(maybeSlot);
+    if (start) selected.start = start;
+  }
+}, true); // capture=true, ať to chytíme dřív než rezervace.js
+
+// 4) Submit modálu: bezpečnostní pojistka – i kdyby někdo prošel klikem, nepustíme uložení
+modalForm?.addEventListener("submit", async (evt) => {
+  hideBlocked();
+
+  const dateIso = dateInput?.value || "";
+  if (!dateIso) return;
+
+  if (currentDate !== dateIso) await loadBlocksForDate(dateIso);
+
+  const start = selected.start;
+  if (!start) return; // když nevíme start, necháme to na rezervace.js
+
+  const hours = Number(hoursSelect?.value || "1");
+  const sMin = timeToMinutes(start);
+  if (sMin === null) return;
+
+  const end = minutesToTime(sMin + (hours * 60));
+
+  const hit = getBlockHit(dateIso, start, end);
+  if (hit) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    showBlocked(`Termín je blokovaný (${hit.label}) – nelze rezervovat. Blokace: ${minutesToTime(hit.fromMin)}–${minutesToTime(hit.toMin)}.`);
+    return false;
+  }
+  return true;
+}, true);
+
+// 5) start stránky: když je datum už vyplněné, načti blokace a aplikuj na sloty
+if (dateInput?.value) {
+  loadBlocksForDate(dateInput.value).then(() => setTimeout(applyBlockingToSlots, 50));
+}
