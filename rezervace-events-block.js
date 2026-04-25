@@ -1,12 +1,15 @@
 // =========================================================
 // rezervace-events-block.js
-// Blokování rezervací podle Firestore kolekce `events`.
 //
-// Cíl:
-// - Na vybraný den načíst akce (events) a jejich blokovací okna (blockStart–blockEnd)
-// - Při pokusu o uložení rezervace zablokovat, pokud se čas překrývá s blokací
+// CO TO DĚLÁ:
+// - Na vybraný den načte z Firestore kolekce `events` všechny akce (zápasy/turnaje).
+// - Každá akce má uložené blockStart/blockEnd (zaokrouhlené na hodinu).
+// - Při pokusu o rezervaci zablokuje odeslání, pokud čas rezervace spadá do blokace.
+// - Blokujeme VŽDY všechny dráhy 1–4 (turnaj i zápas).
 //
-// Pozn.: Dráhy 1–4 blokujeme vždy všechny (zápas i turnaj). U vás vždy platí. ✅
+// POZNÁMKA:
+// - Neřeší vizuální disable slotů v UI (to může být další krok).
+// - Toto je "bezpečný" blok: rezervace se prostě neuloží.
 // =========================================================
 
 import { db } from "./firebase-config.js";
@@ -29,105 +32,127 @@ function overlaps(aStart, aEnd, bStart, bEnd) {
   return aStart < bEnd && bStart < aEnd;
 }
 
-// ---------- Načtené blokace pro aktuálně zvolený den ----------
-let currentDate = null;     // "YYYY-MM-DD"
-let blocks = [];            // [{blockStartMin, blockEndMin, label}]
+// ---------- Stav načtených blokací pro aktuální den ----------
+let currentDate = null; // "YYYY-MM-DD"
+let blocks = [];        // [{ fromMin, toMin, label }]
 
-// ---------- Načti events pro datum ----------
+// ---------- Načíst events pro datum ----------
 async function loadBlocksForDate(dateIso) {
-  if (!dateIso) {
-    currentDate = null;
-    blocks = [];
-    return;
-  }
-
-  currentDate = dateIso;
+  currentDate = dateIso || null;
   blocks = [];
 
+  if (!dateIso) return;
+
   try {
-    const q = query(
-      collection(db, "events"),
-      where("date", "==", dateIso)
-    );
+    const q = query(collection(db, "events"), where("date", "==", dateIso));
     const snap = await getDocs(q);
 
     blocks = snap.docs.map(d => {
       const ev = d.data() || {};
-      const bs = timeToMinutes(ev.blockStart);
-      const be = timeToMinutes(ev.blockEnd);
+      const from = timeToMinutes(ev.blockStart);
+      const to = timeToMinutes(ev.blockEnd);
 
       const label = ev.type === "match"
         ? `Zápas ${ev.team || ""}`.trim()
         : (ev.title || "Turnaj");
 
-      return (bs !== null && be !== null)
-        ? { blockStartMin: bs, blockEndMin: be, label }
-        : null;
+      // potřebujeme blockStart/blockEnd
+      if (from === null || to === null) return null;
+      return { fromMin: from, toMin: to, label };
     }).filter(Boolean);
+
   } catch (e) {
     console.error("events load failed:", e);
-    // Když nejde načíst, raději NEblokuj automaticky (aby se systém nezastavil),
-    // ale error je v konzoli.
+    // Když nejde načíst, raději neblokujeme (aby se systém úplně nezastavil),
+    // ale chyba je v konzoli.
     blocks = [];
   }
 }
 
-// ---------- Zjisti, zda je vybraný čas blokovaný ----------
-function isBlocked(dateIso, startHHMM, endHHMM) {
-  if (!dateIso || dateIso !== currentDate) return { blocked: false };
+// ---------- Zjisti, zda je rezervace blokovaná ----------
+function getBlockHit(dateIso, startHHMM, endHHMM) {
+  if (!dateIso || dateIso !== currentDate) return null;
+
   const s = timeToMinutes(startHHMM);
   const e = timeToMinutes(endHHMM);
-  if (s === null || e === null) return { blocked: false };
+  if (s === null || e === null) return null;
 
   for (const b of blocks) {
-    if (overlaps(s, e, b.blockStartMin, b.blockEndMin)) {
-      return { blocked: true, label: b.label, from: b.blockStartMin, to: b.blockEndMin };
-    }
+    if (overlaps(s, e, b.fromMin, b.toMin)) return b;
   }
-  return { blocked: false };
+  return null;
 }
 
 // =========================================================
-// INTEGRACE do rezervace UI
-//
-// Protože nevidím přímo váš kód rezervací, děláme to robustně:
-// - hledáme input pro datum a posloucháme jeho change
-// - zachytíme submit formuláře (nebo klik na tlačítko "Rezervovat")
-// - časy bereme z běžných polí start/end (pokud existují)
-//
-// Pokud se ID liší, upravíš jen 2 selektory níže.
+// INTEGRACE DO rezervační stránky
+// - protože neznáme přesně tvé ID, používáme tolerantní selektory
+// - pokud se netrefí, řekni a doladíme (krokově)
 // =========================================================
 
-// 1) Selektory – uprav jen pokud máš jiné ID
-const dateInput = document.querySelector("#date, #res-date, input[type='date']");
+// datum (většinou jediný input type=date na stránce)
+const dateInput =
+  document.querySelector("#date, #res-date, #reservation-date, input[type='date']");
 
-// start/end – typicky select nebo input (time)
-const startInput = document.querySelector("#start, #res-start, #time-start, select[name='start'], input[name='start']");
-const endInput   = document.querySelector("#end, #res-end, #time-end, select[name='end'], input[name='end']");
+// start/end (select nebo input)
+const startInput =
+  document.querySelector("#start, #res-start, #time-start, select[name='start'], input[name='start']");
+const endInput =
+  document.querySelector("#end, #res-end, #time-end, select[name='end'], input[name='end']");
 
-// zprávy pro uživatele (volitelné)
-const msgBox = document.querySelector("#reservationMsg, #msg, #res-msg");
+// místo pro hlášku (když existuje)
+const msgBox =
+  document.querySelector("#reservationMsg, #msg, #res-msg");
 
-// 2) Při změně data načti events pro daný den
-dateInput?.addEventListener("change", async () => {
-  await loadBlocksForDate(dateInput.value);
-  if (msgBox) msgBox.textContent = ""; // smaž zprávu
-});
-
-// 3) Zachyť odeslání rezervace
-// - zkusíme najít formulář, nebo zachytíme click na tlačítko typu submit
+// nejčastěji je rezervace přes form submit
 const form = document.querySelector("form");
 
-function blockWithMessage(label) {
-  const text = `Tento termín je blokovaný: ${label}.`;
+// fallback: tlačítko rezervovat
+function findReserveButton() {
+  return document.querySelector("#reserveBtn, button[type='submit'], button");
+}
+const reserveBtn = findReserveButton();
+
+function showBlockedMessage(label) {
+  const text = `Termín je blokovaný (${label}) – nelze rezervovat.`;
   if (msgBox) msgBox.textContent = text;
   else alert(text);
 }
 
+// 1) Po změně data načti blokace
+dateInput?.addEventListener("change", async () => {
+  await loadBlocksForDate(dateInput.value);
+  if (msgBox) msgBox.textContent = "";
+});
+
+// 2) Před odesláním rezervace zkontroluj blokaci
 function checkAndBlock(evt) {
-  // potřebujeme datum + start + end
   const dateIso = dateInput?.value || "";
   const start = startInput?.value || "";
   const end = endInput?.value || "";
 
-  const r = isBlocked(dateIso, start, end);
+  const hit = getBlockHit(dateIso, start, end);
+  if (hit) {
+    evt.preventDefault();
+    evt.stopPropagation();
+    showBlockedMessage(hit.label);
+    return false;
+  }
+  return true;
+}
+
+if (form) {
+  // zachytíme submit formu (nejjistější)
+  form.addEventListener("submit", (evt) => {
+    checkAndBlock(evt);
+  }, true);
+} else {
+  // fallback: zachytit click na "rezervovat"
+  reserveBtn?.addEventListener("click", (evt) => {
+    checkAndBlock(evt);
+  }, true);
+}
+
+// 3) Načti blokace hned při startu, pokud už je datum vyplněné
+if (dateInput?.value) {
+  loadBlocksForDate(dateInput.value);
+}
