@@ -3,13 +3,13 @@
 //
 // CO TENTO SOUBOR DĚLÁ:
 // 1) Vypíše "Seznam aktuálních rezervací" do #reservations-list
-//    - bere kolekci Firestore: reservations
+//    - kolekce Firestore: reservations
 //    - zobrazuje jen dnešní (které ještě neskončily) + budoucí
 //    - přidává odkaz na storno (rezervace-storno.html)
 // 2) Vypíše "Akce na kuželně" do #eventsNews
-//    - bere kolekci Firestore: events
+//    - kolekce Firestore: events
 //    - zobrazuje dnešní + budoucí akce
-//    - zobrazuje SKUTEČNÝ čas start–end (ne blokaci)
+//    - zobrazuje SKUTEČNÝ čas akce start–end (ne blokaci)
 // =========================================================
 
 import { BASE_URL } from "./config.js";
@@ -22,15 +22,22 @@ import {
   orderBy
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// =========================================================
+// ---------------------------
 // DOM
-// =========================================================
+// ---------------------------
 const resListEl = document.getElementById("reservations-list");
 const eventsEl = document.getElementById("eventsNews");
 
-// =========================================================
-// Helpery: datum/čas
-// =========================================================
+// ---------------------------
+// Helpery
+// ---------------------------
+function esc(s) {
+  return (s ?? "").toString()
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
 function toMinutes(t) {
   // "HH:MM" -> minuty od 00:00
   const m = (t || "").match(/^(\d{1,2}):(\d{2})$/);
@@ -60,15 +67,8 @@ function sortKeyReservation(r) {
   return `${date} ${start} ${lane}`;
 }
 
-function esc(s) {
-  return (s ?? "").toString()
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
-}
-
 // =========================================================
-// 1) REZERVACE -> #reservations-list
+// 1) REZERVACE
 // =========================================================
 function renderReservations(reservations) {
   if (!resListEl) return;
@@ -77,18 +77,15 @@ function renderReservations(reservations) {
   const today = todayIso();
   const nowMin = now.getHours() * 60 + now.getMinutes();
 
-  // Zobrazíme jen:
-  // - budoucí dny
-  // - dnešní rezervace, které ještě neskončily
   const filtered = (reservations || []).filter(r => {
     if (!r.date) return false;
 
-    if (r.date > today) return true;      // budoucí dny
-    if (r.date < today) return false;     // minulost pryč
+    if (r.date > today) return true;   // budoucí
+    if (r.date < today) return false;  // minulost pryč
 
     // dnes
-    if (!r.end) return true;              // když chybí end, raději ukázat
-    return toMinutes(r.end) > nowMin;     // dnešní jen pokud ještě neskončila
+    if (!r.end) return true;
+    return toMinutes(r.end) > nowMin;  // dnešní jen pokud ještě neskončila
   });
 
   if (!filtered.length) {
@@ -98,26 +95,26 @@ function renderReservations(reservations) {
 
   filtered.sort((a, b) => sortKeyReservation(a).localeCompare(sortKeyReservation(b)));
 
-  // Storno bez předávání kódu – zákazník ho zadá ručně
   const stornoHref = `${BASE_URL}rezervace-storno.html`;
 
-  resListEl.innerHTML = filtered.map(r => {
-    return `
-      <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.15);">
-        <div>
-          <strong>${esc(formatDate(r.date))}</strong> —
-          Dráha <strong>${esc(r.lane)}</strong> —
-          <strong>${esc(r.start)}–${esc(r.end)}</strong> —
-          ${esc(r.name || "")}
-        </div>
-        <div>
-          <a href="${esc(stornoHref)}" style="color:#ffd700; font-weight:bold).join("");
+  resListEl.innerHTML = filtered.map(r => `
+    <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.15);">
+      <div>
+        <strong>${esc(formatDate(r.date))}</strong> —
+        Dráha <strong>${esc(r.lane)}</strong> —
+        <strong>${esc(r.start)}–${esc(r.end)}</strong> —
+        ${esc(r.name || "")}
+      </div>
+      <div>
+        <a href="${esc(stornoHref)}" style="color:#ffd700; font-weight:bold;">Storno</a>
+      </div>
+    </div>
+  `).join("");
 }
 
 function initReservations() {
   if (!resListEl) return;
 
-  // Realtime načítání rezervací
   onSnapshot(
     collection(db, "reservations"),
     (snap) => {
@@ -132,11 +129,12 @@ function initReservations() {
 }
 
 // =========================================================
-// 2) EVENTS (AKCE) -> #eventsNews
+// 2) EVENTS (AKCE)
 // =========================================================
 function eventLabel(ev) {
-  if (ev.type === "match") return `Zápas ${ev.team || ""}`.trim();
-  return ev.title || "Turnaj";
+  // ✅ Tady byla chyba: musí to být string (v backticích / uvozovkách)
+  if (ev?.type === "match") return `Zápas ${ev.team || ""}`.trim();
+  return (ev?.title || "Turnaj");
 }
 
 function renderEvents(items) {
@@ -150,22 +148,19 @@ function renderEvents(items) {
     return;
   }
 
-  eventsEl.innerHTML = future.map(ev => {
-    // TADY je požadavek: zobrazujeme skutečný čas start–end
-    const line = `${formatDate(ev.date)} — ${ev.start}–${ev.end} — ${eventLabel(ev)}`;
-    return `<div style="margin:2px 0;">
+  eventsEl.innerHTML = future.map(ev => `
+    <div style="margin:2px 0;">
       <strong>${esc(formatDate(ev.date))}</strong> —
       <strong>${esc(ev.start)}–${esc(ev.end)}</strong> —
       ${esc(eventLabel(ev))}
       ${ev.note ? ` — <span style="opacity:0.85;">${esc(ev.note)}</span>` : ""}
-    </div>`;
-  }).join("");
+    </div>
+  `).join("");
 }
 
 function initEvents() {
   if (!eventsEl) return;
 
-  // Realtime načítání akcí – hned se promítnou změny z admin-akce
   const q = query(collection(db, "events"), orderBy("date"), orderBy("start"));
 
   onSnapshot(
