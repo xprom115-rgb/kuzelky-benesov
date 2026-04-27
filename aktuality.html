@@ -36,9 +36,11 @@
     <h2>Aktuality</h2>
 
     <!-- =========================================================
-         1) Aktuální rezervace (zobrazuje aktuality.js)
+         1) Aktuální rezervace (zobrazuje aktuality-page.js)
          ========================================================= -->
     <p>Seznam aktuálních rezervací:</p>
+
+    <!-- sem JS vypíše rezervace -->
     <div id="reservations-list"></div>
 
     <hr style="margin:18px 0;">
@@ -48,7 +50,7 @@
     </p>
 
     <!-- =========================================================
-         2) Akce na kuželně (zápasy/turnaje) – zobrazuje aktuality-events.js
+         2) Akce na kuželně (zápasy/turnaje) – zobrazuje aktuality-page.js
          ========================================================= -->
     <div class="card" style="margin-top:14px;">
       <h3 style="margin:0; color:#ffd700;">Akce na kuželně</h3>
@@ -62,16 +64,16 @@
       </div>
     </div>
 
-  </div><!-- /content-box -->
+  </div>
 </main>
 
 <footer>© Kuželky Benešov – 2026</footer>
 
 <!-- =========================================================
-     JS moduly (cache-buster) – musí být až na konci body
+     JS modul – sjednocené aktuality (rezervace + events)
+     Pozn.: v sobě importuje config.js a firebase-config.js
      ========================================================= -->
 <script type="module" src="./aktuality-page.js?v=2"></script>
-<script type="module" src="./firebase-config.js?v=13"></script>
 
 </body>
 </html>
