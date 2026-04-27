@@ -20,52 +20,64 @@
 
 <nav>
   <ul>
-     <li><a href="index.html">Domů</a></li>
-        <li><a href="aktuality.html">Aktuality</a></li>
-        <li><a href="historie.html">Historie</a></li>
-        <li><a href="druzstva.html">Družstva</a></li>
-        <li><a href="rezervace.html">Rezervace</a></li>
-        <li><a href="habadura.html">Habaďůra</a></li>
-        <li><a href="kontakty.html">Kontakty</a></li>
-        <li><a href="admin.html">Admin</a></li>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
   </ul>
 </nav>
 
 <main>
   <div class="content-box">
     <h2>Aktuality</h2>
-    <p>Seznam aktuálních rezervací:</p>
 
-    <!-- sem JS vypíše rezervace -->
+    <!-- =========================================================
+         1) Aktuální rezervace (zobrazuje aktuality.js)
+         ========================================================= -->
+    <p>Seznam aktuálních rezervací:</p>
     <div id="reservations-list"></div>
 
     <hr style="margin:18px 0;">
+
     <p style="font-size:14px; opacity:0.9;">
       Storno rezervace vyžaduje zadání kódu, který zákazník získal při rezervaci.
     </p>
-    
-    <!-- BLOK: Akce na kuželně (zápasy/turnaje) -->
-<div class="card" style="margin-top:14px;">
-  <h3 style="margin:0; color:#ffd700;">Akce na kuželně</h3>
-  <div class="small" style="margin-top:6px; opacity:0.9;">
-    Zápasy a turnaje blokující dráhy (zobrazuje skutečný čas akce).
-  </div>
 
-  <div id="eventsNews" class="small" style="margin-top:10px;">
-    <em>Načítám…</em>
-  </div>
-</div>
-  </div>
+    <!-- =========================================================
+         2) Akce na kuželně (zápasy/turnaje) – zobrazuje aktuality-events.js
+         ========================================================= -->
+    <div class="card" style="margin-top:14px;">
+      <h3 style="margin:0; color:#ffd700;">Akce na kuželně</h3>
+
+      <div class="small" style="margin-top:6px; opacity:0.9;">
+        Zápasy a turnaje blokující dráhy (zobrazuje skutečný čas akce).
+      </div>
+
+      <div id="eventsNews" class="small" style="margin-top:10px;">
+        <em>Načítám…</em>
+      </div>
+    </div>
+
+  </div><!-- /content-box -->
 </main>
 
 <footer>© Kuželky Benešov – 2026</footer>
 
-<!-- JS moduly (cache-buster) – musí být až na konci body -->
+<!-- =========================================================
+     JS moduly (cache-buster) – musí být až na konci body
+     ========================================================= -->
 <script type="module" src="./config.js?v=13"></script>
 <script type="module" src="./firebase-config.js?v=13"></script>
+
+<!-- Rezervace do aktualit -->
 <script type="module" src="./aktuality.js?v=13"></script>
-<script type="module" src="./aktuality-events.js?v=1"></script> 
-  
+
+<!-- Akce (events) do aktualit -->
+<script type="module" src="./aktuality-events.js?v=1"></script>
 
 </body>
 </html>
