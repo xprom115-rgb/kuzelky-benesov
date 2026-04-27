@@ -84,3 +84,105 @@ function renderReservations(reservations) {
     if (!r.date) return false;
 
     if (r.date > today) return true;      // budoucí dny
+    if (r.date < today) return false;     // minulost pryč
+
+    // dnes
+    if (!r.end) return true;              // když chybí end, raději ukázat
+    return toMinutes(r.end) > nowMin;     // dnešní jen pokud ještě neskončila
+  });
+
+  if (!filtered.length) {
+    resListEl.innerHTML = "<p><em>Zatím nejsou žádné rezervace.</em></p>";
+    return;
+  }
+
+  filtered.sort((a, b) => sortKeyReservation(a).localeCompare(sortKeyReservation(b)));
+
+  // Storno bez předávání kódu – zákazník ho zadá ručně
+  const stornoHref = `${BASE_URL}rezervace-storno.html`;
+
+  resListEl.innerHTML = filtered.map(r => {
+    return `
+      <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.15);">
+        <div>
+          <strong>${esc(formatDate(r.date))}</strong> —
+          Dráha <strong>${esc(r.lane)}</strong> —
+          <strong>${esc(r.start)}–${esc(r.end)}</strong> —
+          ${esc(r.name || "")}
+        </div>
+        <div>
+          <a href="${esc(stornoHref)}" style="color:#ffd700; font-weight:bold).join("");
+}
+
+function initReservations() {
+  if (!resListEl) return;
+
+  // Realtime načítání rezervací
+  onSnapshot(
+    collection(db, "reservations"),
+    (snap) => {
+      const reservations = snap.docs.map(d => d.data());
+      renderReservations(reservations);
+    },
+    (err) => {
+      console.error("Chyba onSnapshot reservations:", err);
+      resListEl.innerHTML = "<p><strong>Chyba načítání rezervací.</strong></p>";
+    }
+  );
+}
+
+// =========================================================
+// 2) EVENTS (AKCE) -> #eventsNews
+// =========================================================
+function eventLabel(ev) {
+  if (ev.type === "match") return `Zápas ${ev.team || ""}`.trim();
+  return ev.title || "Turnaj";
+}
+
+function renderEvents(items) {
+  if (!eventsEl) return;
+
+  const today = todayIso();
+  const future = (items || []).filter(ev => (ev.date || "") >= today);
+
+  if (!future.length) {
+    eventsEl.innerHTML = "<em>Zatím nejsou naplánované žádné akce.</em>";
+    return;
+  }
+
+  eventsEl.innerHTML = future.map(ev => {
+    // TADY je požadavek: zobrazujeme skutečný čas start–end
+    const line = `${formatDate(ev.date)} — ${ev.start}–${ev.end} — ${eventLabel(ev)}`;
+    return `<div style="margin:2px 0;">
+      <strong>${esc(formatDate(ev.date))}</strong> —
+      <strong>${esc(ev.start)}–${esc(ev.end)}</strong> —
+      ${esc(eventLabel(ev))}
+      ${ev.note ? ` — <span style="opacity:0.85;">${esc(ev.note)}</span>` : ""}
+    </div>`;
+  }).join("");
+}
+
+function initEvents() {
+  if (!eventsEl) return;
+
+  // Realtime načítání akcí – hned se promítnou změny z admin-akce
+  const q = query(collection(db, "events"), orderBy("date"), orderBy("start"));
+
+  onSnapshot(
+    q,
+    (snap) => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderEvents(items);
+    },
+    (err) => {
+      console.error("Chyba onSnapshot events:", err);
+      eventsEl.innerHTML = "<em>Nelze načíst akce (zkontroluj Firestore Rules pro events).</em>";
+    }
+  );
+}
+
+// =========================================================
+// Start
+// =========================================================
+initReservations();
+initEvents();
