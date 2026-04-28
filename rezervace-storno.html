@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Storno rezervace – Kuželky Benešov</title>
 
-  <!-- CSS -->
+  <!-- Globální CSS webu (cache-buster) -->
   <link rel="stylesheet" href="./style.css?v=20">
 </head>
 
@@ -20,21 +20,23 @@
 
 <nav>
   <ul>
-     <li><a href="index.html">Domů</a></li>
-        <li><a href="aktuality.html">Aktuality</a></li>
-        <li><a href="historie.html">Historie</a></li>
-        <li><a href="druzstva.html">Družstva</a></li>
-        <li><a href="rezervace.html">Rezervace</a></li>
-        <li><a href="habadura.html">Habaďůra</a></li>
-        <li><a href="kontakty.html">Kontakty</a></li>
-        <li><a href="admin.html">Admin</a></li>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
   </ul>
 </nav>
 
 <main>
   <div class="content-box">
+
     <h2>Zrušení rezervace</h2>
 
+    <!-- Uživatel zadá kód, který dostal po rezervaci -->
     <p><strong>Zadejte kód rezervace:</strong> (kód jste dostali při potvrzení rezervace)</p>
 
     <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
@@ -43,32 +45,25 @@
         id="code"
         placeholder="Např. U7X9VW"
         autocomplete="off"
+        autocapitalize="characters"
+        inputmode="text"
         style="min-width:200px;"
       >
       <button
         id="btn-cancel"
+        type="button"
         style="padding:10px 14px; border-radius:10px; border:0; background:#1e235c; color:#ffd700; font-weight:bold; cursor:pointer;"
       >
         Zrušit rezervaci
       </button>
     </div>
 
-    <!-- Výsledek -->
-    <div id="result-box" style="display:none; margin-top:18px; padding:14px; border-radius:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);">
+    <!-- Výsledek operace -->
+    <div
+      id="result-box"
+      style="display:none; margin-top:18px; padding:14px; border-radius:12px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12);"
+    >
       <h3 id="result-title" style="margin:0 0 8px 0;"></h3>
       <p id="result-text" style="margin:0;"></p>
     </div>
 
-    <p style="margin-top:18px; font-size:14px; opacity:0.9;">
-      V případě technických problémů napište na <strong>kuzelkybn@gmail.com</strong>
-    </p>
-  </div>
-</main>
-
-<footer>© Kuželky Benešov – 2026</footer>
-
-<!-- ✅ DŮLEŽITÉ: načítej jen storno.js, nic dalšího -->
-<script type="module" src="./storno.js?v=20"></script>
-
-</body>
-</html>
