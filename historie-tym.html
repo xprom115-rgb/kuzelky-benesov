@@ -6,6 +6,35 @@
   <title>Historie týmu – Kuželky Benešov</title>
   <link rel="stylesheet" href="./style.css?v=1">
   <style>
+  /* Zvýraznění Benešova v tabulce */
+  .row-benesov {
+    background: rgba(255, 215, 0, 0.16) !important;
+    outline: 2px solid rgba(255, 215, 0, 0.35);
+  }
+  .row-benesov td {
+    font-weight: 700;
+  }
+
+  /* Tabulka zápasů */
+  .matches-table td, .matches-table th {
+    vertical-align: middle;
+  }
+
+  /* Výsledek zápasu z pohledu Benešova */
+  .match-win {
+    background: rgba(46, 204, 113, 0.18) !important; /* zelená */
+  }
+  .match-loss {
+    background: rgba(231, 76, 60, 0.18) !important;  /* červená */
+  }
+  .match-draw {
+    background: rgba(241, 196, 15, 0.14) !important; /* žlutá */
+  }
+  .match-win td strong, .match-loss td strong, .match-draw td strong {
+    color: #ffd700;
+  }
+</style>
+  <style>
     .hist-tile {
       margin-top:14px;
       padding:14px 16px;
