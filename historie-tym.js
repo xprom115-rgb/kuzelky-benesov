@@ -6,17 +6,17 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
-// ------------------------------------------------------------
-// DOM
-// ------------------------------------------------------------
+/* =========================================================
+   DOM
+   ========================================================= */
 const titleEl = document.getElementById("histTitle");
 const subEl = document.getElementById("histSubtitle");
 const seasonsWrap = document.getElementById("seasonsWrap");
 const detailEl = document.getElementById("seasonDetail");
 
-// ------------------------------------------------------------
-// Konstanty / popisky
-// ------------------------------------------------------------
+/* =========================================================
+   Konstanty / popisky
+   ========================================================= */
 const TEAM_NAMES = {
   A: "TJ Sokol Benešov A",
   B: "TJ Sokol Benešov B",
@@ -24,14 +24,19 @@ const TEAM_NAMES = {
   DOROST: "Dorost"
 };
 
-// ------------------------------------------------------------
-// Helpery: escape a datum
-// ------------------------------------------------------------
+/* =========================================================
+   Helpery: escape + datum
+   ========================================================= */
 function esc(s) {
   return (s ?? "").toString()
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
+}
+
+function escAttr(s) {
+  // pro atribut href apod. (minimálně escap uvozovek)
+  return esc(s).replaceAll('"', "&quot;");
 }
 
 function getTeamId() {
@@ -41,30 +46,28 @@ function getTeamId() {
 }
 
 function fmtDate(iso) {
-  // YYYY-MM-DD -> D.M.YYYY (když je ISO)
   if (!iso || typeof iso !== "string") return "";
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return iso;
   return `${Number(m[3])}.${Number(m[2])}.${m[1]}`;
 }
 
-// ------------------------------------------------------------
-// Tabulka (snapshot) + zvýraznění Benešova
-// ------------------------------------------------------------
-function renderTable(finalTable, teamId) {
+/* =========================================================
+   Tabulka snapshot + zvýraznění Benešova
+   - zvýrazní řádek, kde je v názvu "Benešov"
+   ========================================================= */
+function renderTable(finalTable) {
   if (!finalTable || !Array.isArray(finalTable.columns) || !Array.isArray(finalTable.rows)) {
     return `<p><em>Tabulka pro tuto sezónu není uložená.</em></p>`;
   }
 
   const cols = finalTable.columns;
 
-  // najdi index sloupce „Družstvo“
+  // index sloupce "Družstvo"
   const teamColIdx = cols.findIndex(c => (c || "").toString().trim().toLowerCase() === "družstvo");
-
-  // Benešov poznáme dle textu
   const isBenesovTeam = (s) => /benešov/i.test((s || "").toString());
 
-  // rows jsou uložené jako array-of-objects {c0,c1,...}
+  // rows: array-of-objects {c0,c1,...} -> array-of-arrays
   const rows = finalTable.rows.map(obj =>
     cols.map((_, i) => (obj?.["c" + i] ?? "").toString())
   );
@@ -80,21 +83,17 @@ function renderTable(finalTable, teamId) {
   return `<table class="tabulka">${head}${body}</table>`;
 }
 
-// ------------------------------------------------------------
-// Načtení sezón pro tým
-// ------------------------------------------------------------
+/* =========================================================
+   Načtení sezón + výpis dlaždic
+   ========================================================= */
 async function loadSeasons(teamId) {
   const colRef = collection(db, "team_history", teamId, "seasons");
   const snap = await getDocs(colRef);
-
   return snap.docs
     .map(d => ({ id: d.id, ...d.data() }))
     .sort((a, b) => (b.id || "").localeCompare(a.id || ""));
 }
 
-// ------------------------------------------------------------
-// Vykreslení seznamu sezón (dlaždice + tlačítko Otevřít)
-// ------------------------------------------------------------
 function renderSeasons(teamId, seasons) {
   if (!seasonsWrap) return;
 
@@ -111,7 +110,7 @@ function renderSeasons(teamId, seasons) {
           <h3>${esc(sid)}</h3>
           <div class="desc">Klikni na Otevřít pro zobrazení obsahu sezóny.</div>
         </div>
-        <button class="btn-primary" type="button" data-season="${esc(s.id)}">Otevřít</button>
+        <button class="btn-primary" type="button" data-season="${escAttr(s.id)}">Otevřít</button>
       </div>
     `;
   }).join("");
@@ -120,37 +119,32 @@ function renderSeasons(teamId, seasons) {
     btn.addEventListener("click", async () => {
       const seasonId = btn.getAttribute("data-season");
       await showSeasonDetail(teamId, seasonId);
-
-      // volitelné: posun na detail
-      // detailEl?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   });
 }
 
-// ------------------------------------------------------------
-// Zápasy (snapshot) jako tabulka + zvýraznění výhry Benešova
-// ------------------------------------------------------------
+/* =========================================================
+   Zápasy snapshot (pastList) -> tabulka + zvýraznění výsledku Benešova
+   ========================================================= */
 function parseResultSide(resultStr) {
-  // podporuje: "6:2" i "5,5:2,5"
   const clean = (resultStr || "").toString().trim().replace(/\s+/g, "");
   const parts = clean.split(":");
   if (parts.length !== 2) return null;
 
   const left = Number(parts[0].replace(",", "."));
   const right = Number(parts[1].replace(",", "."));
-
   if (!Number.isFinite(left) || !Number.isFinite(right)) return null;
+
   return { left, right };
 }
 
-function isBenesovTeam(s) {
+function isBenesovTeamName(s) {
   return /benešov/i.test((s || "").toString());
 }
 
 function matchRowClass(m) {
-  const homeIsBen = isBenesovTeam(m.home);
-  const awayIsBen = isBenesovTeam(m.away);
-
+  const homeIsBen = isBenesovTeamName(m.home);
+  const awayIsBen = isBenesovTeamName(m.away);
   if (!homeIsBen && !awayIsBen) return "";
 
   const rr = parseResultSide(m.result);
@@ -159,7 +153,7 @@ function matchRowClass(m) {
   const ben = homeIsBen ? rr.left : rr.right;
   const opp = homeIsBen ? rr.right : rr.left;
 
-  // 0:0 bereme jako remíza / bez rozhodnutí
+  // 0:0 bereme jako remízu / bez rozhodnutí
   if (ben > opp) return "match-win";
   if (ben < opp) return "match-loss";
   return "match-draw";
@@ -202,9 +196,9 @@ function renderMatchesTable(pastList) {
   `;
 }
 
-// ------------------------------------------------------------
-// Detail sezóny (po kliknutí na Otevřít)
-// ------------------------------------------------------------
+/* =========================================================
+   Detail sezóny (po kliknutí "Otevřít")
+   ========================================================= */
 async function showSeasonDetail(teamId, seasonId) {
   if (!detailEl) return;
   detailEl.innerHTML = `<p><em>Načítám sezónu…</em></p>`;
@@ -217,29 +211,32 @@ async function showSeasonDetail(teamId, seasonId) {
     return;
   }
 
-  const data = snap.data();
+  const data = snap.data() || {};
 
-  // --------------------------
-  // Dorost: souhrnný zpravodaj
-  // --------------------------
+  // -------------------------
+  // Dorost: souhrnný zpravodaj (bez ternárního template => žádné rozhození závorek)
+  // -------------------------
   if (teamId === "DOROST") {
     const url = data?.summaryBulletin?.url || "";
     const label = data?.summaryBulletin?.title || "Souhrnný zpravodaj (8. kolo)";
 
-    detailEl.innerHTML = `
-      <h3 style="margin-top:0; color:#ffd700;">Sezóna ${esc(seasonId)}</h3>
-      ${url
-        ? `<a class="btn-open" href="${esc(url)}" target="_blank" rel="noopenerravodaj není uložen.</em></p>`
-      }
-    `;
+    let html = `<h3 style="margin-top:0; color:#ffd700;">Sezóna ${esc(seasonId)}</h3>`;
+
+    if (url) {
+      html += `<a class="btn-open" href="${escAttr(url)}" target="_blank" rel="noopener">Otevřít: ${esc(label)}</a>`;
+    } else {
+      html += `<p><em>Souhrnný zpravodaj není uložen.</em></p>`;
+    }
+
+    detailEl.innerHTML = html;
     return;
   }
 
-  // --------------------------
+  // -------------------------
   // A/B/C: tabulka + zápasy
-  // --------------------------
-  const tableHtml = renderTable(data?.finalTable, teamId);
-  const pastList = Array.isArray(data?.pastList) ? data.pastList : [];
+  // -------------------------
+  const tableHtml = renderTable(data.finalTable);
+  const pastList = Array.isArray(data.pastList) ? data.pastList : [];
 
   detailEl.innerHTML = `
     <h3 style="margin-top:0; color:#ffd700;">Sezóna ${esc(seasonId)}</h3>
@@ -252,9 +249,9 @@ async function showSeasonDetail(teamId, seasonId) {
   `;
 }
 
-// ------------------------------------------------------------
-// Init
-// ------------------------------------------------------------
+/* =========================================================
+   Init
+   ========================================================= */
 async function init() {
   const teamId = getTeamId();
   if (!teamId) {
@@ -268,7 +265,7 @@ async function init() {
   if (titleEl) titleEl.textContent = `Historie – ${name}`;
   if (subEl) subEl.textContent = "Vyber sezónu a klikni na Otevřít.";
 
-  // ✅ detail se nezobrazuje automaticky, až po kliknutí
+  // detail se nezobrazuje automaticky
   if (detailEl) detailEl.innerHTML = "";
 
   try {
