@@ -4,7 +4,7 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-
 const el = document.getElementById("pastRoundsList");
 
 // ---------------------------------------------------------
-// CSS: tmavší kabát + zvýraznění win/loss/draw (injekce)
+// CSS: zvýraznění win/loss/draw (injekce)
 // ---------------------------------------------------------
 (function injectStyles() {
   const id = "abcMatchesStyles";
