@@ -499,12 +499,12 @@ if (!/^\d{1,4}:\d{1,4}$/.test(pinsClean)) {
   setAbcMsg("⚠️ Kuželky mají špatný formát (např. 3404:3247 nebo 0:0).");
   return;
 }
-    }
+   
 
     setAbcMsg(`⏳ Ukládám minulý zápas ${roundKey}. kolo pro ${teamId}…`);
 
     const ref = doc(db, "team_current", teamId);
-
+}
     // ✅ uloží past[roundKey] bez smazání ostatních kol
     await setDoc(ref, {
       updatedAt: new Date().toISOString(),
