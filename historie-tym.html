@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Historie týmu – Kuželky Benešov</title>
 
-  <!-- Hlavní CSS webu -->
+  <!-- Hlavní CSS webu (cache-buster) -->
   <link rel="stylesheet" href="./style.css?v=13">
 
   <!-- =========================================================
        Lokální styly jen pro historii týmů
-       - zvýraznění Benešova v tabulce
-       - zápasy jako tabulka + barvy výsledků
        - dlaždice sezón
+       - zvýraznění Benešova v tabulce
+       - tabulka zápasů + výraznější barvy win/loss/draw
        ========================================================= -->
   <style>
     /* Sezónní dlaždice */
@@ -31,22 +31,40 @@
     .hist-tile h3 { margin: 0; color: #ffd700; }
     .hist-tile .desc { font-size: 13px; opacity: 0.9; margin-top: 6px; }
 
-    /* Zvýraznění Benešova v tabulce */
+    /* Zvýraznění Benešova v tabulce – tmavší a výraznější */
     .row-benesov {
-      background: rgba(255, 215, 0, 0.16) !important;
-      outline: 2px solid rgba(255, 215, 0, 0.35);
+      background: rgba(255, 215, 0, 0.38) !important;
+      outline: 2px solid rgba(255, 215, 0, 0.65);
+      box-shadow: inset 0 0 0 9999px rgba(0,0,0,0.10);
     }
-    .row-benesov td { font-weight: 700; }
+    .row-benesov td { font-weight: 800; }
 
     /* Tabulka zápasů */
     .matches-table td, .matches-table th {
       vertical-align: middle;
     }
 
-    /* Výsledek zápasu z pohledu Benešova */
-    .match-win  { background: rgba(46, 204, 113, 0.18) !important; } /* zelená */
-    .match-loss { background: rgba(231, 76, 60, 0.18) !important; }  /* červená */
-    .match-draw { background: rgba(241, 196, 15, 0.14) !important; } /* žlutá */
+    /* Výsledek zápasu z pohledu Benešova – tmavší barvy + levý pruh */
+    .match-win {
+      background: rgba(20, 120, 60, 0.55) !important;
+      border-left: 8px solid rgba(46, 204, 113, 0.95);
+    }
+    .match-loss {
+      background: rgba(140, 40, 30, 0.55) !important;
+      border-left: 8px solid rgba(231, 76, 60, 0.95);
+    }
+    .match-draw {
+      background: rgba(160, 120, 0, 0.50) !important;
+      border-left: 8px solid rgba(241, 196, 15, 0.95);
+    }
+
+    /* Čitelnost tabulek přes fotku pozadí – lehké ztmavení buněk */
+    .tabulka td {
+      background: rgba(0, 0, 0, 0.18);
+    }
+    .tabulka tr:hover td {
+      background: rgba(0, 0, 0, 0.28);
+    }
   </style>
 </head>
 
@@ -54,7 +72,7 @@
 
 <header>
   <div class="header-left">
-    <img src="./logo.jpg" alt="Kuželky Benešov" class="logo">
+    <img src="./logo.jpg" class="logo" alt="Logo">
   </div>
   <div class="header-title">Kuželky Benešov</div>
   <div class="header-right"></div>
@@ -96,3 +114,4 @@
 <script type="module" src="./historie-tym.js?v=3"></script>
 </body>
 </html>
+``
