@@ -4,7 +4,7 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-
 const el = document.getElementById("futureRoundsList");
 
 // ---------------------------------------------------------
-// CSS: tmavší kabát + tabulka (injekce, aby nebylo nutné měnit HTML)
+// CSS: tmavší zvíraznění buněk
 // ---------------------------------------------------------
 (function injectStyles() {
   const id = "abcMatchesStyles";
