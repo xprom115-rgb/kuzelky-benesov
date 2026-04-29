@@ -453,7 +453,7 @@ btnSaveFuture?.addEventListener("click", async () => {
   }
 });
 
-
+// Uložit minulé kolo 
 btnSavePast?.addEventListener("click", async () => {
   try {
     const teamId = abcTeam?.value || "A";
@@ -465,7 +465,7 @@ btnSavePast?.addEventListener("click", async () => {
     const home = (pHome?.value || "").trim(); // select
     const away = (pAway?.value || "").trim(); // select
     const result = (pResult?.value || "").trim(); // např. 6:2
-    const pins = (pPins?.value || "").trim();     // např. 3404:3247
+    const pins = (pPins?.value || "").trim();     // např. 3404:3247 nebo 0:0
 
     if (!roundNum || roundNum < 1 || !Number.isFinite(roundNum)) {
       setAbcMsg("⚠️ Vyplň kolo (číslo >= 1).");
@@ -484,27 +484,28 @@ btnSavePast?.addEventListener("click", async () => {
       return;
     }
     if (!pins) {
-      setAbcMsg("⚠️ Vyplň kuželky (např. 3404:3247).");
+      setAbcMsg("⚠️ Vyplň kuželky (např. 3404:3247 nebo 0:0).");
       return;
     }
 
-    // jednoduchá kontrola formátu (kvůli překlepům)
-    if (!/^\d+(?:[.,]\d+)?:\d+(?:[.,]\d+)?$/.test(result.replace(/\s+/g, ""))) {
+    // jednoduchá kontrola formátu výsledku (kvůli překlepům)
+    const resultClean = result.replace(/\s+/g, "");
+    if (!/^\d+(?:[.,]\d+)?:\d+(?:[.,]\d+)?$/.test(resultClean)) {
       setAbcMsg("⚠️ Výsledek má špatný formát (např. 6:2 nebo 5,5:2,5).");
       return;
     }
-    // povolit i kontumace typu 0:0 (a obecně 1–4 číslice na každé straně)
-const pinsClean = pins.replace(/\s+/g, "");
-if (!/^\d{1,4}:\d{1,4}$/.test(pinsClean)) {
-  setAbcMsg("⚠️ Kuželky mají špatný formát (např. 3404:3247 nebo 0:0).");
-  return;
-}
-   
+
+    // ✅ kuželky: povol i kontumace typu 0:0 (a obecně 1–4 číslice na každé straně)
+    const pinsClean = pins.replace(/\s+/g, "");
+    if (!/^\d{1,4}:\d{1,4}$/.test(pinsClean)) {
+      setAbcMsg("⚠️ Kuželky mají špatný formát (např. 3404:3247 nebo 0:0).");
+      return;
+    }
 
     setAbcMsg(`⏳ Ukládám minulý zápas ${roundKey}. kolo pro ${teamId}…`);
 
     const ref = doc(db, "team_current", teamId);
-}
+
     // ✅ uloží past[roundKey] bez smazání ostatních kol
     await setDoc(ref, {
       updatedAt: new Date().toISOString(),
@@ -514,13 +515,13 @@ if (!/^\d{1,4}:\d{1,4}$/.test(pinsClean)) {
           date,
           home,
           away,
-          result: result.replace(/\s+/g, ""),
-          pins: pins.replace(/\s+/g, "")
+          result: resultClean,
+          pins: pinsClean
         }
       }
     }, { merge: true });
 
-    setAbcMsg(`✅ Uloženo: ${roundKey}. kolo (${date}) ${home} - ${away} ${result} ${pins}`);
+    setAbcMsg(`✅ Uloženo: ${roundKey}. kolo (${date}) ${home} - ${away} ${resultClean} ${pinsClean}`);
 
     // volitelně vyčistit vstupy
     if (pRound) pRound.value = "";
