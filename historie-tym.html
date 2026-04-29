@@ -4,39 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Historie týmu – Kuželky Benešov</title>
-  <link rel="stylesheet" href="./style.css?v=1">
+
+  <link rel="stylesheet" href="./style.css?v=1=====================================
+       Lokální styly jen pro historii týmů
+       - zvýraznění Benešova v tabulce
+       - zápasy jako tabulka + barvy výsledků
+       - dlaždice sezón
+       ========================================================= -->
   <style>
- function renderTable(finalTable, teamId) {
-  if (!finalTable || !Array.isArray(finalTable.columns) || !Array.isArray(finalTable.rows)) {
-    return `<p><em>Tabulka pro tuto sezónu není uložená.</em></p>`;
-  }
-
-  const cols = finalTable.columns;
-
-  // index sloupce "Družstvo" (kde je název týmu)
-  const teamColIdx = cols.findIndex(c => (c || "").toString().trim().toLowerCase() === "družstvo");
-
-  // jak poznat Benešov v tabulce (A/B/C mají v názvu vždy Benešov)
-  const isBenesovTeam = (s) => /benešov/i.test((s || "").toString());
-
-  // rows jsou uložené jako array-of-objects {c0,c1,...}
-  const rows = finalTable.rows.map(obj =>
-    cols.map((_, i) => (obj?.["c" + i] ?? "").toString())
-  );
-
-  const head = `<tr>${cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr>`;
-
-  const body = rows.map(r => {
-    const teamName = (teamColIdx >= 0) ? (r[teamColIdx] || "") : "";
-    const rowClass = isBenesovTeam(teamName) ? "row-benesov" : "";
-    return `<tr class="${rowClass}">${r.map(x => `<td>${esc(x)}</td>`).join("")}</tr>`;
-  }).join("");
-
-  return `<table class="tabulka">${head}${body}</table>`;
-}
-
-</style>
-  <style>
+    /* Sezónní dlaždice */
     .hist-tile {
       margin-top:14px;
       padding:14px 16px;
@@ -51,10 +27,34 @@
     }
     .hist-tile h3 { margin:0; color:#ffd700; }
     .hist-tile .desc { font-size:13px; opacity:0.9; margin-top:6px; }
+
+    /* Zvýraznění Benešova v tabulce */
+    .row-benesov {
+      background: rgba(255, 215, 0, 0.16) !important;
+      outline: 2px solid rgba(255, 215, 0, 0.35);
+    }
+    .row-benesov td { font-weight: 700; }
+
+    /* Tabulka zápasů */
+    .matches-table td, .matches-table th {
+      vertical-align: middle;
+    }
+
+    /* Výsledek zápasu z pohledu Benešova */
+    .match-win {
+      background: rgba(46, 204, 113, 0.18) !important; /* zelená */
+    }
+    .match-loss {
+      background: rgba(231, 76, 60, 0.18) !important;  /* červená */
+    }
+    .match-draw {
+      background: rgba(241, 196, 15, 0.14) !important; /* žlutá */
+    }
   </style>
 </head>
 
 <body>
+
 <header>
   <div class="header-left">
     <img src="./logo.jpg" alt="Kuželky Benešov" style="max-height:64px;">
@@ -95,6 +95,6 @@
 
 <footer>© Kuželky Benešov – 2026</footer>
 
-<script type="module" src="./historie-tym.js?v=1"></script>
+<script type="module" src="./historie-tym.js?v=2"></script>
 </body>
 </html>
