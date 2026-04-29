@@ -138,44 +138,96 @@ async function showSeasonDetail(teamId, seasonId) {
     return;
   }
 
-  // A/B/C: tabulka snapshot + zápasy (pastList)
-  const tableHtml = renderTable(data?.finalTable);
+// A/B/C: tabulka snapshot + zápasy (pastList) jako tabulka
+  const tableHtml = renderTable(data?.finalTable, teamId);
 
   const pastList = Array.isArray(data?.pastList) ? data.pastList : [];
-  const matchesHtml = pastList.length
-    ? `<div style="margin-top:12px;">
-         <h4 style="margin:10px 0 6px 0; color:#ffd700;">Zápasy (uložený snapshot)</h4>
-         ${pastList
-           .slice()
-           .sort((a, b) => (a.round ?? 0) - (b.round ?? 0))
-           .map(m => {
-             const r = m.round ?? "";
-             const dt = fmtDate(m.date ?? "");
-             const home = m.home ?? "";
-             const away = m.away ?? "";
-             const res = m.result ?? "";
-             const pins = m.pins ?? "";
-             return `<div style="margin:2px 0;">
-               <strong>${esc(r)}. kolo</strong>
-               ${esc(dt)}
-               ${esc(home)} - ${esc(away)}
-               <strong>${esc(res)}</strong>
-               ${esc(pins)}
-             </div>`;
-           }).join("")}
-       </div>`
-    : `<div style="margin-top:12px;">
-         <h4 style="margin:10px 0 6px 0; color:#ffd700;">Zápasy (uložený snapshot)</h4>
-         <p><em>V této sezóně nejsou uložené žádné zápasy.</em></p>
-       </div>`;
+
+  // určení, jestli text týmu obsahuje Benešov
+  const isBenesovTeam = (s) => /benešov/i.test((s || "").toString());
+
+  // Výsledek zápasu z pohledu Benešova:
+  // - pokud Benešov je doma → bere se levá strana výsledku
+  // - pokud Benešov je venku → bere se pravá strana
+  // - podporuje "6:2" i "5,5:2,5"
+  function parseResultSide(resultStr) {
+    const clean = (resultStr || "").toString().trim().replace(/\s+/g, "");
+    const m = clean.split(":");
+    if (m.length !== 2) return null;
+    const left = Number(m[0].replace(",", "."));
+    const right = Number(m[1].replace(",", "."));
+    if (!Number.isFinite(left) || !Number.isFinite(right)) return null;
+    return { left, right };
+  }
+
+  function matchClass(m) {
+    const homeIsBen = isBenesovTeam(m.home);
+    const awayIsBen = isBenesovTeam(m.away);
+    if (!homeIsBen && !awayIsBen) return ""; // zápas bez Benešova (nemělo by nastat, ale pro jistotu)
+
+    const rr = parseResultSide(m.result);
+    if (!rr) return "";
+
+    const ben = homeIsBen ? rr.left : rr.right;
+    const opp = homeIsBen ? rr.right : rr.left;
+
+    // 0:0 bereme jako remízu / bez rozhodnutí
+    if (ben > opp) return "match-win";
+    if (ben < opp) return "match-loss";
+    return "match-draw";
+  }
+
+  function renderMatchesTable(list) {
+    if (!list.length) {
+      return `<p><em>V této sezóně nejsou uložené žádné zápasy.</em></p>`;
+    }
+
+    const rows = list
+      .slice()
+      .sort((a, b) => (a.round ?? 0) - (b.round ?? 0))
+      .map(m => {
+        const cls = matchClass(m);
+        return `
+          <tr class="${cls}">
+            <td><strong>${esc(m.round ?? "")}.</strong></td>
+            <td>${esc(fmtDate(m.date ?? ""))}</td>
+            <td>${esc(m.home ?? "")}</td>
+            <td>${esc(m.away ?? "")}</td>
+            <td><strong>${esc(m.result ?? "")}</strong></td>
+            <td>${esc(m.pins ?? "")}</td>
+          </tr>
+        `;
+      }).join("");
+
+    return `
+      <table class="tabulka matches-table">
+        <tr>
+          <th>Kolo</th>
+          <th>Datum</th>
+          <th>Domácí</th>
+          <th>Hosté</th>
+          <th>Výsledek</th>
+          <th>Kuželky</th>
+        </tr>
+        ${rows}
+      </table>
+    `;
+  }
+
+  const matchesHtml = `
+    <h4 style="margin:10px 0 6px 0; color:#ffd700;">Zápasy (uložený snapshot)</h4>
+    ${renderMatchesTable(pastList)}
+  `;
 
   detailEl.innerHTML = `
     <h3 style="margin-top:0; color:#ffd700;">Sezóna ${esc(seasonId)}</h3>
+
     <h4 style="margin:10px 0 6px 0; color:#ffd700;">Tabulka (uložený snapshot)</h4>
     ${tableHtml}
+
     ${matchesHtml}
   `;
-}
+``
 
 async function init() {
   const teamId = getTeamId();
