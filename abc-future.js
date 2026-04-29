@@ -3,6 +3,29 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-
 
 const el = document.getElementById("futureRoundsList");
 
+// ---------------------------------------------------------
+// CSS: tmavší kabát + tabulka (injekce, aby nebylo nutné měnit HTML)
+// ---------------------------------------------------------
+(function injectStyles() {
+  const id = "abcMatchesStyles";
+  if (document.getElementById(id)) return;
+
+  const style = document.createElement("style");
+  style.id = id;
+  style.textContent = `
+    /* Čitelnost tabulek přes fotku pozadí */
+    .tabulka td { background: rgba(0,0,0,0.18); }
+    .tabulka tr:hover td { background: rgba(0,0,0,0.28); }
+
+    /* Tabulka zápasů */
+    .matches-table td, .matches-table th { vertical-align: middle; }
+  `;
+  document.head.appendChild(style);
+})();
+
+// ---------------------------------------------------------
+// Helpery
+// ---------------------------------------------------------
 function esc(s) {
   return (s ?? "").toString()
     .replaceAll("&", "&amp;")
@@ -11,9 +34,21 @@ function esc(s) {
 }
 
 function fmtDate(iso) {
+  // YYYY-MM-DD -> D.M.YYYY
   if (!iso) return "";
-  const [y, m, d] = iso.split("-");
-  return `${Number(d)}.${Number(m)}.${y}`;
+  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!m) return iso;
+  return `${Number(m[3])}.${Number(m[2])}.${m[1]}`;
+}
+
+function toDate(iso) {
+  return iso ? new Date(iso + "T00:00:00") : null;
+}
+
+function todayMidnight() {
+  const t = new Date();
+  t.setHours(0, 0, 0, 0);
+  return t;
 }
 
 function getTeamId() {
@@ -28,19 +63,9 @@ function getTeamId() {
   return null;
 }
 
-function toDate(iso) {
-  return iso ? new Date(iso + "T00:00:00") : null;
-}
-
-function todayMidnight() {
-  const t = new Date();
-  t.setHours(0, 0, 0, 0);
-  return t;
-}
-
 function normalizeFuture(futureMap) {
-  const out = [];
   const today = todayMidnight();
+  const out = [];
 
   for (const key of Object.keys(futureMap || {})) {
     const it = futureMap[key] || {};
@@ -51,9 +76,8 @@ function normalizeFuture(futureMap) {
 
     if (!round || !date || !home || !away) continue;
 
-    // ✅ skryj odehrané: datum < dnes
     const dt = toDate(date);
-    if (!dt || dt < today) continue;
+    if (!dt || dt < today) continue; // ✅ skrýt už odehrané podle data
 
     out.push({ round, date, home, away });
   }
@@ -63,7 +87,7 @@ function normalizeFuture(futureMap) {
   return out;
 }
 
-function render(list) {
+function renderTable(list) {
   if (!el) return;
 
   if (!list.length) {
@@ -71,15 +95,31 @@ function render(list) {
     return;
   }
 
-  el.innerHTML = list.map(m => {
-    return `<div style="margin:2px 0;">
-      <strong>${esc(m.round)}. kolo</strong>
-      ${esc(fmtDate(m.date))}
-      ${esc(m.home)} - ${esc(m.away)}
-    </div>`;
-  }).join("");
+  const rows = list.map(m => `
+    <tr>
+      <td><strong>${esc(m.round)}.</strong></td>
+      <td>${esc(fmtDate(m.date))}</td>
+      <td>${esc(m.home)}</td>
+      <td>${esc(m.away)}</td>
+    </tr>
+  `).join("");
+
+  el.innerHTML = `
+    <table class="tabulka matches-table">
+      <tr>
+        <th>Kolo</th>
+        <th>Datum</th>
+        <th>Domácí</th>
+        <th>Hosté</th>
+      </tr>
+      ${rows}
+    </table>
+  `;
 }
 
+// ---------------------------------------------------------
+// Init
+// ---------------------------------------------------------
 async function init() {
   if (!el) return;
 
@@ -104,7 +144,7 @@ async function init() {
     const future = (data.future && typeof data.future === "object") ? data.future : {};
     const list = normalizeFuture(future);
 
-    render(list);
+    renderTable(list);
   } catch (e) {
     console.error(e);
     el.innerHTML = `<p><em>Nelze načíst budoucí zápasy (zkontroluj Firestore Rules pro team_current).</em></p>`;
