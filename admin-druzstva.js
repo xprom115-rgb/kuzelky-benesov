@@ -493,9 +493,12 @@ btnSavePast?.addEventListener("click", async () => {
       setAbcMsg("⚠️ Výsledek má špatný formát (např. 6:2 nebo 5,5:2,5).");
       return;
     }
-    if (!/^\d{3,4}:\d{3,4}$/.test(pins.replace(/\s+/g, ""))) {
-      setAbcMsg("⚠️ Kuželky mají špatný formát (např. 3404:3247).");
-      return;
+    // povolit i kontumace typu 0:0 (a obecně 1–4 číslice na každé straně)
+const pinsClean = pins.replace(/\s+/g, "");
+if (!/^\d{1,4}:\d{1,4}$/.test(pinsClean)) {
+  setAbcMsg("⚠️ Kuželky mají špatný formát (např. 3404:3247 nebo 0:0).");
+  return;
+}
     }
 
     setAbcMsg(`⏳ Ukládám minulý zápas ${roundKey}. kolo pro ${teamId}…`);
