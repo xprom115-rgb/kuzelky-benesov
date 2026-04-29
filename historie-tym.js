@@ -39,12 +39,18 @@ function fmtDate(iso) {
   return `${Number(m[3])}.${Number(m[2])}.${m[1]}`;
 }
 
-function renderTable(finalTable) {
+function renderTable(finalTable, teamId) {
   if (!finalTable || !Array.isArray(finalTable.columns) || !Array.isArray(finalTable.rows)) {
     return `<p><em>Tabulka pro tuto sezónu není uložená.</em></p>`;
   }
 
   const cols = finalTable.columns;
+
+  // index sloupce "Družstvo" (kde je název týmu)
+  const teamColIdx = cols.findIndex(c => (c || "").toString().trim().toLowerCase() === "družstvo");
+
+  // jak poznat Benešov v tabulce (A/B/C mají v názvu vždy Benešov)
+  const isBenesovTeam = (s) => /benešov/i.test((s || "").toString());
 
   // rows jsou uložené jako array-of-objects {c0,c1,...}
   const rows = finalTable.rows.map(obj =>
@@ -52,10 +58,16 @@ function renderTable(finalTable) {
   );
 
   const head = `<tr>${cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr>`;
-  const body = rows.map(r => `<tr>${r.map(x => `<td>${esc(x)}</td>`).join("")}</tr>`).join("");
+
+  const body = rows.map(r => {
+    const teamName = (teamColIdx >= 0) ? (r[teamColIdx] || "") : "";
+    const rowClass = isBenesovTeam(teamName) ? "row-benesov" : "";
+    return `<tr class="${rowClass}">${r.map(x => `<td>${esc(x)}</td>`).join("")}</tr>`;
+  }).join("");
 
   return `<table class="tabulka">${head}${body}</table>`;
 }
+
 
 async function loadSeasons(teamId) {
   const colRef = collection(db, "team_history", teamId, "seasons");
