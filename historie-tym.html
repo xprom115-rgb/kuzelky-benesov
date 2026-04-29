@@ -44,3 +44,55 @@
     }
 
     /* Výsledek zápasu z pohledu Benešova */
+    .match-win  { background: rgba(46, 204, 113, 0.18) !important; } /* zelená */
+    .match-loss { background: rgba(231, 76, 60, 0.18) !important; }  /* červená */
+    .match-draw { background: rgba(241, 196, 15, 0.14) !important; } /* žlutá */
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-left">
+    <img src="./logo.jpg" alt="Kuželky Benešov" class="logo">
+  </div>
+  <div class="header-title">Kuželky Benešov</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+    <h2 id="histTitle">Historie</h2>
+    <p class="small" id="histSubtitle">Načítám…</p>
+
+    <div id="seasonsWrap">
+      <p><em>Načítám sezóny…</em></p>
+    </div>
+
+    <div id="seasonDetail" style="margin-top:16px;"></div>
+
+    <div style="margin-top:14px;">
+      <a class="btn-soft" href="historie-muzstev.html">Zpět na historii mužstev</a>
+    </div>
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+
+<!-- JS pro historii (tabulka + zápasy + zvýraznění) -->
+<script type="module" src="./historie-tym.js?v=3"></script>
+</body>
+</html>
