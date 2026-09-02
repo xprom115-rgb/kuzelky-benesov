@@ -1,4 +1,4 @@
-// =========================================================
+ =========================================================
 // admin-akce.js
 // Admin pro zadávání zápasů/turnajů (akce) pro blokaci rezervací a výpis v Aktualitách.
 //
