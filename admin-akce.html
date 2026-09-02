@@ -4,132 +4,143 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Admin – Zápasy / Turnaje</title>
+  <title>Admin zápasů a turnajů – Kuželky Benešov</title>
 
-  <!-- Hlavní styl webu -->
+  <!-- Hlavní společné styly webu -->
   ./style.css?v=13
 
-  <!-- =========================================================
-       Lokální styly administrace akcí
-
-       Tyto styly řeší:
-       - řádky formuláře
-       - karty
-       - výběr dnů v měsíci
-       - seznam uložených akcí
-       ========================================================= -->
+  <!-- ======================================================
+       Lokální styly stránky Admin zápasů a turnajů
+       ====================================================== -->
   <style>
+    /* Obecná karta */
+    .card {
+      margin: 14px 0;
+      padding: 14px 16px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 14px;
+      background: rgba(20, 24, 48, 0.72);
+    }
+
+    /* Řádky formuláře */
     .toolrow {
       display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
       align-items: center;
-      margin: 10px 0;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0;
+    }
+
+    .toolrow label {
+      font-weight: 700;
     }
 
     .toolrow input,
     .toolrow select {
-      padding: 10px 12px;
+      box-sizing: border-box;
+      padding: 9px 11px;
+      border: 1px solid rgba(255, 255, 255, 0.35);
       border-radius: 10px;
-      border: 1px solid #bbb;
       font-size: 15px;
     }
 
-    .card {
-      padding: 14px;
-      margin: 12px 0;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.08);
-    }
-
+    /* Pomocný menší text */
     .small {
       font-size: 13px;
-      opacity: 0.85;
+      line-height: 1.45;
+      opacity: 0.88;
     }
 
-    .rowline {
+    /* Hlavička adminu */
+    .admin-heading {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
       justify-content: space-between;
-      padding: 10px 0;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
     }
 
-    /* Samostatný blok pro výběr více dnů */
-    .multi-date-panel {
-      padding: 14px;
-      margin: 12px 0;
+    .admin-heading h2 {
+      margin: 0;
+    }
+
+    /* Výběr režimu jednoho nebo více dnů */
+    .date-mode-box {
+      margin-top: 14px;
+      padding: 12px;
       border: 1px solid rgba(255, 215, 0, 0.35);
-      border-radius: 14px;
-      background: rgba(0, 0, 0, 0.18);
+      border-radius: 12px;
+      background: rgba(0, 0, 0, 0.16);
     }
 
-    /* Mřížka se všemi dny vybraného měsíce */
+    /* Výběr měsíčních dnů */
     .month-days-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
       gap: 8px;
       margin-top: 12px;
     }
 
-    /* Tlačítko konkrétního dne */
     .month-day-button {
       min-height: 42px;
-      transition:
-        background-color 0.15s ease,
-        color 0.15s ease,
-        border-color 0.15s ease,
-        transform 0.15s ease;
+      padding: 8px 10px;
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      border-radius: 10px;
+      cursor: pointer;
     }
 
-    .month-day-button:hover {
-      transform: translateY(-1px);
-    }
-
-    /* Vybraný den */
     .month-day-button.selected {
       color: #1e235c !important;
-      font-weight: 700;
       background: #ffd700 !important;
       border-color: #ffd700 !important;
+      font-weight: 800 !important;
     }
 
-    /* Tlačítka pro hromadné označení */
-    .selection-tools {
+    /* Tlačítka pro hromadný výběr dnů */
+    .weekday-tools {
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
-      align-items: center;
-      margin-top: 12px;
+      gap: 7px;
+      margin-top: 10px;
     }
 
-    /* Zobrazení vybraných datumů */
-    .selected-days-info {
+    /* Informace o vybraných dnech */
+    #selectedDaysInfo {
+      margin-top: 12px;
       padding: 10px 12px;
-      margin-top: 12px;
       border-radius: 10px;
-      background: rgba(255, 215, 0, 0.10);
-      line-height: 1.5;
+      background: rgba(255, 215, 0, 0.12);
+      line-height: 1.45;
     }
 
-    /* Na menších displejích budou vstupy širší */
+    /* Jeden řádek uložené akce */
+    .rowline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .rowline:last-child {
+      border-bottom: 0;
+    }
+
+    /* Mobilní zobrazení */
     @media (max-width: 700px) {
-      .toolrow input,
-      .toolrow select {
-        max-width: 100%;
+      .toolrow {
+        align-items: stretch;
       }
 
-      #evNote,
-      #evTitle {
+      .toolrow input,
+      .toolrow select {
         width: 100%;
-        min-width: 0 !important;
       }
 
       .month-days-grid {
-        grid-template-columns: repeat(3, minmax(70px, 1fr));
+        grid-template-columns: repeat(3, 1fr);
       }
     }
   </style>
@@ -137,440 +148,346 @@
 
 <body>
 
-<!-- =========================================================
-     Hlavička stránky
-     ========================================================= -->
-<header>
-  <div class="header-left">
-    ./logo.jpg
-  </div>
-
-  <div class="header-title">
-    Kuželky Benešov – Admin
-  </div>
-
-  <div class="header-right"></div>
-</header>
-
-<!-- =========================================================
-     Hlavní navigace
-     ========================================================= -->
-<nav>
-  <ul>
-    <li><a href="index.html">Domů</a></li>
-    <li><a href="aktuality.html">Aktuality</a></li>
-    <li><a href="historie.html">Historie</a></li>
-    <li><a href="druzstva.html">Družstva</a></li>
-    <li><a href="rezervace.html">Rezervace</a></li>
-    <li><a href="habadura.html">Habaďůra</a></li>
-    <li><a href="kontakty.html">Kontakty</a></li>
-    <li><a href="admin.html">Admin</a></li>
-  </ul>
-</nav>
-
-<main>
-  <div class="content-box">
-
-    <!-- =====================================================
-         LOGIN BOX
-
-         Přihlášení pomocí Firebase Authentication.
-         Po přihlášení se tento blok skryje a zobrazí se appBox.
-         ===================================================== -->
-    <div id="loginBox" class="card">
-      <h2>Přihlášení admina</h2>
-
-      <p class="small">
-        Přihlášení probíhá přes Firebase Authentication
-        pomocí emailu a hesla.
-      </p>
-
-      <div class="toolrow">
-        <input
-          id="email"
-          type="email"
-          placeholder="Email admina"
-          autocomplete="email"
-          style="min-width:240px;"
-        >
-
-        <input
-          id="pass"
-          type="password"
-          placeholder="Heslo"
-          autocomplete="current-password"
-          style="min-width:200px;"
-        >
-
-        <button
-          id="btnLogin"
-          class="btn-primary"
-          type="button"
-        >
-          Přihlásit
-        </button>
-      </div>
-
-      <div id="loginMsg" class="small"></div>
+  <!-- ======================================================
+       Hlavička webu
+       ====================================================== -->
+  <header>
+    <div class="header-left">
+      ./logo.jpg
     </div>
 
-    <!-- =====================================================
-         APP BOX
+    <div class="header-title">
+      Kuželky Benešov – Admin
+    </div>
 
-         Celá administrace je při otevření stránky skrytá.
-         Zobrazí se až po přihlášení.
-         ===================================================== -->
-    <div
-      id="appBox"
-      class="card"
-      style="display:none;"
-    >
+    <div class="header-right"></div>
+  </header>
 
-      <!-- Hlavička administrace a odhlášení -->
-      <div
-        style="
-          display:flex;
-          align-items:center;
-          justify-content:space-between;
-          gap:12px;
-          flex-wrap:wrap;
-        "
-      >
-        <h2 style="margin:0;">
-          Zadávání zápasů / turnajů
-        </h2>
+  <!-- ======================================================
+       Hlavní navigace
+       ====================================================== -->
+  <nav>
+    <ul>
+      <li><a href="index.html">Domů</a></li>
+      <li><a href="aktuality.html">Aktuality</a></li>
+      <li><a href="historie.html">Historie</a></li>
+      <li><a href="druzstva.html">Družstva</a></li>
+      <li><a href="rezervace.html">Rezervace</a></li>
+      <li><a href="habadura.html">Habaďůra</a></li>
+      <li><a href="kontakty.html">Kontakty</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+  </nav>
 
-        <button
-          id="btnLogout"
-          class="btn-soft"
-          type="button"
-        >
-          Odhlásit
-        </button>
-      </div>
+  <main>
+    <div class="content-box">
 
-      <!-- Informace k časům -->
-      <p class="small" style="margin-top:10px;">
-        Zadaný čas <strong>Od–Do</strong> je skutečný čas akce
-        zobrazovaný v Aktualitách.
-        Blokace rezervací se automaticky zaokrouhlí na celé hodiny.
-        Zápasy i turnaje blokují všechny čtyři dráhy.
-      </p>
+      <!-- ==================================================
+           Přihlašovací formulář
 
-      <hr style="margin:14px 0;">
+           Zobrazuje se nepřihlášenému uživateli.
+           Po úspěšném přihlášení jej admin-akce.js skryje.
+           ================================================== -->
+      <div id="loginBox" class="card">
+        <h2>Přihlášení admina</h2>
 
-      <!-- ===================================================
-           FORMULÁŘ PRO NOVOU AKCI
-           =================================================== -->
-      <h3 style="margin:0 0 8px 0; color:#ffd700;">
-        Přidat akci
-      </h3>
+        <p class="small">
+          Přihlášení probíhá přes Firebase Authentication pomocí
+          emailu a hesla.
+        </p>
 
-      <!-- ===================================================
-           ZPŮSOB ZADÁNÍ DATA
-
-           single:
-           Jedna akce na jeden konkrétní den.
-
-           multiple:
-           Stejná akce na více vybraných dnů v jednom měsíci.
-           =================================================== -->
-      <div class="toolrow">
-        <label for="evDateMode">
-          <strong>Zadání termínu:</strong>
-        </label>
-
-        <select id="evDateMode">
-          <option value="single">Jeden den</option>
-          <option value="multiple">Více dnů v měsíci</option>
-        </select>
-      </div>
-
-      <!-- ===================================================
-           JEDEN DEN
-
-           Tento blok se zobrazuje v režimu "Jeden den".
-           =================================================== -->
-      <div id="singleDateWrap">
         <div class="toolrow">
-          <label for="evDate">
-            <strong>Datum:</strong>
-          </label>
-
-          <input id="evDate" type="date">
-        </div>
-      </div>
-
-      <!-- ===================================================
-           VÍCE DNŮ V MĚSÍCI
-
-           Tento blok je při otevření skrytý.
-           JavaScript ho zobrazí po výběru režimu
-           "Více dnů v měsíci".
-           =================================================== -->
-      <div
-        id="multiDateWrap"
-        class="multi-date-panel"
-        style="display:none;"
-      >
-        <h4 style="margin:0 0 10px 0; color:#ffd700;">
-          Výběr více dnů
-        </h4>
-
-        <!-- Výběr měsíce -->
-        <div class="toolrow">
-          <label for="evMonth">
-            <strong>Měsíc:</strong>
-          </label>
-
-          <input id="evMonth" type="month">
-        </div>
-
-        <!-- Hromadný výběr -->
-        <div class="selection-tools">
-          <button
-            id="btnSelectAllDays"
-            class="btn-soft"
-            type="button"
+          <input
+            id="email"
+            type="email"
+            placeholder="Email admina"
+            autocomplete="username"
+            style="min-width:250px;"
           >
-            Vybrat všechny dny
-          </button>
-
-          <button
-            id="btnClearDays"
-            class="btn-soft"
-            type="button"
-          >
-            Zrušit výběr
-          </button>
-        </div>
-
-        <!-- Výběr opakovaného dne v týdnu -->
-        <div style="margin-top:14px;">
-          <div class="small" style="margin-bottom:7px;">
-            <strong>Vybrat všechny stejné dny v týdnu:</strong>
-          </div>
-
-          <div class="selection-tools">
-            <button
-              class="btn-soft"
-              type="button"
-              data-select-weekday="1"
-            >
-              Pondělí
-            </button>
-
-            <button
-              class="btn-soft"
-              type="button"
-              data-select-weekday="2"
-            >
-              Úterý
-            </button>
-
-            <button
-              class="btn-soft"
-              type="button"
-              data-select-weekday="3"
-            >
-              Středa
-            </button>
-
-            <button
-              class="btn-soft"
-              type="button"
-              data-select-weekday="4"
-            >
-              Čtvrtek
-            </button>
-
-            <button
-              class="btn-soft"
-              type="button"
-              data-select-weekday="5"
-            >
-              Pátek
-            </button>
-
-            <button
-              class="btn-soft"
-              type="button"
-              data-select-weekday="6"
-            >
-              Sobota
-            </button>
-
-            <button
-              class="btn-soft"
-              type="button"
-              data-select-weekday="0"
-            >
-              Neděle
-            </button>
-          </div>
-        </div>
-
-        <!-- Sem JavaScript vytvoří tlačítka jednotlivých dnů -->
-        <div
-          id="evDaysGrid"
-          class="month-days-grid"
-        >
-          <p>
-            <em>Vyber měsíc.</em>
-          </p>
-        </div>
-
-        <!-- Přehled vybraných datumů -->
-        <div
-          id="selectedDaysInfo"
-          class="selected-days-info small"
-        >
-          Není vybraný žádný den.
-        </div>
-      </div>
-
-      <!-- ===================================================
-           SKUTEČNÝ ČAS AKCE
-
-           Časy se použijí pro všechny označené dny.
-           V Aktualitách se zobrazí přesně tyto časy.
-           =================================================== -->
-      <div class="toolrow">
-        <label for="evStart">
-          <strong>Od:</strong>
-        </label>
-
-        <input id="evStart" type="time">
-
-        <label for="evEnd">
-          <strong>Do:</strong>
-        </label>
-
-        <input id="evEnd" type="time">
-      </div>
-
-      <!-- ===================================================
-           TYP AKCE
-
-           Zápas:
-           Zobrazí se výběr družstva.
-
-           Turnaj / akce:
-           Zobrazí se pole pro vlastní název.
-           =================================================== -->
-      <div class="toolrow">
-        <label for="evType">
-          <strong>Typ:</strong>
-        </label>
-
-        <select id="evType">
-          <option value="match">Zápas</option>
-          <option value="tournament">Turnaj / akce</option>
-        </select>
-
-        <!-- Výběr družstva pro zápas -->
-        <div id="evTeamWrap">
-          <label for="evTeam">
-            <strong>Tým:</strong>
-          </label>
-
-          <select id="evTeam">
-            <option value="A">TJ Sokol Benešov A</option>
-            <option value="B">TJ Sokol Benešov B</option>
-            <option value="C">TJ Sokol Benešov C</option>
-            <option value="DOROST">Dorost</option>
-          </select>
-        </div>
-
-        <!-- Vlastní název turnaje nebo jiné akce -->
-        <div
-          id="evTitleWrap"
-          style="display:none;"
-        >
-          <label for="evTitle">
-            <strong>Název:</strong>
-          </label>
 
           <input
-            id="evTitle"
-            type="text"
-            placeholder="např. Habaďůra nebo jiný turnaj"
-            style="min-width:260px;"
+            id="pass"
+            type="password"
+            placeholder="Heslo"
+            autocomplete="current-password"
+            style="min-width:210px;"
+          >
+
+          <button
+            id="btnLogin"
+            class="btn-primary"
+            type="button"
+          >
+            Přihlásit
+          </button>
+        </div>
+
+        <div id="loginMsg" class="small"></div>
+      </div>
+
+      <!-- ==================================================
+           Vlastní administrace akcí
+
+           Při načtení je schovaná. JavaScript ji zobrazí až
+           přihlášenému uživateli.
+           ================================================== -->
+      <div id="appBox" class="card" style="display:none;">
+
+        <div class="admin-heading">
+          <h2>Zadávání zápasů / turnajů</h2>
+
+          <button
+            id="btnLogout"
+            class="btn-soft"
+            type="button"
+          >
+            Odhlásit
+          </button>
+        </div>
+
+        <p class="small">
+          Skutečný čas začátku a konce se zobrazí v Aktualitách.
+          Pro rezervační systém se začátek blokace zaokrouhlí dolů
+          a konec blokace nahoru na celou hodinu. Zápasy i turnaje
+          blokují všechny čtyři dráhy.
+        </p>
+
+        <hr style="margin:16px 0;">
+
+        <!-- ==================================================
+             Formulář nové akce
+             ================================================== -->
+        <h3 style="margin:0; color:#ffd700;">
+          Přidat akci
+        </h3>
+
+        <!-- Výběr jednoho nebo více termínů -->
+        <div class="date-mode-box">
+
+          <div class="toolrow">
+            <label for="evDateMode">Zadání termínu:</label>
+
+            <select id="evDateMode">
+              <option value="single">Jeden den</option>
+              <option value="multiple">Více dnů v měsíci</option>
+            </select>
+          </div>
+
+          <!-- ================================================
+               Jeden den
+               ================================================ -->
+          <div id="singleDateWrap">
+            <div class="toolrow">
+              <label for="evDate">Datum:</label>
+
+              <input
+                id="evDate"
+                type="date"
+              >
+            </div>
+          </div>
+
+          <!-- ================================================
+               Více dnů v jednom měsíci
+
+               JavaScript sem vygeneruje tlačítka jednotlivých dní.
+               ================================================ -->
+          <div id="multiDateWrap" style="display:none;">
+
+            <div class="toolrow">
+              <label for="evMonth">Měsíc:</label>
+
+              <input
+                id="evMonth"
+                type="month"
+              >
+            </div>
+
+            <!-- Rychlá tlačítka pro výběr -->
+            <div class="weekday-tools">
+              <button
+                id="btnSelectAllDays"
+                class="btn-soft"
+                type="button"
+              >
+                Vybrat všechny dny
+              </button>
+
+              <button
+                id="btnClearDays"
+                class="btn-soft"
+                type="button"
+              >
+                Zrušit výběr
+              </button>
+            </div>
+
+            <!-- Výběr pravidelných dnů v týdnu -->
+            <div class="weekday-tools">
+              <button class="btn-soft" type="button" data-select-weekday="1">
+                Všechna pondělí
+              </button>
+
+              <button class="btn-soft" type="button" data-select-weekday="2">
+                Všechna úterý
+              </button>
+
+              <button class="btn-soft" type="button" data-select-weekday="3">
+                Všechny středy
+              </button>
+
+              <button class="btn-soft" type="button" data-select-weekday="4">
+                Všechny čtvrtky
+              </button>
+
+              <button class="btn-soft" type="button" data-select-weekday="5">
+                Všechny pátky
+              </button>
+
+              <button class="btn-soft" type="button" data-select-weekday="6">
+                Všechny soboty
+              </button>
+
+              <button class="btn-soft" type="button" data-select-weekday="0">
+                Všechny neděle
+              </button>
+            </div>
+
+            <!-- Sem JavaScript vloží jednotlivé dny měsíce -->
+            <div
+              id="evDaysGrid"
+              class="month-days-grid"
+            ></div>
+
+            <!-- Přehled vybraných termínů -->
+            <div
+              id="selectedDaysInfo"
+              class="small"
+            >
+              Není vybraný žádný den.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Skutečný čas akce -->
+        <div class="toolrow">
+          <label for="evStart">Od:</label>
+
+          <input
+            id="evStart"
+            type="time"
+          >
+
+          <label for="evEnd">Do:</label>
+
+          <input
+            id="evEnd"
+            type="time"
           >
         </div>
+
+        <!-- Typ akce -->
+        <div class="toolrow">
+          <label for="evType">Typ:</label>
+
+          <select id="evType">
+            <option value="match">Zápas</option>
+            <option value="tournament">Turnaj / jiná akce</option>
+          </select>
+
+          <!-- Výběr týmu se ukazuje pouze u zápasu -->
+          <div id="evTeamWrap">
+            <label for="evTeam">Tým:</label>
+
+            <select id="evTeam">
+              <option value="A">TJ Sokol Benešov A</option>
+              <option value="B">TJ Sokol Benešov B</option>
+              <option value="C">TJ Sokol Benešov C</option>
+              <option value="DOROST">Dorost</option>
+            </select>
+          </div>
+
+          <!-- Název se ukazuje pouze u turnaje / jiné akce -->
+          <div id="evTitleWrap" style="display:none;">
+            <label for="evTitle">Název:</label>
+
+            <input
+              id="evTitle"
+              type="text"
+              placeholder="Např. Habaďůra nebo jiný turnaj"
+              style="min-width:280px;"
+            >
+          </div>
+        </div>
+
+        <!-- Volitelná poznámka -->
+        <div class="toolrow">
+          <label for="evNote">Poznámka:</label>
+
+          <input
+            id="evNote"
+            type="text"
+            placeholder="Volitelné"
+            style="min-width:360px;"
+          >
+        </div>
+
+        <!-- Uložení -->
+        <div class="toolrow">
+          <button
+            id="btnSaveEvent"
+            class="btn-primary"
+            type="button"
+          >
+            Uložit akci
+          </button>
+
+          <span id="evMsg" class="small"></span>
+        </div>
+
+        <hr style="margin:16px 0;">
+
+        <!-- ==================================================
+             Výpis existujících akcí
+             ================================================== -->
+        <h3 style="margin:0; color:#ffd700;">
+          Uložené akce
+        </h3>
+
+        <div class="toolrow">
+          <button
+            id="btnLoadEvents"
+            class="btn-soft"
+            type="button"
+          >
+            Načíst akce
+          </button>
+
+          <span class="small">
+            Akce se načítají z kolekce Firestore
+            <strong>events</strong>.
+          </span>
+        </div>
+
+        <div id="eventsList">
+          <p><em>Načítám…</em></p>
+        </div>
+
       </div>
+    </div>
+  </main>
 
-      <!-- Volitelná poznámka -->
-      <div class="toolrow">
-        <label for="evNote">
-          <strong>Poznámka:</strong>
-        </label>
+  <footer>
+    © Kuželky Benešov – 2026
+  </footer>
 
-        <input
-          id="evNote"
-          type="text"
-          placeholder="volitelné"
-          style="min-width:360px;"
-        >
-      </div>
+  <!-- ======================================================
+       Jediný skript této stránky
 
-      <!-- Uložení akce -->
-      <div class="toolrow">
-        <button
-          id="btnSaveEvent"
-          class="btn-primary"
-          type="button"
-        >
-          Uložit akci
-        </button>
-
-        <span id="evMsg" class="small"></span>
-      </div>
-
-      <hr style="margin:14px 0;">
-
-      <!-- ===================================================
-           SEZNAM ULOŽENÝCH AKCÍ
-
-           Každý vybraný den je uložen jako samostatná akce.
-           Proto lze jednotlivé dny samostatně odstranit.
-           =================================================== -->
-      <h3 style="margin:0 0 8px 0; color:#ffd700;">
-        Uložené akce
-      </h3>
-
-      <div class="toolrow">
-        <button
-          id="btnLoadEvents"
-          class="btn-soft"
-          type="button"
-        >
-          Načíst akce
-        </button>
-
-        <span class="small">
-          Načítá se z kolekce <code>events</code>.
-        </span>
-      </div>
-
-      <div id="eventsList">
-        <p><em>Zatím nic…</em></p>
-      </div>
-
-    </div><!-- /appBox -->
-
-  </div><!-- /content-box -->
-</main>
-
-<footer>© Kuželky Benešov – 2026</footer>
-
-<!-- =========================================================
-     JavaScript administrace zápasů a turnajů
-
-     Zvýšené číslo verze zajistí načtení nového souboru
-     místo starší verze z cache prohlížeče.
-     ========================================================= -->
-<script type="module" src="./admin-akce.js?v=2">
+       Musí být type="module", protože používá import.
+       ====================================================== -->
+  ./admin-akce.js?v=3script>
 
 </body>
 </html>
