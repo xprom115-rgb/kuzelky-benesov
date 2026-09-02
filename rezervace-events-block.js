@@ -108,8 +108,14 @@ async function loadBlocksForDate(dateIso) {
 
     blocks = snap.docs.map(d => {
       const ev = d.data() || {};
-      const from = timeToMinutes(ev.blockStart);
-      const to = timeToMinutes(ev.blockEnd);
+      // Začátek blokace převedeme běžně na minuty.
+const from = timeToMinutes(ev.blockStart);
+      // Konec 00:00 znamená půlnoc na konci dne, tedy 24:00.
+
+    // Proto ho musíme převést na 1440 minut, nikoliv na 0 minut.
+const to = ev.blockEnd === "00:00"
+? 24 * 60
+: timeToMinutes(ev.blockEnd);
 
       const label = ev.type === "match"
         ? `Zápas ${ev.team || ""}`.trim()
