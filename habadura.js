@@ -342,10 +342,49 @@ if (!seasonReady || !SEASON_ID || !ROUND) {
   return;
 }
 
-  const liga = Number(ligaSelect.value);
-  const homeTeam = teamHome.value;
-  const awayTeam = teamAway.value;
-  const date = dateInput.value;
+ const liga = Number(ligaSelect.value);
+const homeTeam = teamHome.value;
+const awayTeam = teamAway.value;
+const date = dateInput.value;
+
+// =====================================================
+// Kontrola týmového přihlášení
+//
+// Přihlášený tým musí být domácí nebo hostující.
+// Firestore Rules provádějí stejnou kontrolu znovu
+// na straně databáze.
+// =====================================================
+const loggedTeamId =
+  document.body.dataset.habaduraTeamId || "";
+
+const loggedTeamLiga = Number(
+  document.body.dataset.habaduraTeamLiga || "0"
+);
+
+if (!loggedTeamId) {
+  alert("Nejprve se přihlaste jako tým.");
+  return;
+}
+
+if (
+  loggedTeamId !== homeTeam &&
+  loggedTeamId !== awayTeam
+) {
+  alert(
+    "Můžete zadat pouze zápas, ve kterém figuruje váš přihlášený tým."
+  );
+  return;
+}
+
+if (
+  loggedTeamLiga &&
+  loggedTeamLiga !== liga
+) {
+  alert(
+    "Vybraná liga neodpovídá lize přihlášeného týmu."
+  );
+  return;
+}
 
   if (!date) return alert("Vyber datum zápasu.");
   if (!homeTeam || !awayTeam) return alert("Vyber oba týmy.");
