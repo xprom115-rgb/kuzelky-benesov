@@ -90,7 +90,6 @@ function showLoggedOutUi() {
   if (loggedTeamName) {
     loggedTeamName.textContent = "—";
   }
-}
 
 function showLoggedInUi(team) {
   if (loginBox) {
