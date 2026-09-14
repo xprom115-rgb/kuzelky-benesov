@@ -93,7 +93,7 @@ function showLoggedOutUi() {
       }
     })
   );
-}
+
 
   if (matchEntrySection) {
     matchEntrySection.hidden = true;
