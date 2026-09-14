@@ -2,6 +2,7 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Memoriál Vavříka a Košaře – Habaďůra</title>
 
   <!-- Globální CSS webu -->
@@ -9,54 +10,135 @@
 
   <!-- Lokální styly pouze pro Habaďůru -->
   <style>
-    .liga-switch { display:flex; gap:10px; margin:18px 0; flex-wrap:wrap; }
-    .liga-btn{
-      padding:10px 16px; border-radius:10px;
-      border:1px solid #ffd700; background:#1e235c; color:#ffd700;
-      cursor:pointer; font-weight:bold;
+    .liga-switch {
+      display: flex;
+      gap: 10px;
+      margin: 18px 0;
+      flex-wrap: wrap;
     }
-    .liga-btn.active{ background:#ffd700; color:#1e235c; }
 
-    .form-block{
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 16px;
+    .liga-btn {
+      padding: 10px 16px;
+      border: 1px solid #ffd700;
+      border-radius: 10px;
+      background: #1e235c;
+      color: #ffd700;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .liga-btn.active {
+      background: #ffd700;
+      color: #1e235c;
+    }
+
+    .form-block,
+    .team-login-box {
       margin-top: 10px;
+      padding: 16px;
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 14px;
+      background: rgba(20,24,48,0.72);
     }
 
-    .toolrow{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:10px 0; }
-    .toolrow input, .toolrow select{
-      padding:10px 12px; border-radius:10px; border:1px solid #bbb; font-size:15px;
+    .team-login-box h3 {
+      margin: 0 0 10px;
+      color: #ffd700;
     }
 
-    .player-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin:8px 0; }
-    .player-row select, .player-row input{
-      padding:9px 10px; border-radius:10px; border:1px solid #bbb; font-size:15px;
+    .team-login-status {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,215,0,0.35);
+      border-radius: 10px;
+      background: rgba(255,215,0,0.10);
     }
-    .player-row .kuz, .player-row .bod{ width:120px; }
 
-    .save-btn{
-      margin-top:12px; padding:12px 18px;
-      border-radius:10px; border:0;
-      background:#ffd700; color:#1e235c; font-weight:bold; cursor:pointer;
+    .toolrow {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin: 10px 0;
     }
 
-    .summary{
-      margin-top:14px; padding:12px 14px; border-radius:12px;
-      background: rgba(255,255,255,0.08);
+    .toolrow input,
+    .toolrow select {
+      padding: 10px 12px;
+      border: 1px solid #bbb;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    .player-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin: 8px 0;
+    }
+
+    .player-row select,
+    .player-row input {
+      padding: 9px 10px;
+      border: 1px solid #bbb;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+
+    .player-row .kuz,
+    .player-row .bod {
+      width: 120px;
+    }
+
+    .save-btn {
+      margin-top: 12px;
+      padding: 12px 18px;
+      border: 0;
+      border-radius: 10px;
+      background: #ffd700;
+      color: #1e235c;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .summary {
+      margin-top: 14px;
+      padding: 12px 14px;
       border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
       font-size: 16px;
     }
-    .mono{ font-family: ui-monospace, Menlo, Consolas, monospace; }
+
+    .mono {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+    }
+
+    .small {
+      font-size: 13px;
+      line-height: 1.45;
+      opacity: 0.88;
+    }
+
+    @media (max-width: 700px) {
+      .team-login-box .toolrow input,
+      .team-login-box .toolrow select {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 
 <body>
-
 <header>
   <div class="header-left">
-    <img src="logo.jpg" class="logo" alt="Logo">
+    <img src="./logo.jpg" class="logo" alt="Logo Kuželky Benešov">
   </div>
   <div class="header-title">Kuželky Benešov</div>
   <div class="header-right"></div>
@@ -77,91 +159,146 @@
 
 <main>
   <div class="content-box">
-    
-<h2>
-  Memoriál Vavříka a Košaře – výsledky
-  
-  <span id="seasonBadge" style="font-size:23px; font-weight:normal; opacity:0.9; margin-left:8px;"></span>
+    <h2>
+      Memoriál Vavříka a Košaře – výsledky
+      <span id="seasonBadge" style="font-size:23px; font-weight:normal; opacity:0.9; margin-left:8px;"></span>
+    </h2>
 
-
-</h2>
-
+    <!-- Veřejný přepínač lig -->
     <div class="liga-switch">
       <button type="button" id="btn-liga1" class="liga-btn active">1. liga</button>
       <button type="button" id="btn-liga2" class="liga-btn">2. liga</button>
     </div>
 
-    <h3 style="color:#ffd700;">Zadání výsledku zápasu</h3>
+    <!-- =====================================================
+         TÝMOVÉ PŘIHLÁŠENÍ
 
-    <div class="form-block">
+         Tento blok je oddělený od Adminu Habaďůry.
+         KROK 5 doplní do habadura.js skutečné přihlášení.
+         ===================================================== -->
+    <section id="teamLoginBox" class="team-login-box">
+      <h3>Přihlášení týmu pro zadání výsledku</h3>
+
+      <p class="small">
+        Vyber svůj tým a zadej týmové heslo. Tabulky a výsledky níže jsou veřejné.
+      </p>
+
       <div class="toolrow">
-        <label><strong>Liga:</strong></label>
-        <select id="liga-select">
-          <option value="1">1. liga</option>
-          <option value="2">2. liga</option>
+        <label for="team-login-select"><strong>Tým:</strong></label>
+        <select id="team-login-select">
+          <option value="">— vyber tým —</option>
         </select>
+
+        <label for="team-login-password"><strong>Heslo:</strong></label>
+        <input
+          id="team-login-password"
+          type="password"
+          placeholder="Heslo týmu"
+          autocomplete="current-password"
+        >
+
+        <button id="team-login-button" class="save-btn" type="button" style="margin-top:0;">
+          Přihlásit
+        </button>
       </div>
 
-      <div class="toolrow">
-        <label><strong>Domácí:</strong></label>
-        <select id="team-home"></select>
+      <div id="team-login-message" class="small" aria-live="polite"></div>
+    </section>
 
-        <label><strong>Hosté:</strong></label>
-        <select id="team-away"></select>
+    <!-- =====================================================
+         CHRÁNĚNÁ ČÁST PRO ZADÁNÍ VÝSLEDKU
+
+         Před přihlášením je skrytá atributem hidden.
+         KROK 5 ji zobrazí pouze přihlášenému týmovému účtu.
+         ===================================================== -->
+    <section id="matchEntrySection" hidden>
+      <div class="team-login-status">
+        <div>
+          Přihlášený tým:
+          <strong id="logged-team-name">—</strong>
+        </div>
+
+        <button id="team-logout-button" class="liga-btn" type="button">
+          Odhlásit tým
+        </button>
       </div>
 
-      <h4 style="color:#ffd700; margin-top:16px;">Domácí hráči</h4>
-      <div id="home-players">
-        <div class="player-row">
-          <select class="home-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+      <h3 style="color:#ffd700;">Zadání výsledku zápasu</h3>
+
+      <div class="form-block">
+        <div class="toolrow">
+          <label for="liga-select"><strong>Liga:</strong></label>
+          <select id="liga-select">
+            <option value="1">1. liga</option>
+            <option value="2">2. liga</option>
+          </select>
         </div>
-        <div class="player-row">
-          <select class="home-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+
+        <div class="toolrow">
+          <label for="team-home"><strong>Domácí:</strong></label>
+          <select id="team-home"></select>
+
+          <label for="team-away"><strong>Hosté:</strong></label>
+          <select id="team-away"></select>
         </div>
-        <div class="player-row">
-          <select class="home-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+
+        <h4 style="color:#ffd700; margin-top:16px;">Domácí hráči</h4>
+        <div id="home-players">
+          <div class="player-row">
+            <select class="home-player"></select>
+            <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
+            <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+          </div>
+          <div class="player-row">
+            <select class="home-player"></select>
+            <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
+            <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+          </div>
+          <div class="player-row">
+            <select class="home-player"></select>
+            <input type="number" min="0" placeholder="Kuželky" class="kuz home-kuz">
+            <input type="number" min="0" max="2" placeholder="Body" class="bod home-body">
+          </div>
         </div>
+
+        <h4 style="color:#ffd700; margin-top:16px;">Hosté hráči</h4>
+        <div id="away-players">
+          <div class="player-row">
+            <select class="away-player"></select>
+            <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
+            <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
+          </div>
+          <div class="player-row">
+            <select class="away-player"></select>
+            <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
+            <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
+          </div>
+          <div class="player-row">
+            <select class="away-player"></select>
+            <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
+            <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
+          </div>
+        </div>
+
+        <div class="toolrow" style="margin-top:14px;">
+          <label for="match-date"><strong>Datum zápasu:</strong></label>
+          <input type="date" id="match-date">
+        </div>
+
+        <div class="summary">
+          <strong>Souhrn:</strong><br>
+          Body: <span id="sum-body" class="mono">0 : 0</span><br>
+          Kuželky: <span id="sum-kuz" class="mono">0 : 0</span>
+        </div>
+
+        <button type="button" id="submit-match" class="save-btn">Uložit zápas</button>
       </div>
+    </section>
 
-      <h4 style="color:#ffd700; margin-top:16px;">Hosté hráči</h4>
-      <div id="away-players">
-        <div class="player-row">
-          <select class="away-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
-        </div>
-        <div class="player-row">
-          <select class="away-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
-        </div>
-        <div class="player-row">
-          <select class="away-player"></select>
-          <input type="number" min="0" placeholder="Kuželky" class="kuz away-kuz">
-          <input type="number" min="0" max="2" placeholder="Body" class="bod away-body">
-        </div>
-      </div>
-
-      <div class="toolrow" style="margin-top:14px;">
-        <label><strong>Datum zápasu:</strong></label>
-        <input type="date" id="match-date">
-      </div>
-
-      <div class="summary">
-        <strong>Souhrn:</strong><br>
-        Body: <span id="sum-body" class="mono">0 : 0</span><br>
-        Kuželky: <span id="sum-kuz" class="mono">0 : 0</span>
-      </div>
-
-      <button type="button" id="submit-match" class="save-btn">Uložit zápas</button>
-    </div>
-
+    <!-- =====================================================
+         VEŘEJNÁ ČÁST
+         Tabulky zůstávají viditelné i bez přihlášení.
+         ===================================================== -->
     <h3 style="color:#ffd700;">Tabulka družstev</h3>
     <div id="tab-druzstva"></div>
 
@@ -175,8 +312,7 @@
 
 <footer>© Kuželky Benešov – 2026</footer>
 
-<!-- Jen jeden modul -->
-<script type="module" src="./habadura.js?v=9999"></script>
-
+<!-- Hlavní modul Habaďůry. KROK 5 doplní týmovou autentizaci. -->
+<script type="module" src="./habadura.js?v=10000"></script>
 </body>
 </html>
