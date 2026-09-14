@@ -902,12 +902,23 @@ window.addEventListener("DOMContentLoaded", async ()=>{
     await loadPlayers();
 
     listenActiveSeason(() => {
-      if (seasonReady){
-        startMatchListeners();
-        switchLiga("1");
-        computeSums();
-      }
-    });
+  if (seasonReady) {
+    startMatchListeners();
+
+    // Pokud už je přihlášený tým, nastavíme jeho ligu a tým.
+    // Jinak ponecháme výchozí 1. ligu.
+    const loggedTeam = window.__habaduraLoggedTeam || null;
+
+    if (loggedTeam) {
+      applyLoggedTeamToForm(loggedTeam);
+    } else {
+      switchLiga("1");
+    }
+
+    computeSums();
+  }
+});
+
   } catch(e){
     console.error(e);
     alert("Nepodařilo se načíst data Habaďůry. Podívej se do konzole.");
