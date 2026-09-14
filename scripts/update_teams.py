@@ -300,13 +300,13 @@ html = fetch(base_url)
     last_m, next_m = pick_last_next(matches_all)
 
     data_debug = {
-        "matchesFound": len(matches_all),
-        "playedCount": len([m for m in matches_all if m.played]),
-        "futureCount": len([m for m in matches_all if not m.played]),
-        "teamKey": team_key,
-        "competitionId": comp_id,
-        "sample": []
-    }
+    "matchesFound": len(matches_all),
+    "playedCount": len([m for m in matches_all if m.played]),
+    "futureCount": len([m for m in matches_all if not m.played]),
+    "teamKey": team_key,
+    "competitionUrl": competition_url,
+    "sample": []
+}
     for m in matches_all[:5]:
         data_debug["sample"].append({
             "date": m.date,
@@ -320,7 +320,7 @@ html = fetch(base_url)
     data = load_json(path) if path.exists() else {}
 
     data["label"] = label
-    data["source"] = {"type": "cka", "competitionId": comp_id, "teamKey": team_key}
+    data["source"] = {"type": "cka","url": competition_url,"teamKey": team_key}
     data["updatedAt"] = iso_now()
     data["lastMatch"] = last_m
     data["nextMatch"] = next_m
@@ -377,7 +377,7 @@ def main() -> None:
 
     for team_id, cfg in COMPETITIONS.items():
         try:
-            update_cka_team(team_id, cfg["competitionId"], cfg["teamKey"], cfg["label"])
+            update_cka_team(team_id, cfg["url"], cfg["teamKey"], cfg["label"])
         except Exception as e:
             failures += 1
             print(f"ERROR: {team_id} failed: {e}")
