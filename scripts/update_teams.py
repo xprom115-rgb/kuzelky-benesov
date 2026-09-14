@@ -15,13 +15,10 @@ HEADERS = {
     "User-Agent": "kuzelky-benesov-bot/1.0 (+https://xprom115-rgb.github.io/kuzelky-benesov/)"
 }
 
-# A/B/C – ČKA výsledkový servis
+
 # ============================================================
 # A/B/C – nový výsledkový servis ČKA pro sezonu 2026/2027
-#
-# Nový servis nepoužívá původní competitionId typu c800.
 # Každá soutěž má vlastní adresu detail-souteze.
-#
 # teamKey musí odpovídat názvu družstva na nové stránce.
 # ============================================================
 
@@ -272,7 +269,12 @@ def pick_last_next(matches: List[Match]) -> Tuple[Optional[Dict[str, Any]], Opti
     return (to_dict(last) if last else None, to_dict(nxt) if nxt else None)
 
 
-def update_cka_team(team_id: str, comp_id: str, team_key: str, label: str) -> None:
+def update_cka_team(
+    team_id: str,
+    competition_url: str,
+    team_key: str,
+    label: str
+) -> None:
     # ✅ bez www (kvůli SSL certifikátu)
     base_url = f"https://vysledky.kuzelky.cz/soutez.php?id={comp_id}"
 
