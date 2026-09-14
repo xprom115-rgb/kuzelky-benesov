@@ -16,10 +16,33 @@ HEADERS = {
 }
 
 # A/B/C – ČKA výsledkový servis
+# ============================================================
+# A/B/C – nový výsledkový servis ČKA pro sezonu 2026/2027
+#
+# Nový servis nepoužívá původní competitionId typu c800.
+# Každá soutěž má vlastní adresu detail-souteze.
+#
+# teamKey musí odpovídat názvu družstva na nové stránce.
+# ============================================================
+
 COMPETITIONS = {
-    "A": {"competitionId": "c800", "teamKey": "TJ Sokol Benešov",   "label": "Družstvo A – 3. KLM B"},
-    "B": {"competitionId": "c788", "teamKey": "TJ Sokol Benešov B", "label": "Družstvo B – Divize AS"},
-    "C": {"competitionId": "c791", "teamKey": "TJ Sokol Benešov C", "label": "Družstvo C – Středočeský KP I. třídy"},
+    "A": {
+        "url": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
+        "teamKey": "Benešov",
+        "label": "Družstvo A – 3. KLM A"
+    },
+
+    "B": {
+        "url": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
+        "teamKey": "Benešov B",
+        "label": "Družstvo B – Divize AS"
+    },
+
+    "C": {
+        "url": "https://vysledky.kuzelky.cz/detail-souteze/krajsky-prebor-1-tridy-2026-2027",
+        "teamKey": "Benešov C",
+        "label": "Družstvo C – Krajský přebor 1. třídy"
+    }
 }
 
 # Dorost – jen zpravodaje (SKKS)
