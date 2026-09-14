@@ -136,9 +136,9 @@ async function loadLoginTeams() {
 
     const loginTeams = snapshot.docs
       .map((teamDocument) => ({
-        id: teamDocument.id,
-        ...teamDocument.data()
-      }))
+...teamDocument.data(),
+id: teamDocument.id
+}))
       .filter((team) =>
         typeof team.authUid === "string" &&
         team.authUid.trim() !== "" &&
