@@ -358,44 +358,47 @@ html = fetch(base_url)
 
     table = parse_table(soup)
 
-    # ============================================================
-# Zápasy z nového výsledkového servisu
-#
-# Starý servis používal adresy ?r=1, ?r=2 atd.
-# Nový servis používá odkazy /detail-zapasu/...
-#
-# V tomto kroku zatím nenačítáme jednotlivé zápasy.
-# Parser nových odkazů doplníme v KROKU 7.
-# Soutěžní tabulka se už načte a uloží správně.
-# ============================================================
+   def update_cka_team(
+    team_id: str,
+    competition_url: str,
+    team_key: str,
+    label: str
+) -> None:
+    # Nová adresa soutěže se předává přímo z COMPETITIONS.
+    base_url = competition_url
 
-matches_all: List[Match] = []
+    # Načtení hlavní stránky soutěže.
+    html = fetch(base_url)
+    soup = BeautifulSoup(html, "lxml")
 
-last_m = None
-next_m = None
+    # Načtení celkové tabulky soutěže.
+    table = parse_table(soup)
+
+    # Nový výsledkový servis už nepoužívá parametr ?r=.
+   
+    matches_all: List[Match] = []
+
+    last_m = None
+    next_m = None
 
     data_debug = {
-    "matchesFound": len(matches_all),
-    "playedCount": len([m for m in matches_all if m.played]),
-    "futureCount": len([m for m in matches_all if not m.played]),
-    "teamKey": team_key,
-    "competitionUrl": competition_url,
-    "sample": []
-}
-    for m in matches_all[:5]:
-        data_debug["sample"].append({
-            "date": m.date,
-            "time": m.time,
-            "home": m.home,
-            "opponent": m.opponent,
-            "played": m.played
-        })
+        "matchesFound": len(matches_all),
+        "playedCount": 0,
+        "futureCount": 0,
+        "teamKey": team_key,
+        "competitionUrl": competition_url,
+        "sample": []
+    }
 
     path = BASE / f"{team_id}.json"
     data = load_json(path) if path.exists() else {}
 
     data["label"] = label
-    data["source"] = {"type": "cka","url": competition_url,"teamKey": team_key}
+    data["source"] = {
+        "type": "cka",
+        "url": competition_url,
+        "teamKey": team_key
+    }
     data["updatedAt"] = iso_now()
     data["lastMatch"] = last_m
     data["nextMatch"] = next_m
@@ -403,6 +406,7 @@ next_m = None
     data["debug"] = data_debug
 
     save_json(path, data)
+
     print(f"OK: updated {team_id} from {base_url}")
 
 
