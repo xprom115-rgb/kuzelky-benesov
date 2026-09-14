@@ -53,10 +53,35 @@ function setLoginMessage(text) {
   }
 }
 
+// =========================================================
+// Zobrazení stránky po odhlášení
+// =========================================================
 function showLoggedOutUi() {
+  // Odstraníme informaci o přihlášeném týmu.
+  document.body.removeAttribute("data-habadura-team-id");
+  document.body.removeAttribute("data-habadura-team-liga");
+
   if (loginBox) {
     loginBox.hidden = false;
   }
+
+  if (matchEntrySection) {
+    matchEntrySection.hidden = true;
+  }
+
+  if (loggedTeamName) {
+    loggedTeamName.textContent = "—";
+  }
+
+  // Informujeme ostatní skripty, že tým byl odhlášen.
+  window.dispatchEvent(
+    new CustomEvent("habadura-team-changed", {
+      detail: {
+        team: null
+      }
+    })
+  );
+}
 
   if (matchEntrySection) {
     matchEntrySection.hidden = true;
