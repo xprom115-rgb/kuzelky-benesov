@@ -103,7 +103,18 @@ function showLoggedOutUi() {
     loggedTeamName.textContent = "—";
   }
 
+// =========================================================
+// Zobrazení stránky po úspěšném přihlášení týmu
+// =========================================================
 function showLoggedInUi(team) {
+  // Tým uložíme také do globální proměnné.
+  // Díky tomu si jej habadura.js může načíst i tehdy,
+  // když už událost habadura-team-changed proběhla.
+  window.__habaduraLoggedTeam = team;
+
+  document.body.dataset.habaduraTeamId = team?.id || "";
+  document.body.dataset.habaduraTeamLiga = String(team?.liga || "");
+
   if (loginBox) {
     loginBox.hidden = true;
   }
@@ -113,9 +124,19 @@ function showLoggedInUi(team) {
   }
 
   if (loggedTeamName) {
-    loggedTeamName.textContent = team?.name || "Přihlášený tým";
+    loggedTeamName.textContent =
+      team?.name || "Přihlášený tým";
   }
+
+  window.dispatchEvent(
+    new CustomEvent("habadura-team-changed", {
+      detail: {
+        team
+      }
+    })
+  );
 }
+
 
 function setLoginButtonBusy(isBusy) {
   if (!loginButton) {
