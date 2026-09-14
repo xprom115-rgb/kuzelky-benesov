@@ -374,8 +374,6 @@ matches_all: List[Match] = []
 last_m = None
 next_m = None
 
-    last_m, next_m = pick_last_next(matches_all)
-
     data_debug = {
     "matchesFound": len(matches_all),
     "playedCount": len([m for m in matches_all if m.played]),
