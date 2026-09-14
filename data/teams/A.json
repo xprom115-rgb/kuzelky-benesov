@@ -1,23 +1,35 @@
 {
-  "label": "Družstvo A – 3. KLM B",
+  "label": "Družstvo A – 3. KLM A",
   "source": {
     "type": "cka",
-    "competitionId": "c800",
-    "teamKey": "TJ Sokol Benešov"
+    "url": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
+    "teamKey": "Benešov"
   },
-  "updatedAt": "2026-09-13T08:10:59+00:00",
+  "updatedAt": "2026-09-14T20:59:08+00:00",
   "lastMatch": null,
   "nextMatch": null,
   "table": {
-    "columns": [],
+    "columns": [
+      "#",
+      "Tým",
+      "Z",
+      "V",
+      "R",
+      "P",
+      "Skóre",
+      "SB",
+      "Ø",
+      "B",
+      "+/-"
+    ],
     "rows": []
   },
   "debug": {
     "matchesFound": 0,
     "playedCount": 0,
     "futureCount": 0,
-    "teamKey": "TJ Sokol Benešov",
-    "competitionId": "c800",
+    "teamKey": "Benešov",
+    "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
     "sample": []
   }
 }

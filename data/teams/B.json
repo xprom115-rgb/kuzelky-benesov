@@ -2,22 +2,34 @@
   "label": "Družstvo B – Divize AS",
   "source": {
     "type": "cka",
-    "competitionId": "c788",
-    "teamKey": "TJ Sokol Benešov B"
+    "url": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
+    "teamKey": "Benešov B"
   },
-  "updatedAt": "2026-09-13T08:11:17+00:00",
+  "updatedAt": "2026-09-14T20:59:09+00:00",
   "lastMatch": null,
   "nextMatch": null,
   "table": {
-    "columns": [],
+    "columns": [
+      "#",
+      "Tým",
+      "Z",
+      "V",
+      "R",
+      "P",
+      "Skóre",
+      "SB",
+      "Ø",
+      "B",
+      "+/-"
+    ],
     "rows": []
   },
   "debug": {
     "matchesFound": 0,
     "playedCount": 0,
     "futureCount": 0,
-    "teamKey": "TJ Sokol Benešov B",
-    "competitionId": "c788",
+    "teamKey": "Benešov B",
+    "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
     "sample": []
   }
 }
