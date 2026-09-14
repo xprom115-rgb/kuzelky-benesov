@@ -275,10 +275,10 @@ def update_cka_team(
     team_key: str,
     label: str
 ) -> None:
-    # ✅ bez www (kvůli SSL certifikátu)
-    base_url = f"https://vysledky.kuzelky.cz/soutez.php?id={comp_id}"
+    # Nová adresa soutěže se předává přímo z COMPETITIONS.
+base_url = competition_url
 
-    html = fetch(base_url)
+html = fetch(base_url)
     soup = BeautifulSoup(html, "lxml")
 
     table = parse_table(soup)
