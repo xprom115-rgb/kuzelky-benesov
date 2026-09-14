@@ -821,36 +821,74 @@ function listenPhase(liga) {
   );
 }
 // =====================================================
-// Reakce na přihlášení týmového účtu
-//
-// Po přihlášení automaticky nastavíme ligu daného týmu
-// a předvybereme přihlášený tým jako domácí.
+// Nastavení formuláře podle přihlášeného týmu
 // =====================================================
+function applyLoggedTeamToForm(team) {
+  if (!team) {
+    return;
+  }
+
+  const teamId = team.id || "";
+  const teamLiga = Number(team.liga || 0);
+
+  if (!teamId || !teamLiga) {
+    console.warn(
+      "Přihlášenému týmu chybí ID nebo číslo ligy:",
+      team
+    );
+    return;
+  }
+
+  // Nastavíme ligu a znovu naplníme týmové roletky.
+  switchLiga(String(teamLiga));
+
+  // Po switchLiga() jsou možnosti v teamHome již vytvořené.
+  const homeTeamExists = Array
+    .from(teamHome.options)
+    .some((option) => option.value === teamId);
+
+  if (!homeTeamExists) {
+    console.warn(
+      "Přihlášený tým nebyl nalezen v roletce:",
+      teamId,
+      team.name
+    );
+    return;
+  }
+
+  // Přihlášený tým předvybereme jako domácí.
+  teamHome.value = teamId;
+
+  // Pokud by byl stejný tým také mezi hosty,
+  // vybereme jako hostující první jiný tým.
+  if (teamAway.value === teamId) {
+    const firstOpponent = Array
+      .from(teamAway.options)
+      .find((option) => option.value !== teamId);
+
+    if (firstOpponent) {
+      teamAway.value = firstOpponent.value;
+    }
+  }
+
+  // Znovu naplníme hráče podle nově vybraných týmů.
+  fillPlayers();
+
+  console.log(
+    "✅ Formulář nastaven pro tým:",
+    team.name,
+    "| liga:",
+    teamLiga,
+    "| teamId:",
+    teamId
+  );
+}
+
+// Reakce na nové přihlášení nebo odhlášení.
 window.addEventListener(
   "habadura-team-changed",
   (event) => {
-    const team = event.detail?.team;
-
-    if (!team) {
-      return;
-    }
-
-    const teamLiga = Number(team.liga || 1);
-
-    // Nastavení správné ligy.
-    switchLiga(String(teamLiga));
-
-    // Po naplnění roletek vybereme přihlášený tým
-    // jako domácí tým.
-    if (
-      teamHome &&
-      Array.from(teamHome.options).some(
-        option => option.value === team.id
-      )
-    ) {
-      teamHome.value = team.id;
-      fillPlayers();
-    }
+    applyLoggedTeamToForm(event.detail?.team);
   }
 );
 // ----------------------------------------------------
