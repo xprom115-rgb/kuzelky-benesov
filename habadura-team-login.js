@@ -57,7 +57,9 @@ function setLoginMessage(text) {
 // Zobrazení stránky po odhlášení
 // =========================================================
 function showLoggedOutUi() {
-  // Odstraníme informaci o přihlášeném týmu.
+  // Odstraníme uložený tým i pomocné atributy stránky.
+  window.__habaduraLoggedTeam = null;
+
   document.body.removeAttribute("data-habadura-team-id");
   document.body.removeAttribute("data-habadura-team-liga");
 
@@ -72,6 +74,16 @@ function showLoggedOutUi() {
   if (loggedTeamName) {
     loggedTeamName.textContent = "—";
   }
+
+  window.dispatchEvent(
+    new CustomEvent("habadura-team-changed", {
+      detail: {
+        team: null
+      }
+    })
+  );
+}
+
 
   // Informujeme ostatní skripty, že tým byl odhlášen.
   window.dispatchEvent(
