@@ -102,44 +102,119 @@ def parse_dt(text: str) -> Tuple[Optional[str], Optional[str], Optional[datetime
 
 # ---------- parse whole table ----------
 
+# ============================================================
+# Načtení celkové tabulky soutěže
+#
+# Starý servis používal název sloupce "Družstvo".
+# Nový servis používá název "Tým".
+#
+# Funkce podporuje obě varianty, aby zůstal skript použitelný
+# také pro případné starší stránky výsledkového servisu.
+# ============================================================
+
 def parse_table(soup: BeautifulSoup) -> Dict[str, Any]:
     """
-    Vrací tabulku celou:
-      columns: [...]
-      rows: [[...], [...], ...]
-    Stabilní i když se mění počet sloupců.
+    Vrací celou soutěžní tabulku:
+
+    {
+        "columns": ["#", "Tým", "Z", ...],
+        "rows": [
+            ["1.", "Benešov B", "3", ...],
+            ...
+        ]
+    }
     """
+
     target = None
+
+    # Najdeme tabulku soutěže podle typických názvů sloupců.
     for table in soup.find_all("table"):
-        txt = table.get_text(" ", strip=True)
-        if ("Družstvo" in txt) and ("Body" in txt) and ("Zápasy" in txt):
+        text = norm(table.get_text(" ", strip=True))
+
+        has_team_column = (
+            "Družstvo" in text
+            or "Tým" in text
+        )
+
+        has_score_column = (
+            "Skóre" in text
+            or "SB" in text
+        )
+
+        has_points_column = (
+            "Body" in text
+            or re.search(r"\bB\b", text) is not None
+        )
+
+        if (
+            has_team_column
+            and has_score_column
+            and has_points_column
+        ):
             target = table
             break
 
-    if not target:
-        return {"columns": [], "rows": []}
+    if target is None:
+        return {
+            "columns": [],
+            "rows": []
+        }
 
-    trs = target.find_all("tr")
-    if not trs:
-        return {"columns": [], "rows": []}
+    rows = target.find_all("tr")
 
-    header_cells = trs[0].find_all(["th", "td"])
-    columns = [norm(c.get_text(" ", strip=True)) for c in header_cells]
+    if not rows:
+        return {
+            "columns": [],
+            "rows": []
+        }
+
+    # První řádek považujeme za hlavičku.
+    header_cells = rows[0].find_all(["th", "td"])
+
+    columns = [
+        norm(cell.get_text(" ", strip=True))
+        for cell in header_cells
+    ]
+
+    if not columns:
+        return {
+            "columns": [],
+            "rows": []
+        }
 
     rows_out: List[List[str]] = []
-    for tr in trs[1:]:
-        cells = tr.find_all(["td", "th"])
+
+    for row_element in rows[1:]:
+        cells = row_element.find_all(["td", "th"])
+
         if not cells:
             continue
-        row = [norm(c.get_text(" ", strip=True)) for c in cells]
+
+        row = [
+            norm(cell.get_text(" ", strip=True))
+            for cell in cells
+        ]
+
+        # Prázdné řádky nebo řádky pomocného stránkování vynecháme.
+        if not any(row):
+            continue
+
+        # Doplnění chybějících buněk.
         if len(row) < len(columns):
-            row += [""] * (len(columns) - len(row))
+            row.extend(
+                [""] * (len(columns) - len(row))
+            )
+
+        # Odstranění případných nadbytečných buněk.
         if len(row) > len(columns):
             row = row[:len(columns)]
+
         rows_out.append(row)
 
-    return {"columns": columns, "rows": rows_out}
-
+    return {
+        "columns": columns,
+        "rows": rows_out
+    }
 
 # ---------- parse matches (only Benešov) ----------
 
@@ -283,19 +358,21 @@ html = fetch(base_url)
 
     table = parse_table(soup)
 
-    rounds = find_round_numbers(soup)
-    if not rounds:
-        rounds = list(range(1, 40))
+    # ============================================================
+# Zápasy z nového výsledkového servisu
+#
+# Starý servis používal adresy ?r=1, ?r=2 atd.
+# Nový servis používá odkazy /detail-zapasu/...
+#
+# V tomto kroku zatím nenačítáme jednotlivé zápasy.
+# Parser nových odkazů doplníme v KROKU 7.
+# Soutěžní tabulka se už načte a uloží správně.
+# ============================================================
 
-    matches_all: List[Match] = []
-    for r in rounds:
-        url_r = f"{base_url}&r={r}"
-        try:
-            html_r = fetch(url_r)
-        except:
-            continue
-        soup_r = BeautifulSoup(html_r, "lxml")
-        matches_all.extend(parse_team_matches_from_round(soup_r, team_key))
+matches_all: List[Match] = []
+
+last_m = None
+next_m = None
 
     last_m, next_m = pick_last_next(matches_all)
 
