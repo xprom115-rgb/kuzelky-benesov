@@ -820,7 +820,39 @@ function listenPhase(liga) {
     }
   );
 }
+// =====================================================
+// Reakce na přihlášení týmového účtu
+//
+// Po přihlášení automaticky nastavíme ligu daného týmu
+// a předvybereme přihlášený tým jako domácí.
+// =====================================================
+window.addEventListener(
+  "habadura-team-changed",
+  (event) => {
+    const team = event.detail?.team;
 
+    if (!team) {
+      return;
+    }
+
+    const teamLiga = Number(team.liga || 1);
+
+    // Nastavení správné ligy.
+    switchLiga(String(teamLiga));
+
+    // Po naplnění roletek vybereme přihlášený tým
+    // jako domácí tým.
+    if (
+      teamHome &&
+      Array.from(teamHome.options).some(
+        option => option.value === team.id
+      )
+    ) {
+      teamHome.value = team.id;
+      fillPlayers();
+    }
+  }
+);
 // ----------------------------------------------------
 // Init
 // ----------------------------------------------------
