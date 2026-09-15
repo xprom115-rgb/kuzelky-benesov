@@ -341,9 +341,26 @@ def parse_match_cards(soup: BeautifulSoup, team_key: str) -> List[Dict[str, Any]
         away_name = away_name.rstrip(".")
 
         if not home_name or not away_name:
-            continue
-        if not (team_matches(home_name, team_key) or team_matches(away_name, team_key)):
-            continue
+    print(
+        f"DEBUG CARD PARSE [{team_key}]: "
+        f"href={href!r}, "
+        f"card_text={card_text!r}, "
+        f"after_dt={after_dt!r}, "
+        f"parts={parts!r}"
+    )
+    continue
+
+if not (
+    team_matches(home_name, team_key)
+    or team_matches(away_name, team_key)
+):
+    print(
+        f"DEBUG TEAM SKIP [{team_key}]: "
+        f"home={home_name!r}, "
+        f"away={away_name!r}, "
+        f"card_text={card_text!r}"
+    )
+    continue
 
         score_match = re.search(r"(\d+(?:[.,]\d+)?)\s*:\s*(\d+(?:[.,]\d+)?)", middle)
         pins_match = re.search(r"(\d{3,4})\s*:\s*(\d{3,4})", card_text)
