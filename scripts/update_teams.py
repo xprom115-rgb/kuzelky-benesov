@@ -437,12 +437,59 @@ def update_cka_team(
     label: str
 ) -> None:
     """Načte tabulku, budoucí i minulé zápasy družstva."""
-    html = fetch(competition_url)
-    soup = BeautifulSoup(html, "lxml")
+   html = fetch(competition_url)
+soup = BeautifulSoup(html, "lxml")
 
-    table = parse_table(soup)
-    all_matches = parse_match_cards(soup, team_key)
+# ============================================================
+# Diagnostika nového výsledkového servisu
+# Do logu GitHub Actions vypíše, co server skutečně poslal.
+# ============================================================
 
+all_links = [
+    anchor.get("href", "")
+    for anchor in soup.find_all("a", href=True)
+]
+
+match_links = [
+    href
+    for href in all_links
+    if "detail-zapasu" in href
+]
+
+print(f"DEBUG {team_id}: HTML length = {len(html)}")
+print(f"DEBUG {team_id}: tables = {len(soup.find_all('table'))}")
+print(f"DEBUG {team_id}: all links = {len(all_links)}")
+print(f"DEBUG {team_id}: match links = {len(match_links)}")
+print(f"DEBUG {team_id}: scripts = {len(soup.find_all('script'))}")
+
+# Vypíšeme několik odkazů na zápasy, pokud jsou ve zdrojovém HTML.
+for href in match_links[:5]:
+    print(f"DEBUG {team_id}: match URL = {href}")
+
+# Zjistíme, zda stránka obsahuje data frameworku Next.js.
+next_data = soup.find("script", id="__NEXT_DATA__")
+print(
+    f"DEBUG {team_id}: __NEXT_DATA__ = "
+    f"{'YES' if next_data else 'NO'}"
+)
+
+# Zjistíme, zda jsou v HTML zmíněné možné API adresy.
+html_lower = html.lower()
+
+for keyword in [
+    "/api/",
+    "graphql",
+    "detail-zapasu",
+    "benesov",
+    "benešov"
+]:
+    print(
+        f"DEBUG {team_id}: contains {keyword} = "
+        f"{keyword in html_lower}"
+    )
+
+table = parse_table(soup)
+all_matches = parse_match_cards(soup, team_key)
     past_matches = [public_match(m) for m in all_matches if m["played"]]
     future_matches = [public_match(m) for m in all_matches if not m["played"]]
 
