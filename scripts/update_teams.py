@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
+from playwright.sync_api import sync_playwright
 
 
 # ============================================================
@@ -96,6 +97,38 @@ def fetch(url: str) -> str:
 
     raise RuntimeError(f"Nepodařilo se stáhnout URL: {url}")
 
+
+
+def fetch_rendered(url: str) -> str:
+    """
+    Otevře stránku ve skutečném Chromium prohlížeči, počká na
+    vykreslení JavaScriptem a vrátí výsledné HTML.
+    """
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        page = browser.new_page(
+            viewport={"width": 1440, "height": 1200},
+            locale="cs-CZ"
+        )
+
+        try:
+            page.goto(
+                url,
+                wait_until="domcontentloaded",
+                timeout=90000
+            )
+
+            # Čekáme na hlavičku soutěžní tabulky a potom ještě krátce
+            # na její řádky a odkazy na jednotlivé zápasy.
+            try:
+                page.wait_for_selector("table", timeout=30000)
+            except Exception:
+                pass
+
+            page.wait_for_timeout(5000)
+            return page.content()
+        finally:
+            browser.close()
 
 def norm(value: str) -> str:
     return " ".join(
@@ -440,8 +473,15 @@ def update_cka_team(
     label: str
 ) -> None:
     """Načte tabulku, budoucí i minulé zápasy družstva."""
-    html = fetch(competition_url)
+    html = fetch_rendered(competition_url)
     soup = BeautifulSoup(html, "lxml")
+
+    print(f"DEBUG {team_id}: rendered HTML length={len(html)}")
+    print(f"DEBUG {team_id}: tables={len(soup.find_all('table'))}")
+    print(
+        f"DEBUG {team_id}: match links="
+        f"{len([a for a in soup.find_all('a', href=True) if 'detail-zapasu' in a.get('href', '')])}"
+    )
 
     table = parse_table(soup)
     all_matches = parse_match_cards(soup, team_key)
