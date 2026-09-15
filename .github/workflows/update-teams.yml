@@ -24,8 +24,9 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          python -m pip install requests beautifulsoup4 lxml
-
+          pip install requests beautifulsoup4 lxml playwright
+          playwright install chromium
+          
       - name: Verify deps
         run: |
           python -c "import requests; import bs4; import lxml; print('deps OK')"
