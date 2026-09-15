@@ -294,22 +294,24 @@ def update_cka_team(
     team_key: str,
     label: str
 ) -> None:
-    """
-    Načte hlavní stránku nové soutěže a uloží její tabulku.
+    # Nová adresa soutěže se předává přímo z COMPETITIONS.
+    base_url = competition_url
 
-    Poznámka:
-    Nový servis už nepoužívá parametr ?r=. Parser jednotlivých
-    zápasů přes /detail-zapasu/ bude doplněn v dalším kroku.
-    """
-    html = fetch(competition_url)
+    # Načtení hlavní stránky soutěže.
+    html = fetch(base_url)
     soup = BeautifulSoup(html, "lxml")
+
+    # Načtení celkové tabulky soutěže.
     table = parse_table(soup)
 
+    # Nový výsledkový servis už nepoužívá parametr ?r=.
+    # Načítání jednotlivých zápasů doplníme v dalším kroku.
     matches_all: List[Match] = []
-    last_match = None
-    next_match = None
 
-    debug = {
+    last_m = None
+    next_m = None
+
+    data_debug = {
         "matchesFound": len(matches_all),
         "playedCount": 0,
         "futureCount": 0,
@@ -328,13 +330,14 @@ def update_cka_team(
         "teamKey": team_key
     }
     data["updatedAt"] = iso_now()
-    data["lastMatch"] = last_match
-    data["nextMatch"] = next_match
+    data["lastMatch"] = last_m
+    data["nextMatch"] = next_m
     data["table"] = table
-    data["debug"] = debug
+    data["debug"] = data_debug
 
     save_json(path, data)
-    print(f"OK: updated {team_id} from {competition_url}")
+
+    print(f"OK: updated {team_id} from {base_url}")
 
 
 # ============================================================
