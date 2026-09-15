@@ -5,7 +5,7 @@
     "url": "https://vysledky.kuzelky.cz/detail-souteze/krajsky-prebor-1-tridy-2026-2027",
     "teamKey": "Benešov C"
   },
-  "updatedAt": "2026-09-15T12:13:30+00:00",
+  "updatedAt": "2026-09-15T13:02:02+00:00",
   "lastMatch": null,
   "nextMatch": null,
   "table": {
@@ -31,5 +31,8 @@
     "teamKey": "Benešov C",
     "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/krajsky-prebor-1-tridy-2026-2027",
     "sample": []
-  }
+  },
+  "futureMatches": [],
+  "pastMatches": [],
+  "tableStatus": "empty"
 }
