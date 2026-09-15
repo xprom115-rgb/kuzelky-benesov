@@ -332,7 +332,29 @@ def update_cka_team(
     data["updatedAt"] = iso_now()
     data["lastMatch"] = last_m
     data["nextMatch"] = next_m
+if table["columns"] and table["rows"]:
     data["table"] = table
+    data["tableStatus"] = "updated"
+else:
+    previous_table = data.get("table")
+
+    if (
+        isinstance(previous_table, dict)
+        and previous_table.get("columns")
+        and previous_table.get("rows")
+    ):
+        data["table"] = previous_table
+        data["tableStatus"] = "kept_previous"
+        print(
+            f"WARNING: {team_id} table is empty; "
+            "previous table was preserved."
+        )
+    else:
+        data["table"] = table
+        data["tableStatus"] = "empty"
+        print(
+            f"WARNING: {team_id} table is currently empty."
+        )
     data["debug"] = data_debug
 
     save_json(path, data)
