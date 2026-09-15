@@ -341,7 +341,7 @@ def parse_match_cards(soup: BeautifulSoup, team_key: str) -> List[Dict[str, Any]
         away_name = away_name.rstrip(".")
 
         if not home_name or not away_name:
-    print(
+        print(
         f"DEBUG CARD PARSE [{team_key}]: "
         f"href={href!r}, "
         f"card_text={card_text!r}, "
