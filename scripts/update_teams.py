@@ -367,9 +367,6 @@ def public_match(item: Dict[str, Any]) -> Dict[str, Any]:
 
 # ============================================================
 # Datová třída zápasu
-#
-# Zůstává připravena pro další krok, ve kterém se doplní parser
-# nových odkazů /detail-zapasu/.
 # ============================================================
 
 @dataclass
