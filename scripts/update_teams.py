@@ -483,6 +483,32 @@ def update_cka_team(
         f"{len([a for a in soup.find_all('a', href=True) if 'detail-zapasu' in a.get('href', '')])}"
     )
 
+match_anchors = [
+    anchor
+    for anchor in soup.find_all("a", href=True)
+    if "detail-zapasu" in anchor.get("href", "")
+]
+
+if match_anchors:
+    first_anchor = match_anchors[0]
+
+    print(
+        f"DEBUG {team_id}: FIRST MATCH ANCHOR = "
+        f"{str(first_anchor)[:1500]}"
+    )
+
+    parent = first_anchor.parent
+
+    for level in range(1, 5):
+        if parent is None:
+            break
+
+        print(
+            f"DEBUG {team_id}: PARENT LEVEL {level} = "
+            f"{str(parent)[:3000]}"
+        )
+
+        parent = parent.parent
     table = parse_table(soup)
     all_matches = parse_match_cards(soup, team_key)
 
