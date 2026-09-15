@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, List, Dict, Any, Tuple
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
@@ -220,6 +221,150 @@ def parse_table(soup: BeautifulSoup) -> Dict[str, Any]:
     return {"columns": columns, "rows": rows_out}
 
 
+
+# ============================================================
+# Nový výsledkový servis: rozpis a výsledky zápasů
+# ============================================================
+
+def team_matches(name: str, team_key: str) -> bool:
+    """Porovnání názvu týmu tolerantní k tečce a prefixu TJ Sokol."""
+    value = norm(name).rstrip(".").casefold()
+    key = norm(team_key).rstrip(".").casefold()
+    return value == key or key in value
+
+
+def parse_match_cards(soup: BeautifulSoup, team_key: str) -> List[Dict[str, Any]]:
+    """
+    Načte zápasy z odkazů /detail-zapasu/ na nové stránce soutěže.
+
+    Výstup obsahuje: round, date, time, home, away, result, pins,
+    played a url. Když servis ještě výsledek nepublikoval, result/pins
+    zůstanou prázdné a zápas se zařadí mezi budoucí.
+    """
+    output: List[Dict[str, Any]] = []
+    seen_urls = set()
+
+    for anchor in soup.find_all("a", href=True):
+        href = anchor.get("href", "")
+        if "/detail-zapasu/" not in href:
+            continue
+
+        absolute_url = urljoin("https://vysledky.kuzelky.cz", href)
+        if absolute_url in seen_urls:
+            continue
+        seen_urls.add(absolute_url)
+
+        # Nový servis obvykle ukládá celé utkání do textu odkazu.
+        # Když je text odkazu stručný, hledáme nejbližší rodičovský blok.
+        candidates = [anchor]
+        parent = anchor.parent
+        for _ in range(5):
+            if parent is None:
+                break
+            candidates.append(parent)
+            parent = parent.parent
+
+        card_text = ""
+        for candidate in candidates:
+            text = norm(candidate.get_text(" ", strip=True))
+            if DT_RE.search(text) and team_key.casefold() in text.casefold():
+                card_text = text
+                if len(text) < 500:
+                    break
+
+        if not card_text:
+            continue
+
+        date_string, time_string, parsed_dt = parse_dt(card_text)
+        if not date_string:
+            continue
+
+        round_match = re.search(r"(?:^|\D)kolo[-\s]?(\d+)(?:\D|$)", href, re.I)
+        round_number = int(round_match.group(1)) if round_match else None
+
+        # Text za datem/časem obvykle vypadá:
+        # Domácí – výsledek – Hosté, případně Domácí – – Hosté.
+        after_dt = DT_RE.sub("", card_text, count=1).strip(" |–-")
+        parts = [norm(x).strip() for x in re.split(r"\s+[–—]\s+", after_dt) if norm(x)]
+
+        home_name = ""
+        away_name = ""
+        middle = ""
+
+        if len(parts) >= 3:
+            home_name = parts[0]
+            away_name = parts[-1]
+            middle = " | ".join(parts[1:-1])
+        else:
+            # Náhradní varianta pro obyčejný spojovník.
+            parts = [norm(x).strip() for x in re.split(r"\s+-\s+", after_dt) if norm(x)]
+            if len(parts) >= 3:
+                home_name = parts[0]
+                away_name = parts[-1]
+                middle = " | ".join(parts[1:-1])
+
+        # Některé karty mají před domácím ještě pořadové číslo.
+        home_name = re.sub(r"^\d+\s+", "", home_name).rstrip(".")
+        away_name = away_name.rstrip(".")
+
+        if not home_name or not away_name:
+            continue
+        if not (team_matches(home_name, team_key) or team_matches(away_name, team_key)):
+            continue
+
+        score_match = re.search(r"(\d+(?:[.,]\d+)?)\s*:\s*(\d+(?:[.,]\d+)?)", middle)
+        pins_match = re.search(r"(\d{3,4})\s*:\s*(\d{3,4})", card_text)
+
+        result = None
+        if score_match:
+            result = f"{score_match.group(1)}:{score_match.group(2)}"
+
+        pins = None
+        if pins_match:
+            pins = f"{pins_match.group(1)}:{pins_match.group(2)}"
+
+        played = bool(result and result.replace(" ", "") != "0:0") or bool(
+            pins and pins.replace(" ", "") != "0:0"
+        )
+
+        output.append({
+            "round": round_number,
+            "date": date_string,
+            "time": time_string,
+            "dt": parsed_dt,
+            "home": home_name,
+            "away": away_name,
+            "result": result,
+            "pins": pins,
+            "played": played,
+            "url": absolute_url
+        })
+
+    # Odstranění případných duplicit a seřazení chronologicky.
+    unique: Dict[str, Dict[str, Any]] = {}
+    for item in output:
+        key = item["url"]
+        unique[key] = item
+
+    return sorted(
+        unique.values(),
+        key=lambda item: item.get("dt") or datetime.max.replace(tzinfo=timezone.utc)
+    )
+
+
+def public_match(item: Dict[str, Any]) -> Dict[str, Any]:
+    """Odstraní interní datetime, který nelze uložit do JSON."""
+    return {
+        "round": item.get("round"),
+        "date": item.get("date"),
+        "time": item.get("time"),
+        "home": item.get("home"),
+        "away": item.get("away"),
+        "result": item.get("result"),
+        "pins": item.get("pins"),
+        "url": item.get("url")
+    }
+
 # ============================================================
 # Datová třída zápasu
 #
@@ -294,34 +439,35 @@ def update_cka_team(
     team_key: str,
     label: str
 ) -> None:
-    # Nová adresa soutěže se předává přímo z COMPETITIONS.
-    base_url = competition_url
-
-    # Načtení hlavní stránky soutěže.
-    html = fetch(base_url)
+    """Načte tabulku, budoucí i minulé zápasy družstva."""
+    html = fetch(competition_url)
     soup = BeautifulSoup(html, "lxml")
 
-    # Načtení celkové tabulky soutěže.
     table = parse_table(soup)
+    all_matches = parse_match_cards(soup, team_key)
 
-    # Nový výsledkový servis už nepoužívá parametr ?r=.
-    # Načítání jednotlivých zápasů doplníme v dalším kroku.
-    matches_all: List[Match] = []
+    past_matches = [public_match(m) for m in all_matches if m["played"]]
+    future_matches = [public_match(m) for m in all_matches if not m["played"]]
 
-    last_m = None
-    next_m = None
+    now = datetime.now(timezone.utc)
+    completed = [m for m in all_matches if m["played"] and m.get("dt")]
+    upcoming = [m for m in all_matches if not m["played"] and m.get("dt") and m["dt"] >= now]
 
-    data_debug = {
-        "matchesFound": len(matches_all),
-        "playedCount": 0,
-        "futureCount": 0,
-        "teamKey": team_key,
-        "competitionUrl": competition_url,
-        "sample": []
-    }
+    last_match = public_match(completed[-1]) if completed else None
+    next_match = public_match(upcoming[0]) if upcoming else None
 
     path = BASE / f"{team_id}.json"
     data = load_json(path) if path.exists() else {}
+
+    # Prázdná odpověď nesmí přepsat dříve platnou tabulku.
+    if table.get("columns") and table.get("rows"):
+        data["table"] = table
+        table_status = "updated"
+    elif data.get("table", {}).get("rows"):
+        table_status = "kept_previous"
+    else:
+        data["table"] = table
+        table_status = "empty"
 
     data["label"] = label
     data["source"] = {
@@ -330,36 +476,25 @@ def update_cka_team(
         "teamKey": team_key
     }
     data["updatedAt"] = iso_now()
-    data["lastMatch"] = last_m
-    data["nextMatch"] = next_m
-if table["columns"] and table["rows"]:
-    data["table"] = table
-    data["tableStatus"] = "updated"
-else:
-    previous_table = data.get("table")
-
-    if (
-        isinstance(previous_table, dict)
-        and previous_table.get("columns")
-        and previous_table.get("rows")
-    ):
-        data["table"] = previous_table
-        data["tableStatus"] = "kept_previous"
-        print(
-            f"WARNING: {team_id} table is empty; "
-            "previous table was preserved."
-        )
-    else:
-        data["table"] = table
-        data["tableStatus"] = "empty"
-        print(
-            f"WARNING: {team_id} table is currently empty."
-        )
-    data["debug"] = data_debug
+    data["lastMatch"] = last_match
+    data["nextMatch"] = next_match
+    data["futureMatches"] = future_matches
+    data["pastMatches"] = past_matches
+    data["tableStatus"] = table_status
+    data["debug"] = {
+        "matchesFound": len(all_matches),
+        "playedCount": len(past_matches),
+        "futureCount": len(future_matches),
+        "teamKey": team_key,
+        "competitionUrl": competition_url,
+        "sample": [public_match(m) for m in all_matches[:3]]
+    }
 
     save_json(path, data)
-
-    print(f"OK: updated {team_id} from {base_url}")
+    print(
+        f"OK: {team_id}: table={table_status}, "
+        f"past={len(past_matches)}, future={len(future_matches)}"
+    )
 
 
 # ============================================================
