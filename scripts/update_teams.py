@@ -3,7 +3,7 @@ import re
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional, List, Dict, Any, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urljoin
 
 import requests
@@ -25,39 +25,24 @@ HEADERS = {
     )
 }
 
-
-# ============================================================
-# A/B/C – nový výsledkový servis ČKA pro sezonu 2026/2027
-# ============================================================
-
 COMPETITIONS = {
     "A": {
-        "url": (
-            "https://vysledky.kuzelky.cz/"
-            "detail-souteze/3-klm-a-2026-2027"
-        ),
+        "url": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
         "teamKey": "Benešov",
-        "label": "Družstvo A – 3. KLM A"
+        "label": "Družstvo A – 3. KLM A",
     },
     "B": {
-        "url": (
-            "https://vysledky.kuzelky.cz/"
-            "detail-souteze/divize-as-2026-2027"
-        ),
+        "url": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
         "teamKey": "Benešov B",
-        "label": "Družstvo B – Divize AS"
+        "label": "Družstvo B – Divize AS",
     },
     "C": {
-        "url": (
-            "https://vysledky.kuzelky.cz/"
-            "detail-souteze/krajsky-prebor-1-tridy-2026-2027"
-        ),
+        "url": "https://vysledky.kuzelky.cz/detail-souteze/krajsky-prebor-1-tridy-2026-2027",
         "teamKey": "Benešov C",
-        "label": "Družstvo C – Krajský přebor 1. třídy"
-    }
+        "label": "Družstvo C – Krajský přebor 1. třídy",
+    },
 }
 
-# Dorost se v main() nyní neaktualizuje.
 SKKS_DOROST_URL = (
     "https://www.skks-kuzelky.cz/index.php/souteze/"
     "stredocesky-pohar-mladeze"
@@ -74,12 +59,8 @@ def load_json(path: Path) -> Dict[str, Any]:
 
 def save_json(path: Path, obj: Dict[str, Any]) -> None:
     path.write_text(
-        json.dumps(
-            obj,
-            ensure_ascii=False,
-            indent=2
-        ) + "\n",
-        encoding="utf-8"
+        json.dumps(obj, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
     )
 
 
@@ -87,9 +68,15 @@ def iso_now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+def norm(value: str) -> str:
+    return " ".join(
+        (value or "").replace("\xa0", " ").split()
+    ).strip()
+
+
 def fetch(url: str) -> str:
     """
-    Stáhne stránku přes requests.
+    Stáhne stránku pomocí requests.
 
     Při dočasném selhání provede až tři pokusy.
     """
@@ -100,7 +87,7 @@ def fetch(url: str) -> str:
             response = requests.get(
                 url,
                 headers=HEADERS,
-                timeout=(20, 60)
+                timeout=(20, 60),
             )
             response.raise_for_status()
             return response.text
@@ -118,8 +105,8 @@ def fetch(url: str) -> str:
 
 def fetch_rendered(url: str) -> str:
     """
-    Otevře stránku v Chromium, počká na vykreslení JavaScriptem
-    a vrátí výsledné HTML.
+    Otevře stránku v Chromium, počká na vykreslení obsahu
+    pomocí JavaScriptu a vrátí výsledné HTML.
     """
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(
@@ -129,22 +116,22 @@ def fetch_rendered(url: str) -> str:
         page = browser.new_page(
             viewport={
                 "width": 1440,
-                "height": 1200
+                "height": 1200,
             },
-            locale="cs-CZ"
+            locale="cs-CZ",
         )
 
         try:
             page.goto(
                 url,
                 wait_until="domcontentloaded",
-                timeout=90000
+                timeout=90000,
             )
 
             try:
                 page.wait_for_selector(
                     "table",
-                    timeout=30000
+                    timeout=30000,
                 )
             except Exception:
                 pass
@@ -152,7 +139,7 @@ def fetch_rendered(url: str) -> str:
             try:
                 page.wait_for_selector(
                     'a[href*="/detail-zapasu/"]',
-                    timeout=15000
+                    timeout=15000,
                 )
             except Exception:
                 pass
@@ -164,29 +151,9 @@ def fetch_rendered(url: str) -> str:
             browser.close()
 
 
-def norm(value: str) -> str:
-    """
-    Odstraní nezlomitelné mezery, nové řádky
-    a opakující se mezery.
-    """
-    return " ".join(
-        (value or "")
-        .replace("\xa0", " ")
-        .split()
-    ).strip()
-
-
 # ============================================================
 # Datum a čas
 # ============================================================
-
-# Pojmenované skupiny zabraňují chybě:
-# IndexError: no such group
-#
-# Podporované příklady:
-# 15. 9. 2026
-# 15. 9. 2026 18:00
-# 15. 9. 2026 18.00
 
 DT_RE = re.compile(
     r"(?P<day>\d{1,2})\.\s*"
@@ -194,41 +161,34 @@ DT_RE = re.compile(
     r"(?P<year>\d{4})"
     r"(?:\s+"
     r"(?P<hour>\d{1,2})"
-    r"\s*[\x3a.]\s*"
+    r"\s*[:.]\s*"
     r"(?P<minute>\d{2})"
     r")?"
 )
 
 
 def parse_dt(
-    text: str
+    text: str,
 ) -> Tuple[Optional[str], Optional[str], Optional[datetime]]:
     """
-    Z textu načte datum a případně čas.
+    Z textu načte datum a případný čas.
 
     Vrací:
     - datum ve formátu YYYY-MM-DD,
     - čas ve formátu HH:MM,
-    - datetime v UTC.
+    - objekt datetime v UTC.
     """
-    normalized = norm(text)
-    match = DT_RE.search(normalized)
+    match = DT_RE.search(norm(text))
 
     if match is None:
         return None, None, None
 
-    day_text = match.groupdict().get("day")
-    month_text = match.groupdict().get("month")
-    year_text = match.groupdict().get("year")
-    hour_text = match.groupdict().get("hour")
-    minute_text = match.groupdict().get("minute")
+    day = int(match.group("day"))
+    month = int(match.group("month"))
+    year = int(match.group("year"))
 
-    if not day_text or not month_text or not year_text:
-        return None, None, None
-
-    day = int(day_text)
-    month = int(month_text)
-    year = int(year_text)
+    hour_text = match.group("hour")
+    minute_text = match.group("minute")
 
     date_string = (
         f"{year:04d}-"
@@ -239,36 +199,25 @@ def parse_dt(
     if hour_text is not None and minute_text is not None:
         hour = int(hour_text)
         minute = int(minute_text)
-
-        time_string = (
-            f"{hour:02d}:"
-            f"{minute:02d}"
-        )
-
-        parsed_datetime = datetime(
-            year,
-            month,
-            day,
-            hour,
-            minute,
-            tzinfo=timezone.utc
-        )
+        time_string = f"{hour:02d}:{minute:02d}"
     else:
+        hour = 0
+        minute = 0
         time_string = None
 
-        parsed_datetime = datetime(
-            year,
-            month,
-            day,
-            0,
-            0,
-            tzinfo=timezone.utc
-        )
+    parsed_datetime = datetime(
+        year,
+        month,
+        day,
+        hour,
+        minute,
+        tzinfo=timezone.utc,
+    )
 
     return (
         date_string,
         time_string,
-        parsed_datetime
+        parsed_datetime,
     )
 
 
@@ -277,12 +226,12 @@ def parse_dt(
 # ============================================================
 
 def parse_table(
-    soup: BeautifulSoup
+    soup: BeautifulSoup,
 ) -> Dict[str, Any]:
     """
-    Načte soutěžní tabulku ze starého i nového servisu.
+    Načte soutěžní tabulku.
 
-    Podporuje označení:
+    Podporuje názvy sloupců:
     - Družstvo nebo Tým,
     - Skóre nebo SB,
     - Body nebo B.
@@ -293,40 +242,36 @@ def parse_table(
         table_text = norm(
             table.get_text(
                 " ",
-                strip=True
+                strip=True,
             )
         )
 
-        has_team_column = (
+        has_team = (
             "Družstvo" in table_text
             or "Tým" in table_text
         )
 
-        has_score_column = (
+        has_score = (
             "Skóre" in table_text
             or "SB" in table_text
         )
 
-        has_points_column = (
+        has_points = (
             "Body" in table_text
             or re.search(
                 r"\bB\b",
-                table_text
+                table_text,
             ) is not None
         )
 
-        if (
-            has_team_column
-            and has_score_column
-            and has_points_column
-        ):
+        if has_team and has_score and has_points:
             target = table
             break
 
     if target is None:
         return {
             "columns": [],
-            "rows": []
+            "rows": [],
         }
 
     table_rows = target.find_all("tr")
@@ -334,53 +279,7 @@ def parse_table(
     if not table_rows:
         return {
             "columns": [],
-            "rows": []
+            "rows": [],
         }
 
-    header_cells = table_rows[0].find_all(
-        ["th", "td"]
-    )
-
-    columns = [
-        norm(
-            cell.get_text(
-                " ",
-                strip=True
-            )
-        )
-        for cell in header_cells
-    ]
-
-    if not columns:
-        return {
-            "columns": [],
-            "rows": []
-        }
-
-    rows_out: List[List[str]] = []
-
-    for row_element in table_rows[1:]:
-        cells = row_element.find_all(
-            ["td", "th"]
-        )
-
-        if not cells:
-            continue
-
-        row = [
-            norm(
-                cell.get_text(
-                    " ",
-                    strip=True
-                )
-            )
-            for cell in cells
-        ]
-
-        if not any(row):
-            continue
-
-        if len(row) < len(columns):
-            row.extend(
-                [""] * (
-                    len(columns) - len
+    header
