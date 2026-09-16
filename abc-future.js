@@ -4,7 +4,7 @@ import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-
 const el = document.getElementById("futureRoundsList");
 
 // ---------------------------------------------------------
-// CSS: tmavší zvíraznění buněk
+// CSS: tmavší zvýraznění buněk
 // ---------------------------------------------------------
 (function injectStyles() {
   const id = "abcMatchesStyles";
@@ -26,89 +26,245 @@ const el = document.getElementById("futureRoundsList");
 // ---------------------------------------------------------
 // Helpery
 // ---------------------------------------------------------
-function esc(s) {
-  return (s ?? "").toString()
+function esc(value) {
+  return (value ?? "").toString()
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;");
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 function fmtDate(iso) {
   // YYYY-MM-DD -> D.M.YYYY
   if (!iso) return "";
-  const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-  if (!m) return iso;
-  return `${Number(m[3])}.${Number(m[2])}.${m[1]}`;
+  const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return iso;
+  return `${Number(match[3])}.${Number(match[2])}.${match[1]}`;
 }
 
-function toDate(iso) {
-  return iso ? new Date(iso + "T00:00:00") : null;
+function toDateTime(date, time = "00:00") {
+  if (!date) return null;
+
+  const safeTime = /^\d{2}:\d{2}$/.test(time || "")
+    ? time
+    : "00:00";
+
+  const parsed = new Date(`${date}T${safeTime}:00`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
 }
 
-function todayMidnight() {
-  const t = new Date();
-  t.setHours(0, 0, 0, 0);
-  return t;
+function nowForFiltering() {
+  return new Date();
 }
 
 function getTeamId() {
-  const p = new URLSearchParams(location.search);
-  const t = (p.get("team") || "").toUpperCase();
-  if (["A", "B", "C"].includes(t)) return t;
+  const params = new URLSearchParams(location.search);
+  const fromQuery = (params.get("team") || "").toUpperCase();
+
+  if (["A", "B", "C"].includes(fromQuery)) {
+    return fromQuery;
+  }
 
   const path = (location.pathname || "").toLowerCase();
+
   if (path.includes("druzstvo-a")) return "A";
   if (path.includes("druzstvo-b")) return "B";
   if (path.includes("druzstvo-c")) return "C";
+
   return null;
 }
 
-function normalizeFuture(futureMap) {
-  const today = todayMidnight();
-  const out = [];
+function normalizeName(value) {
+  return (value || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\b(tj|sokol|sk|kk)\b/g, " ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function matchTeamsKey(match) {
+  const home = normalizeName(match.home);
+  const away = normalizeName(match.away);
+  return [home, away].sort().join("|");
+}
+
+function normalizeManualFuture(futureMap) {
+  const now = nowForFiltering();
+  const output = [];
 
   for (const key of Object.keys(futureMap || {})) {
-    const it = futureMap[key] || {};
-    const round = Number(it.round ?? key);
-    const date = (it.date || "").trim();
-    const home = (it.home || "").trim();
-    const away = (it.away || "").trim();
+    const item = futureMap[key] || {};
+    const round = Number(item.round ?? key);
+    const date = (item.date || "").trim();
+    const time = (item.time || "").trim();
+    const home = (item.home || "").trim();
+    const away = (item.away || "").trim();
 
     if (!round || !date || !home || !away) continue;
 
-    const dt = toDate(date);
-    if (!dt || dt < today) continue; // ✅ skrýt už odehrané podle data
+    const dateTime = toDateTime(date, time || "23:59");
+    if (!dateTime || dateTime < now) continue;
 
-    out.push({ round, date, home, away });
+    output.push({
+      round,
+      date,
+      time: time || null,
+      home,
+      away,
+      url: item.url || null,
+      source: "manual",
+    });
   }
 
-  // řazení podle kola
-  out.sort((a, b) => (a.round ?? 0) - (b.round ?? 0));
-  return out;
+  return output;
+}
+
+function normalizeAutomaticFuture(teamData) {
+  const now = nowForFiltering();
+  const source = Array.isArray(teamData?.futureMatches)
+    ? teamData.futureMatches
+    : [];
+
+  const output = [];
+
+  for (const item of source) {
+    const round = Number(item?.round);
+    const date = (item?.date || "").trim();
+    const time = (item?.time || "").trim();
+    const home = (item?.home || "").trim();
+    const away = (item?.away || "").trim();
+
+    if (!round || !date || !home || !away) continue;
+
+    const dateTime = toDateTime(date, time || "23:59");
+    if (!dateTime || dateTime < now) continue;
+
+    output.push({
+      round,
+      date,
+      time: time || null,
+      home,
+      away,
+      url: item.url || null,
+      source: "automatic",
+    });
+  }
+
+  return output;
+}
+
+function mergeFutureMatches(manualMatches, automaticMatches) {
+  /*
+   * Ruční zápis má vždy přednost.
+   *
+   * Automatický zápas se nepřidá, pokud:
+   * 1. už existuje ruční zápis stejného kola, nebo
+   * 2. už existuje ruční zápis stejných dvou družstev.
+   *
+   * Datum se do porovnání úmyslně nezahrnuje, protože při předehrávce
+   * může mít ruční a automatický záznam rozdílné datum i čas.
+   */
+  const manualRounds = new Set(
+    manualMatches
+      .map((match) => Number(match.round))
+      .filter((round) => Number.isFinite(round) && round > 0)
+  );
+
+  const manualTeamKeys = new Set(
+    manualMatches
+      .map(matchTeamsKey)
+      .filter(Boolean)
+  );
+
+  const automaticOnly = automaticMatches.filter((match) => {
+    const sameRoundExists = manualRounds.has(Number(match.round));
+    const sameTeamsExist = manualTeamKeys.has(matchTeamsKey(match));
+
+    return !sameRoundExists && !sameTeamsExist;
+  });
+
+  const merged = [...manualMatches, ...automaticOnly];
+
+  merged.sort((a, b) => {
+    const first = toDateTime(a.date, a.time || "00:00");
+    const second = toDateTime(b.date, b.time || "00:00");
+
+    if (first && second && first.getTime() !== second.getTime()) {
+      return first - second;
+    }
+
+    return Number(a.round || 0) - Number(b.round || 0);
+  });
+
+  return merged;
+}
+
+async function loadAutomaticTeamData(teamId) {
+  const url = new URL(
+    `./data/teams/${encodeURIComponent(teamId)}.json`,
+    document.baseURI
+  );
+
+  // Zamezení použití starého JSONu z cache prohlížeče.
+  url.searchParams.set("v", Date.now().toString());
+
+  const response = await fetch(url.toString(), {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Automatická data ${teamId}.json nelze načíst: HTTP ${response.status}`
+    );
+  }
+
+  return response.json();
 }
 
 function renderTable(list) {
   if (!el) return;
 
   if (!list.length) {
-    el.innerHTML = `<p><em>Zatím nejsou zadané žádné budoucí zápasy.</em></p>`;
+    el.innerHTML = "<p><em>Zatím nejsou zadané žádné budoucí zápasy.</em></p>";
     return;
   }
 
-  const rows = list.map(m => `
-    <tr>
-      <td><strong>${esc(m.round)}.</strong></td>
-      <td>${esc(fmtDate(m.date))}</td>
-      <td>${esc(m.home)}</td>
-      <td>${esc(m.away)}</td>
-    </tr>
-  `).join("");
+  const rows = list.map((match) => {
+    const dateText = match.time
+      ? `${fmtDate(match.date)} ${match.time}`
+      : fmtDate(match.date);
+
+    const home = esc(match.home);
+    const away = esc(match.away);
+
+    const homeHtml = match.url && match.source === "automatic"
+      ? `<a href="${esc(match.url)}" target="_blank" rel="noopener noreferrer">${home}</a>`
+      : home;
+
+    const awayHtml = match.url && match.source === "automatic"
+      ? `<a href="${esc(match.url)}" target="_blank" rel="noopener noreferrer">${away}</a>`
+      : away;
+
+    return `
+      <tr>
+        <td><strong>${esc(match.round)}.</strong></td>
+        <td>${esc(dateText)}</td>
+        <td>${homeHtml}</td>
+        <td>${awayHtml}</td>
+      </tr>
+    `;
+  }).join("");
 
   el.innerHTML = `
     <table class="tabulka matches-table">
       <tr>
         <th>Kolo</th>
-        <th>Datum</th>
+        <th>Datum a čas</th>
         <th>Domácí</th>
         <th>Hosté</th>
       </tr>
@@ -124,31 +280,59 @@ async function init() {
   if (!el) return;
 
   const teamId = getTeamId();
+
   if (!teamId) {
-    el.innerHTML = `<p><em>Chybí identifikace týmu (A/B/C).</em></p>`;
+    el.innerHTML = "<p><em>Chybí identifikace týmu (A/B/C).</em></p>";
     return;
   }
 
-  try {
-    el.innerHTML = `<p><em>Načítám…</em></p>`;
+  el.innerHTML = "<p><em>Načítám…</em></p>";
 
+  let manualMatches = [];
+  let automaticMatches = [];
+  let manualError = null;
+  let automaticError = null;
+
+  try {
     const ref = doc(db, "team_current", teamId);
     const snap = await getDoc(ref);
 
-    if (!snap.exists()) {
-      el.innerHTML = `<p><em>Neexistuje team_current/${esc(teamId)}.</em></p>`;
-      return;
+    if (snap.exists()) {
+      const data = snap.data();
+      const future = (
+        data.future
+        && typeof data.future === "object"
+        && !Array.isArray(data.future)
+      ) ? data.future : {};
+
+      manualMatches = normalizeManualFuture(future);
     }
-
-    const data = snap.data();
-    const future = (data.future && typeof data.future === "object") ? data.future : {};
-    const list = normalizeFuture(future);
-
-    renderTable(list);
-  } catch (e) {
-    console.error(e);
-    el.innerHTML = `<p><em>Nelze načíst budoucí zápasy (zkontroluj Firestore Rules pro team_current).</em></p>`;
+  } catch (error) {
+    manualError = error;
+    console.error("Nelze načíst ruční budoucí zápasy:", error);
   }
+
+  try {
+    const automaticData = await loadAutomaticTeamData(teamId);
+    automaticMatches = normalizeAutomaticFuture(automaticData);
+  } catch (error) {
+    automaticError = error;
+    console.error("Nelze načíst automatické budoucí zápasy:", error);
+  }
+
+  if (manualError && automaticError) {
+    el.innerHTML = (
+      "<p><em>Nelze načíst ruční ani automatické budoucí zápasy.</em></p>"
+    );
+    return;
+  }
+
+  const list = mergeFutureMatches(
+    manualMatches,
+    automaticMatches
+  );
+
+  renderTable(list);
 }
 
 init();
