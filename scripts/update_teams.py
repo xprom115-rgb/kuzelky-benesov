@@ -29,19 +29,19 @@ COMPETITIONS = {
     "A": {
         "url": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
         "teamKey": "Benešov",
-        "teamSlug": "tj-sokol-benesov-muzi",
+        "teamSlug": "benesov",
         "label": "Družstvo A – 3. KLM A",
     },
     "B": {
         "url": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
         "teamKey": "Benešov B",
-        "teamSlug": "tj-sokol-benesov-b-muzi",
+        "teamSlug": "benesov",
         "label": "Družstvo B – Divize AS",
     },
     "C": {
         "url": "https://vysledky.kuzelky.cz/detail-souteze/krajsky-prebor-1-tridy-2026-2027",
         "teamKey": "Benešov C",
-        "teamSlug": "tj-sokol-benesov-c-muzi",
+        "teamSlug": "benesov",
         "label": "Družstvo C – Krajský přebor 1. třídy",
     },
 }
