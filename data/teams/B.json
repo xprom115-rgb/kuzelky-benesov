@@ -3,19 +3,11 @@
   "source": {
     "type": "cka",
     "url": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
-    "teamKey": "Benešov B"
+    "teamKey": "Benešov B",
+    "teamSlug": "tj-sokol-benesov-b-muzi"
   },
-  "updatedAt": "2026-09-15T20:53:49+00:00",
-  "lastMatch": {
-    "round": 1,
-    "date": "2026-09-14",
-    "time": "18:00",
-    "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-    "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-    "result": "17:00",
-    "pins": null,
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-kosmonosy-c-muzi-vlasim-a-muzi"
-  },
+  "updatedAt": "2026-09-16T08:09:54+00:00",
+  "lastMatch": null,
   "nextMatch": null,
   "table": {
     "columns": [
@@ -217,106 +209,17 @@
     ]
   },
   "debug": {
-    "matchesFound": 6,
-    "playedCount": 6,
+    "matchesFound": 0,
+    "playedCount": 0,
     "futureCount": 0,
+    "allMatchLinksFound": 7,
+    "teamMatchLinksFound": 0,
     "teamKey": "Benešov B",
+    "teamSlug": "tj-sokol-benesov-b-muzi",
     "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
-    "sample": [
-      {
-        "round": 1,
-        "date": "2026-09-14",
-        "time": "18:00",
-        "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-        "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-        "result": "17:00",
-        "pins": null,
-        "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-sparta-praha-a-muzi-kolin-a-muzi"
-      },
-      {
-        "round": 1,
-        "date": "2026-09-14",
-        "time": "18:00",
-        "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-        "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-        "result": "17:00",
-        "pins": null,
-        "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-meteor-a-muzi-tj-sokol-kostelec-nad-cernymi-lesy-a-muzi"
-      },
-      {
-        "round": 1,
-        "date": "2026-09-14",
-        "time": "18:00",
-        "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-        "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-        "result": "17:00",
-        "pins": null,
-        "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-rudna-a-muzi-vrsovice-a-muzi"
-      }
-    ]
+    "sample": []
   },
   "futureMatches": [],
-  "pastMatches": [
-    {
-      "round": 1,
-      "date": "2026-09-14",
-      "time": "18:00",
-      "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-      "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-      "result": "17:00",
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-sparta-praha-a-muzi-kolin-a-muzi"
-    },
-    {
-      "round": 1,
-      "date": "2026-09-14",
-      "time": "18:00",
-      "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-      "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-      "result": "17:00",
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-meteor-a-muzi-tj-sokol-kostelec-nad-cernymi-lesy-a-muzi"
-    },
-    {
-      "round": 1,
-      "date": "2026-09-14",
-      "time": "18:00",
-      "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-      "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-      "result": "17:00",
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-rudna-a-muzi-vrsovice-a-muzi"
-    },
-    {
-      "round": 1,
-      "date": "2026-09-14",
-      "time": "18:00",
-      "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-      "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-      "result": "17:00",
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-konstruktiva-c-muzi-pribram-a-muzi"
-    },
-    {
-      "round": 1,
-      "date": "2026-09-14",
-      "time": "18:00",
-      "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-      "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-      "result": "17:00",
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-vlasim-b-muzi-kosmonosy-b-muzi"
-    },
-    {
-      "round": 1,
-      "date": "2026-09-14",
-      "time": "18:00",
-      "home": "předchozí kolo 1. kolo nadcházející kolo Sparta Praha A. Sparta Praha A",
-      "away": "– Vlašim A. Vlašim A Tabulka Celkem Doma Venku Podrobnější statistiky # Tým Z V R P Skóre SB Ø B +/- 0. Benešov B 0 0 0 0 0:0 0:0 0 0 0 0. Kolín A 0 0 0 0 0:0 0:0 0 0 0 0. Konstruktiva C 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy B 0 0 0 0 0:0 0:0 0 0 0 0. Kosmonosy C 0 0 0 0 0:0 0:0 0 0 0 0. Meteor A 0 0 0 0 0:0 0:0 0 0 0 0. Příbram A 0 0 0 0 0:0 0:0 0 0 0 0. Rudná A 0 0 0 0 0:0 0:0 0 0 0 0. Sparta Praha A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Brandýs nad Labem A 0 0 0 0 0:0 0:0 0 0 0 0. TJ Sokol Kostelec nad Černými lesy A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim A 0 0 0 0 0:0 0:0 0 0 0 0. Vlašim B 0 0 0 0 0:0 0:0 0 0 0 0. Vršovice A 0 0 0 0 0:0 0:0 0 0 0 Pořadí jednotlivců Celkem Doma Venku Podrobnější statistiky # Hráč Tým Ø P D Ch ØD ØV Z B SB K MAX Žádné výsledky",
-      "result": "17:00",
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-kosmonosy-c-muzi-vlasim-a-muzi"
-    }
-  ],
+  "pastMatches": [],
   "tableStatus": "updated"
 }
