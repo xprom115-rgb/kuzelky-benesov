@@ -4,9 +4,9 @@
     "type": "cka",
     "url": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
     "teamKey": "Benešov B",
-    "teamSlug": "benesov"
+    "teamSlug": "tj-sokol-benesov-b-muzi"
   },
-  "updatedAt": "2026-09-16T08:09:54+00:00",
+  "updatedAt": "2026-09-16T08:20:49+00:00",
   "lastMatch": null,
   "nextMatch": null,
   "table": {
@@ -215,7 +215,7 @@
     "allMatchLinksFound": 7,
     "teamMatchLinksFound": 0,
     "teamKey": "Benešov B",
-    "teamSlug": "benesov",
+    "teamSlug": "tj-sokol-benesov-b-muzi",
     "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
     "sample": []
   },
