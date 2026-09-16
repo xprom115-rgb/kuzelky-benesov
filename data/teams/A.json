@@ -4,11 +4,20 @@
     "type": "cka",
     "url": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
     "teamKey": "Benešov",
-    "teamSlug": "benesov"
+    "teamSlug": "tj-sokol-benesov-muzi"
   },
-  "updatedAt": "2026-09-16T08:24:13+00:00",
+  "updatedAt": "2026-09-16T08:30:53+00:00",
   "lastMatch": null,
-  "nextMatch": null,
+  "nextMatch": {
+    "round": 1,
+    "date": "2026-10-31",
+    "time": "10:00",
+    "home": "SK Škoda VS Plzeň",
+    "away": "TJ Sokol Benešov",
+    "result": null,
+    "pins": null,
+    "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-1-sk-skoda-vs-plzen-muzi-tj-sokol-benesov-muzi"
+  },
   "table": {
     "columns": [
       "#",
@@ -183,17 +192,39 @@
     ]
   },
   "debug": {
-    "matchesFound": 0,
+    "matchesFound": 1,
     "playedCount": 0,
-    "futureCount": 0,
+    "futureCount": 1,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov",
-    "teamSlug": "benesov",
+    "teamSlug": "tj-sokol-benesov-muzi",
     "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
-    "sample": []
+    "sample": [
+      {
+        "round": 1,
+        "date": "2026-10-31",
+        "time": "10:00",
+        "home": "SK Škoda VS Plzeň",
+        "away": "TJ Sokol Benešov",
+        "result": null,
+        "pins": null,
+        "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-1-sk-skoda-vs-plzen-muzi-tj-sokol-benesov-muzi"
+      }
+    ]
   },
-  "futureMatches": [],
+  "futureMatches": [
+    {
+      "round": 1,
+      "date": "2026-10-31",
+      "time": "10:00",
+      "home": "SK Škoda VS Plzeň",
+      "away": "TJ Sokol Benešov",
+      "result": null,
+      "pins": null,
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-1-sk-skoda-vs-plzen-muzi-tj-sokol-benesov-muzi"
+    }
+  ],
   "pastMatches": [],
   "tableStatus": "updated"
 }
