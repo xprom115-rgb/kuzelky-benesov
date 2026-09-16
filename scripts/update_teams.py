@@ -35,7 +35,7 @@ COMPETITIONS = {
     "B": {
         "url": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
         "teamKey": "Benešov B",
-        "teamSlug": "tj-sokol-benesov-b-muzi",
+        "teamSlug": "benesov-b-muzi",
         "label": "Družstvo B – Divize AS",
     },
     "C": {
