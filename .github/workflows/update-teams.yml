@@ -31,6 +31,9 @@ jobs:
         run: |
           python -c "import requests; import bs4; import lxml; print('deps OK')"
 
+      - name: Check Python syntax
+        run: python -m py_compile scripts/update_teams.py   
+
       - name: Run updater
         run: |
           python scripts/update_teams.py
