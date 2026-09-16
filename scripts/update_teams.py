@@ -225,13 +225,11 @@ def parse_dt(
 # Celková tabulka soutěže
 # ============================================================
 
-def parse_table(
-    soup: BeautifulSoup,
-) -> Dict[str, Any]:
+def parse_table(soup: BeautifulSoup) -> Dict[str, Any]:
     """
-    Načte soutěžní tabulku.
+    Načte soutěžní tabulku ze starého i nového servisu.
 
-    Podporuje názvy sloupců:
+    Podporuje označení:
     - Družstvo nebo Tým,
     - Skóre nebo SB,
     - Body nebo B.
@@ -239,39 +237,35 @@ def parse_table(
     target = None
 
     for table in soup.find_all("table"):
-        table_text = norm(
-            table.get_text(
-                " ",
-                strip=True,
-            )
-        )
+        table_text = norm(table.get_text(" ", strip=True))
 
-        has_team = (
+        has_team_column = (
             "Družstvo" in table_text
             or "Tým" in table_text
         )
 
-        has_score = (
+        has_score_column = (
             "Skóre" in table_text
             or "SB" in table_text
         )
 
-        has_points = (
+        has_points_column = (
             "Body" in table_text
-            or re.search(
-                r"\bB\b",
-                table_text,
-            ) is not None
+            or re.search(r"\bB\b", table_text) is not None
         )
 
-        if has_team and has_score and has_points:
+        if (
+            has_team_column
+            and has_score_column
+            and has_points_column
+        ):
             target = table
             break
 
     if target is None:
         return {
             "columns": [],
-            "rows": [],
+            "rows": []
         }
 
     table_rows = target.find_all("tr")
@@ -279,7 +273,48 @@ def parse_table(
     if not table_rows:
         return {
             "columns": [],
-            "rows": [],
+            "rows": []
         }
 
+    header_cells = table_rows[0].find_all(["th", "td"])
+
+    columns = [
+        norm(cell.get_text(" ", strip=True))
+        for cell in header_cells
+    ]
+
+    if not columns:
+        return {
+            "columns": [],
+            "rows": []
+        }
+
+    rows_out: List[List[str]] = []
+
+    for row_element in table_rows[1:]:
+        cells = row_element.find_all(["td", "th"])
+
+        if not cells:
+            continue
+
+        row = [
+            norm(cell.get_text(" ", strip=True))
+            for cell in cells
+        ]
+
+        if not any(row):
+            continue
+
+        if len(row) < len(columns):
+            row.extend([""] * (len(columns) - len(row)))
+
+        if len(row) > len(columns):
+            row = row[:len(columns)]
+
+        rows_out.append(row)
+
+    return {
+        "columns": columns,
+        "rows": rows_out
+    }
     header
