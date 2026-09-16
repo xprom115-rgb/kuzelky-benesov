@@ -29,19 +29,19 @@ COMPETITIONS = {
     "A": {
         "url": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
         "teamKey": "Benešov",
-        "teamSlug": "benesov",
+        "teamSlug": "tj-sokol-benesov-muzi",
         "label": "Družstvo A – 3. KLM A",
     },
     "B": {
         "url": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
         "teamKey": "Benešov B",
-        "teamSlug": "benesov",
+        "teamSlug": "tj-sokol-benesov-b-muzi",
         "label": "Družstvo B – Divize AS",
     },
     "C": {
         "url": "https://vysledky.kuzelky.cz/detail-souteze/krajsky-prebor-1-tridy-2026-2027",
         "teamKey": "Benešov C",
-        "teamSlug": "benesov",
+        "teamSlug": "tj-sokol-benesov-c-muzi",
         "label": "Družstvo C – Krajský přebor 1. třídy",
     },
 }
@@ -251,14 +251,54 @@ def team_matches(name: str, team_key: str) -> bool:
 # Zápasy
 # ============================================================
 
+def clean_team_side(value: str) -> str:
+    """
+    Z textu typu 'TJ Sokol Benešov C. TJ Sokol Benešov C'
+    vrátí úplný název uvedený za poslední oddělovací tečkou.
+    """
+    value = norm(value).strip(" .–—-")
+    variants = [norm(item) for item in re.split(r"\.\s+", value) if norm(item)]
+
+    if len(variants) >= 2:
+        return variants[-1].rstrip(".")
+
+    return value.rstrip(".")
+
+
+def parse_teams_from_anchor_text(
+    anchor_text: str,
+) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Načte domácí a hostující družstvo přímo z textu odkazu zápasu.
+
+    Nový servis používá například:
+    16. 9. 2026 17:00 Benešov B. Benešov B – – Soupeř A. Soupeř A
+    """
+    without_date = DT_RE.sub("", anchor_text, count=1).strip(" |–—-")
+
+    sides = re.split(
+        r"\s+[–—]\s+(?:[–—]\s+)?",
+        without_date,
+        maxsplit=1,
+    )
+
+    if len(sides) != 2:
+        return None, None
+
+    home_name = clean_team_side(sides[0])
+    away_name = clean_team_side(sides[1])
+
+    if not home_name or not away_name:
+        return None, None
+
+    return home_name, away_name
+
+
 def find_match_container(anchor: Any) -> Optional[Any]:
-    """
-    Najde nejmenší rodičovský blok obsahující právě jeden zápas,
-    datum a nejméně dva odkazy na družstva.
-    """
+    """Najde malý rodičovský blok patřící jednomu zápasu."""
     candidate = anchor
 
-    for _ in range(10):
+    for _ in range(8):
         if candidate is None:
             return None
 
@@ -270,16 +310,10 @@ def find_match_container(anchor: Any) -> Optional[Any]:
             for item in candidate.find_all("a", href=True)
             if "/detail-zapasu/" in item.get("href", "")
         }
-
-        team_links = candidate.find_all(
-            "a",
-            href=lambda href: href and "/detail-druzstva/" in href,
-        )
         text = norm(candidate.get_text(" ", strip=True))
 
         if (
             len(match_links) == 1
-            and len(team_links) >= 2
             and DT_RE.search(text) is not None
             and len(text) < 1200
         ):
@@ -290,30 +324,6 @@ def find_match_container(anchor: Any) -> Optional[Any]:
     return None
 
 
-def unique_team_names(container: Any) -> List[str]:
-    """Vrátí první dva různé názvy družstev v pořadí z HTML."""
-    names: List[str] = []
-    seen = set()
-
-    for anchor in container.find_all(
-        "a",
-        href=lambda href: href and "/detail-druzstva/" in href,
-    ):
-        name = norm(anchor.get_text(" ", strip=True)).rstrip(".")
-        key = normalize_team_name(name)
-
-        if not name or not key or key in seen:
-            continue
-
-        seen.add(key)
-        names.append(name)
-
-        if len(names) == 2:
-            break
-
-    return names
-
-
 def parse_match_cards(
     soup: BeautifulSoup,
     team_key: str,
@@ -322,8 +332,8 @@ def parse_match_cards(
     """
     Načte pouze zápasy konkrétního družstva.
 
-    Odkazy nejprve filtruje podle jednoznačného slugu družstva.
-    Data následně čte pouze z bloku obsahujícího jediný zápas.
+    Domácí, hosté, datum a čas se primárně čtou přímo z textu odkazu.
+    Rodičovský blok se používá jen pro hledání zveřejněného výsledku.
     """
     output: List[Dict[str, Any]] = []
     seen_urls = set()
@@ -344,37 +354,24 @@ def parse_match_cards(
             continue
 
         seen_urls.add(absolute_url)
-        container = find_match_container(anchor)
-
-        if container is None:
-            print(
-                f"DEBUG NO CONTAINER [{team_key}]: "
-                f"href={href!r}, "
-                f"anchor={norm(anchor.get_text(' ', strip=True))!r}"
-            )
-            continue
-
-        card_text = norm(container.get_text(" ", strip=True))
-        date_string, time_string, parsed_dt = parse_dt(card_text)
+        anchor_text = norm(anchor.get_text(" ", strip=True))
+        date_string, time_string, parsed_dt = parse_dt(anchor_text)
 
         if not date_string or parsed_dt is None:
             print(
                 f"DEBUG NO DATE [{team_key}]: "
-                f"href={href!r}, card_text={card_text!r}"
+                f"href={href!r}, anchor={anchor_text!r}"
             )
             continue
 
-        team_names = unique_team_names(container)
+        home_name, away_name = parse_teams_from_anchor_text(anchor_text)
 
-        if len(team_names) < 2:
+        if not home_name or not away_name:
             print(
                 f"DEBUG NO TEAMS [{team_key}]: "
-                f"href={href!r}, card_text={card_text!r}"
+                f"href={href!r}, anchor={anchor_text!r}"
             )
             continue
-
-        home_name = team_names[0]
-        away_name = team_names[1]
 
         if not (
             team_matches(home_name, team_key)
@@ -386,15 +383,22 @@ def parse_match_cards(
             )
             continue
 
-        # Po odstranění data a času nelze zaměnit 18:00 za výsledek.
-        result_text = DT_RE.sub("", card_text, count=1)
+        container = find_match_container(anchor)
+        result_text = ""
 
-        # Družstevní skóre 0 až 8, případně půlbod, např. 4.5:3.5.
+        if container is not None:
+            result_text = norm(container.get_text(" ", strip=True))
+        else:
+            result_text = anchor_text
+
+        result_text = DT_RE.sub("", result_text, count=1)
+
+        # Čas již byl odstraněn. Skóre soutěžního utkání je 0 až 8,
+        # případně s půlbodem, například 4,5:3,5.
         score_match = re.search(
             r"(?<!\d)([0-8](?:[.,]5)?)\s*:\s*([0-8](?:[.,]5)?)(?!\d)",
             result_text,
         )
-
         pins_matches = list(
             re.finditer(
                 r"(?<!\d)(\d{3,4})\s*:\s*(\d{3,4})(?!\d)",
@@ -438,9 +442,14 @@ def parse_match_cards(
             }
         )
 
+        print(
+            f"DEBUG MATCH [{team_key}]: round={round_number}, "
+            f"date={date_string}, time={time_string}, "
+            f"home={home_name!r}, away={away_name!r}, played={played}"
+        )
+
     unique = {item["url"]: item for item in output}
     return sorted(unique.values(), key=lambda item: item["dt"])
-
 
 def public_match(item: Dict[str, Any]) -> Dict[str, Any]:
     """Odstraní interní datetime, který nelze uložit do JSON."""
