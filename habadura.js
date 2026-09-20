@@ -18,8 +18,6 @@
 //            scoreHomeBase/scoreAwayBase, bonusScoreHome/bonusScoreAway, scoreHome/scoreAway,
 //            leaguePointsHome/leaguePointsAway, createdAt
 //
-// Pozn.: Tato verze je kompatibilní s vašimi rules: read pro teams/players/matches, create pro matches,
-// update/delete pro admin (přes Auth + UID).
 
 import { db } from "./firebase-config.js";
 
