@@ -20,12 +20,12 @@ function fmtDate(iso) {
   return `${Number(match[3])}.${Number(match[2])}.${match[1]}`;
 }
 
-function toDateTime(date, time = "23:59") {
+function toDateTime(date, time = "00:00") {
   if (!date) return null;
 
   const safeTime = /^\d{2}:\d{2}$/.test(time || "")
     ? time
-    : "23:59";
+    : "00:00";
 
   const parsed = new Date(`${date}T${safeTime}:00`);
   return Number.isNaN(parsed.getTime()) ? null : parsed;
@@ -49,21 +49,21 @@ function teamsKey(match) {
     .join("|");
 }
 
-function normalizeManualFuture(futureMap, teamId) {
-  const now = new Date();
+function normalizeManualMap(sourceMap, teamId, kind) {
   const output = [];
 
-  for (const key of Object.keys(futureMap || {})) {
-    const item = futureMap[key] || {};
+  for (const key of Object.keys(sourceMap || {})) {
+    const item = sourceMap[key] || {};
     const round = Number(item.round ?? key);
     const date = (item.date || "").trim();
     const time = (item.time || "").trim();
     const home = (item.home || "").trim();
     const away = (item.away || "").trim();
-    const dateTime = toDateTime(date, time || "23:59");
+    const result = (item.result || item.score || "").trim();
+    const pins = (item.pins || "").trim();
+    const dateTime = toDateTime(date, time || (kind === "future" ? "23:59" : "00:00"));
 
     if (!round || !date || !home || !away || !dateTime) continue;
-    if (dateTime < now) continue;
 
     output.push({
       teamId,
@@ -72,6 +72,8 @@ function normalizeManualFuture(futureMap, teamId) {
       time: time || null,
       home,
       away,
+      result: result || null,
+      pins: pins || null,
       url: item.url || null,
       source: "manual",
       dateTime,
@@ -81,23 +83,20 @@ function normalizeManualFuture(futureMap, teamId) {
   return output;
 }
 
-function normalizeAutomaticFuture(teamData, teamId) {
-  const now = new Date();
-  const source = Array.isArray(teamData?.futureMatches)
-    ? teamData.futureMatches
-    : [];
+function normalizeAutomaticList(sourceList, teamId, kind) {
   const output = [];
 
-  for (const item of source) {
+  for (const item of Array.isArray(sourceList) ? sourceList : []) {
     const round = Number(item?.round);
     const date = (item?.date || "").trim();
     const time = (item?.time || "").trim();
     const home = (item?.home || "").trim();
     const away = (item?.away || "").trim();
-    const dateTime = toDateTime(date, time || "23:59");
+    const result = (item?.result || item?.score || "").trim();
+    const pins = (item?.pins || "").trim();
+    const dateTime = toDateTime(date, time || (kind === "future" ? "23:59" : "00:00"));
 
     if (!round || !date || !home || !away || !dateTime) continue;
-    if (dateTime < now) continue;
 
     output.push({
       teamId,
@@ -106,6 +105,8 @@ function normalizeAutomaticFuture(teamData, teamId) {
       time: time || null,
       home,
       away,
+      result: result || null,
+      pins: pins || null,
       url: item?.url || null,
       source: "automatic",
       dateTime,
@@ -115,8 +116,7 @@ function normalizeAutomaticFuture(teamData, teamId) {
   return output;
 }
 
-function mergeTeamMatches(manualMatches, automaticMatches) {
-  // Ruční zápis má přednost. Datum se neporovnává kvůli předehrávkám.
+function mergeWithManualPriority(manualMatches, automaticMatches) {
   const manualRounds = new Set(
     manualMatches.map((match) => Number(match.round))
   );
@@ -133,23 +133,33 @@ function mergeTeamMatches(manualMatches, automaticMatches) {
   return [...manualMatches, ...automaticOnly];
 }
 
-async function loadManualMatches(teamId) {
+async function loadFirestoreTeam(teamId) {
   const reference = doc(db, "team_current", teamId);
   const snapshot = await getDoc(reference);
 
-  if (!snapshot.exists()) return [];
+  if (!snapshot.exists()) {
+    return { future: [], past: [] };
+  }
 
   const data = snapshot.data();
-  const future = (
+  const futureMap = (
     data.future
     && typeof data.future === "object"
     && !Array.isArray(data.future)
   ) ? data.future : {};
+  const pastMap = (
+    data.past
+    && typeof data.past === "object"
+    && !Array.isArray(data.past)
+  ) ? data.past : {};
 
-  return normalizeManualFuture(future, teamId);
+  return {
+    future: normalizeManualMap(futureMap, teamId, "future"),
+    past: normalizeManualMap(pastMap, teamId, "past"),
+  };
 }
 
-async function loadAutomaticMatches(teamId) {
+async function loadAutomaticTeam(teamId) {
   const url = new URL(
     `./data/teams/${encodeURIComponent(teamId)}.json`,
     document.baseURI
@@ -163,21 +173,25 @@ async function loadAutomaticMatches(teamId) {
   }
 
   const data = await response.json();
-  return normalizeAutomaticFuture(data, teamId);
+
+  return {
+    future: normalizeAutomaticList(data.futureMatches, teamId, "future"),
+    past: normalizeAutomaticList(data.pastMatches, teamId, "past"),
+  };
 }
 
-async function loadTeamMatches(teamId) {
+async function loadTeamSummary(teamId) {
   const [manualResult, automaticResult] = await Promise.allSettled([
-    loadManualMatches(teamId),
-    loadAutomaticMatches(teamId),
+    loadFirestoreTeam(teamId),
+    loadAutomaticTeam(teamId),
   ]);
 
-  const manualMatches = manualResult.status === "fulfilled"
+  const manual = manualResult.status === "fulfilled"
     ? manualResult.value
-    : [];
-  const automaticMatches = automaticResult.status === "fulfilled"
+    : { future: [], past: [] };
+  const automatic = automaticResult.status === "fulfilled"
     ? automaticResult.value
-    : [];
+    : { future: [], past: [] };
 
   if (manualResult.status === "rejected") {
     console.error(`Ruční zápasy družstva ${teamId} nelze načíst:`, manualResult.reason);
@@ -187,61 +201,87 @@ async function loadTeamMatches(teamId) {
     console.error(`Automatické zápasy družstva ${teamId} nelze načíst:`, automaticResult.reason);
   }
 
-  return mergeTeamMatches(manualMatches, automaticMatches);
+  const now = new Date();
+  const future = mergeWithManualPriority(manual.future, automatic.future)
+    .filter((match) => match.dateTime >= now)
+    .sort((a, b) => a.dateTime - b.dateTime);
+
+  const past = mergeWithManualPriority(manual.past, automatic.past)
+    .filter((match) => match.dateTime < now || match.result || match.pins)
+    .sort((a, b) => b.dateTime - a.dateTime);
+
+  return {
+    teamId,
+    next: future[0] || null,
+    last: past[0] || null,
+  };
 }
 
-function matchLink(match, text) {
-  if (!match.url || match.source !== "automatic") {
-    return esc(text);
+function teamLabel(teamId) {
+  return `TJ Sokol Benešov ${teamId}`;
+}
+
+function renderNextMatch(summary) {
+  const match = summary.next;
+
+  if (!match) {
+    return `<div><strong>${esc(teamLabel(summary.teamId))}:</strong> <em>bez nadcházejícího zápasu</em></div>`;
   }
 
-  return `<a href="${esc(match.url)}" target="_blank" rel="noopener noreferrer">${esc(text)}</a>`;
+  const timeText = match.time ? ` v ${esc(match.time)}` : "";
+  const text = `
+    <strong>${esc(teamLabel(summary.teamId))}:</strong>
+    ${esc(match.round)}. kolo
+    ${esc(fmtDate(match.date))}${timeText}
+    ${esc(match.home)} – ${esc(match.away)}
+  `;
+
+  if (match.url && match.source === "automatic") {
+    return `<div><a href="${esc(match.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:none;">${text}</a></div>`;
+  }
+
+  return `<div>${text}</div>`;
 }
 
-function render(matches) {
+function renderLastMatch(summary) {
+  const match = summary.last;
+
+  if (!match) {
+    return `<div><strong>${esc(teamLabel(summary.teamId))}:</strong> <em>bez posledního zápasu</em></div>`;
+  }
+
+  const scoreText = match.result
+    ? `, výsledek <strong>${esc(match.result)}</strong>`
+    : "";
+  const pinsText = match.pins
+    ? `, kuželky ${esc(match.pins)}`
+    : "";
+
+  const text = `
+    <strong>${esc(teamLabel(summary.teamId))}:</strong>
+    ${esc(match.round)}. kolo
+    ${esc(fmtDate(match.date))}
+    ${esc(match.home)} – ${esc(match.away)}
+    ${scoreText}${pinsText}
+  `;
+
+  if (match.url && match.source === "automatic") {
+    return `<div><a href="${esc(match.url)}" target="_blank" rel="noopener noreferrer" style="color:inherit; text-decoration:none;">${text}</a></div>`;
+  }
+
+  return `<div>${text}</div>`;
+}
+
+function render(summaries) {
   if (!el) return;
 
-  if (!matches.length) {
-    el.innerHTML = "<em>Momentálně nejsou evidována žádná budoucí utkání.</em>";
-    return;
-  }
-
-  matches.sort((first, second) => {
-    const dateDifference = first.dateTime - second.dateTime;
-    if (dateDifference !== 0) return dateDifference;
-    return first.teamId.localeCompare(second.teamId, "cs");
-  });
-
-  const rows = matches.map((match) => {
-    const when = match.time
-      ? `${fmtDate(match.date)} v ${match.time}`
-      : fmtDate(match.date);
-
-    return `
-      <tr>
-        <td><strong>${esc(match.teamId)}</strong></td>
-        <td>${esc(match.round)}.</td>
-        <td>${esc(when)}</td>
-        <td>${matchLink(match, match.home)}</td>
-        <td>${matchLink(match, match.away)}</td>
-      </tr>
-    `;
-  }).join("");
-
   el.innerHTML = `
-    <div style="overflow-x:auto;">
-      <table class="tabulka matches-table" style="width:100%;">
-        <thead>
-          <tr>
-            <th>Družstvo</th>
-            <th>Kolo</th>
-            <th>Termín</th>
-            <th>Domácí</th>
-            <th>Hosté</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
+    <div style="line-height:1.45;">
+      <div style="font-weight:700; color:#ffd700; margin-bottom:2px;">Nejbližší zápas</div>
+      ${summaries.map(renderNextMatch).join("")}
+
+      <div style="font-weight:700; color:#ffd700; margin-top:8px; margin-bottom:2px;">Poslední zápas</div>
+      ${summaries.map(renderLastMatch).join("")}
     </div>
   `;
 }
@@ -252,14 +292,14 @@ async function init() {
   el.innerHTML = "<em>Načítám…</em>";
 
   try {
-    const teamLists = await Promise.all(
-      TEAM_IDS.map((teamId) => loadTeamMatches(teamId))
+    const summaries = await Promise.all(
+      TEAM_IDS.map((teamId) => loadTeamSummary(teamId))
     );
 
-    render(teamLists.flat());
+    render(summaries);
   } catch (error) {
-    console.error("Nelze načíst dlaždici utkání:", error);
-    el.innerHTML = "<em>Utkání se nyní nepodařilo načíst.</em>";
+    console.error("Nelze načíst přehled utkání:", error);
+    el.innerHTML = "<em>Přehled utkání se nyní nepodařilo načíst.</em>";
   }
 }
 
