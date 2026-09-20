@@ -67,17 +67,6 @@ const loginMsg = document.getElementById("loginMsg");
 
 // =========================================================
 // DOM: způsob zadávání termínu
-//
-// Tyto nové prvky doplníme do admin-akce.html:
-// - evDateMode
-// - singleDateWrap
-// - multiDateWrap
-// - evMonth
-// - evDaysGrid
-// - selectedDaysInfo
-// - btnSelectAllDays
-// - btnClearDays
-// - tlačítka s atributem data-weekday
 // =========================================================
 
 const evDateMode = document.getElementById("evDateMode");
@@ -152,8 +141,6 @@ function showApp(isLoggedIn) {
   }
 }
 
-// Administraci ihned schováme, aby se před inicializací
-// Firebase Authentication krátce nezobrazila.
 showApp(false);
 
 // =========================================================
