@@ -252,10 +252,7 @@ def team_matches(name: str, team_key: str) -> bool:
 # ============================================================
 
 def clean_team_side(value: str) -> str:
-    """
-    Z textu typu 'TJ Sokol Benešov C. TJ Sokol Benešov C'
-    vrátí úplný název uvedený za poslední oddělovací tečkou.
-    """
+    """Vrátí úplný název družstva z dvojího zkráceného/plného zápisu."""
     value = norm(value).strip(" .–—-")
     variants = [norm(item) for item in re.split(r"\.\s+", value) if norm(item)]
 
@@ -265,34 +262,63 @@ def clean_team_side(value: str) -> str:
     return value.rstrip(".")
 
 
-def parse_teams_from_anchor_text(
+def parse_match_from_anchor_text(
     anchor_text: str,
-) -> Tuple[Optional[str], Optional[str]]:
+) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
     """
-    Načte domácí a hostující družstvo přímo z textu odkazu zápasu.
+    Vrátí domácí, hosty, výsledek a kuželky.
 
-    Nový servis používá například:
-    16. 9. 2026 17:00 Benešov B. Benešov B – – Soupeř A. Soupeř A
+    Budoucí zápas:
+    Benešov B. Benešov B – – Soupeř A. Soupeř A
+
+    Odehraný zápas:
+    Benešov B. Benešov B 2607 6 2 2501 Soupeř A. Soupeř A
     """
     without_date = DT_RE.sub("", anchor_text, count=1).strip(" |–—-")
 
-    sides = re.split(
+    future_sides = re.split(
         r"\s+[–—]\s+(?:[–—]\s+)?",
         without_date,
         maxsplit=1,
     )
 
-    if len(sides) != 2:
-        return None, None
+    if len(future_sides) == 2:
+        home_name = clean_team_side(future_sides[0])
+        away_name = clean_team_side(future_sides[1])
 
-    home_name = clean_team_side(sides[0])
-    away_name = clean_team_side(sides[1])
+        if home_name and away_name:
+            return home_name, away_name, None, None
+
+    played_match = re.match(
+        r"^(.+?)\s+"
+        r"(\d{3,4})\s+"
+        r"([0-8](?:[.,]5)?)\s+"
+        r"([0-8](?:[.,]5)?)\s+"
+        r"(\d{3,4})\s+"
+        r"(.+)$",
+        without_date,
+    )
+
+    if played_match is None:
+        return None, None, None, None
+
+    home_name = clean_team_side(played_match.group(1))
+    away_name = clean_team_side(played_match.group(6))
 
     if not home_name or not away_name:
-        return None, None
+        return None, None, None, None
 
-    return home_name, away_name
+    home_pins = played_match.group(2)
+    home_score = played_match.group(3).replace(",", ".")
+    away_score = played_match.group(4).replace(",", ".")
+    away_pins = played_match.group(5)
 
+    return (
+        home_name,
+        away_name,
+        f"{home_score}:{away_score}",
+        f"{home_pins}:{away_pins}",
+    )
 
 def find_match_container(anchor: Any) -> Optional[Any]:
     """Najde malý rodičovský blok patřící jednomu zápasu."""
@@ -364,7 +390,9 @@ def parse_match_cards(
             )
             continue
 
-        home_name, away_name = parse_teams_from_anchor_text(anchor_text)
+        home_name, away_name, parsed_result, parsed_pins = (
+            parse_match_from_anchor_text(anchor_text)
+        )
 
         if not home_name or not away_name:
             print(
@@ -406,15 +434,15 @@ def parse_match_cards(
             )
         )
 
-        result = None
-        if score_match is not None:
+        result = parsed_result
+        if result is None and score_match is not None:
             result = (
                 f"{score_match.group(1).replace(',', '.')}:"
                 f"{score_match.group(2).replace(',', '.')}"
             )
 
-        pins = None
-        if pins_matches:
+        pins = parsed_pins
+        if pins is None and pins_matches:
             pins_match = pins_matches[-1]
             pins = f"{pins_match.group(1)}:{pins_match.group(2)}"
 
@@ -445,7 +473,8 @@ def parse_match_cards(
         print(
             f"DEBUG MATCH [{team_key}]: round={round_number}, "
             f"date={date_string}, time={time_string}, "
-            f"home={home_name!r}, away={away_name!r}, played={played}"
+            f"home={home_name!r}, away={away_name!r}, "
+            f"result={result!r}, pins={pins!r}, played={played}"
         )
 
     unique = {item["url"]: item for item in output}
