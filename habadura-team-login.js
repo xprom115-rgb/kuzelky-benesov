@@ -4,15 +4,7 @@
 // Samostatne tymove prihlaseni pro zadavani vysledku Habadury.
 // Tento soubor je oddeleny od admin-habadura.js.
 //
-// V tomto kroku:
-// 1) nacte z kolekce teams pouze tymy s poli loginEmail a authUid,
-// 2) naplni prihlasovaci roletku,
-// 3) prihlasi vybrany tym pres Firebase Authentication,
-// 4) po prihlaseni zobrazi sekci #matchEntrySection,
-// 5) po odhlaseni zadavaci sekci znovu skryje.
-//
-// Heslo se nikdy neuklada do Firestore ani do JavaScriptu.
-// =========================================================
+
 
 import { auth, db } from "./firebase-config.js";
 
