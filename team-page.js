@@ -44,13 +44,23 @@ const elBulletins = document.getElementById("bulletinsWrap");
   const style = document.createElement("style");
   style.id = id;
   style.textContent = `
-    /* Benešov v tabulce */
-    .row-benesov{
-      background: rgba(255, 215, 0, 0.38) !important;
-      outline: 2px solid rgba(255, 215, 0, 0.65);
-      box-shadow: inset 0 0 0 9999px rgba(0,0,0,0.10);
+    /* Zvýraznění řádku Benešova v soutěžní tabulce */
+    .tabulka tr.row-benesov td {
+      background: rgba(130, 115, 0, 0.72) !important;
+      color: #ffffff !important;
+      font-weight: 800;
+      border-top: 1px solid rgba(255, 225, 0, 0.95);
+      border-bottom: 1px solid rgba(255, 225, 0, 0.95);
     }
-    .row-benesov td{ font-weight: 800; }
+    .tabulka tr.row-benesov td:first-child {
+      border-left: 1px solid rgba(255, 225, 0, 0.95);
+    }
+    .tabulka tr.row-benesov td:last-child {
+      border-right: 1px solid rgba(255, 225, 0, 0.95);
+    }
+    .tabulka tr.row-benesov:hover td {
+      background: rgba(165, 145, 0, 0.82) !important;
+    }
 
     /* Čitelnost tabulky */
     .tabulka td{ background: rgba(0,0,0,0.18); }
@@ -202,13 +212,31 @@ function renderTable(table) {
 
   const teamKey = (window.__teamKey || "").toLowerCase().trim();
 
-  // index sloupce „Družstvo“
-  const teamColIdx = cols.findIndex(c => (c || "").toString().trim().toLowerCase() === "družstvo");
+  // Nový servis používá název sloupce „Tým“, starší data „Družstvo“.
+  const teamColIdx = cols.findIndex((column) => {
+    const name = (column || "").toString().trim().toLowerCase();
+    return name === "tým" || name === "družstvo";
+  });
+  const normalizeTeamName = (value) => (value || "")
+    .toString()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+
+  const normalizedTeamKey = normalizeTeamName(teamKey);
+
   const isBenesov = (name) => {
-    // primárně teamKey (z JSON), fallback na “benešov”
-    const t = (name || "").toString().toLowerCase();
-    if (teamKey && t.includes(teamKey)) return true;
-    return t.includes("benešov");
+    const normalizedName = normalizeTeamName(name);
+    if (!normalizedName) return false;
+
+    if (normalizedTeamKey && normalizedName.includes(normalizedTeamKey)) {
+      return true;
+    }
+
+    return normalizedName.includes("benesov");
   };
 
   const thead = `<tr>${cols.map(c => `<th>${esc(c)}</th>`).join("")}</tr>`;
