@@ -132,6 +132,41 @@
         width: 100%;
       }
     }
+    .schedule-box{
+  margin:15px 0 20px;
+  padding:16px;
+  border:1px solid rgba(255,215,0,.4);
+  border-radius:14px;
+  background:rgba(20,24,48,.72);
+}
+
+.schedule-box h3{
+  margin:0 0 12px;
+  color:#ffd700;
+}
+
+.schedule-table{
+  width:100%;
+  border-collapse:collapse;
+  color:#fff;
+  font-size:14px;
+}
+
+.schedule-table th{
+  background:#ffd700;
+  color:#1e235c;
+  padding:8px;
+  border:1px solid rgba(255,255,255,.2);
+}
+
+.schedule-table td{
+  padding:8px;
+  border:1px solid rgba(255,255,255,.15);
+}
+
+.schedule-table tr:nth-child(even){
+  background:rgba(255,255,255,.05);
+}
   </style>
 </head>
 
@@ -169,7 +204,46 @@
       <button type="button" id="btn-liga1" class="liga-btn active">1. liga</button>
       <button type="button" id="btn-liga2" class="liga-btn">2. liga</button>
     </div>
+<div class="schedule-box">
+  <h3>Rozpis zápasů</h3>
 
+  <table class="schedule-table">
+    <thead>
+      <tr>
+        <th>Kolo</th>
+        <th>Datum</th>
+        <th>Rozpis</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td>29.09.2026</td>
+        <td>Rad. Jitrnice • Pozov • Kopyta • Formanka | Benešov D • Pohodáři | Česyk • Georeal • Šody • Básníci</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td>06.10.2026</td>
+        <td>Formanka • Jelita • Pozov • Kopyta | Básníci • Benešov D | Pohodáři • Česyk • Georeal • Šody</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td>13.10.2026</td>
+        <td>Jelita • Kopyta • Formanka • Rad. Jitrnice | Benešov D • Georeal | Básníci • Pohodáři • Šody • Česyk</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>20.10.2026</td>
+        <td>Pozov • Formanka • Rad. Jitrnice • Jelita | Benešov D • Česyk | Georeal • Básníci • Pohodáři • Šody</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td>27.10.2026</td>
+        <td>Kopyta • Rad. Jitrnice • Jelita • Pozov | Benešov D • Šody | Georeal • Pohodáři • Česyk • Básníci</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
     <!-- =====================================================
          TÝMOVÉ PŘIHLÁŠENÍ
 
