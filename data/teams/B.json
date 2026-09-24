@@ -6,18 +6,18 @@
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi"
   },
-  "updatedAt": "2026-09-20T15:35:06+00:00",
-  "lastMatch": {
-    "round": 1,
-    "date": "2026-09-16",
-    "time": "17:00",
-    "home": "Benešov B",
-    "away": "TJ Sokol Brandýs nad Labem A",
-    "result": "6:2",
-    "pins": "2607:2501",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-benesov-b-muzi-tj-sokol-brandys-nad-labem-a-muzi"
+  "updatedAt": "2026-09-24T08:16:46+00:00",
+  "lastMatch": null,
+  "nextMatch": {
+    "round": 2,
+    "date": "2026-09-25",
+    "time": "18:30",
+    "home": "KK Kolín",
+    "away": "TJ Sokol Benešov B",
+    "result": null,
+    "pins": null,
+    "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-2-kk-kolin-muzi-tj-sokol-benesov-b-muzi"
   },
-  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -35,7 +35,20 @@
     "rows": [
       [
         "1.",
-        "Kolín A",
+        "TJ Sokol Rudná A",
+        "2",
+        "2",
+        "0",
+        "0",
+        "13:3",
+        "16.5:7.5",
+        "2578",
+        "4",
+        "0"
+      ],
+      [
+        "2.",
+        "KK Kolín",
         "1",
         "1",
         "0",
@@ -47,21 +60,8 @@
         "+2"
       ],
       [
-        "2.",
-        "Rudná A",
-        "1",
-        "1",
-        "0",
-        "0",
-        "7:1",
-        "8.5:3.5",
-        "2555",
-        "2",
-        "0"
-      ],
-      [
         "3.",
-        "Meteor A",
+        "SK Meteor Praha A",
         "1",
         "1",
         "0",
@@ -74,7 +74,7 @@
       ],
       [
         "4.",
-        "Benešov B",
+        "TJ Sokol Benešov B",
         "1",
         "1",
         "0",
@@ -87,7 +87,7 @@
       ],
       [
         "5.",
-        "Konstruktiva C",
+        "KK Konstruktiva Praha C",
         "1",
         "1",
         "0",
@@ -113,19 +113,6 @@
       ],
       [
         "7.",
-        "Kosmonosy C",
-        "0",
-        "0",
-        "0",
-        "0",
-        "0:0",
-        "0:0",
-        "0",
-        "0",
-        "0"
-      ],
-      [
-        "8.",
         "KK Vlašim B",
         "0",
         "0",
@@ -138,8 +125,8 @@
         "0"
       ],
       [
-        "9.",
-        "Kosmonosy B",
+        "8.",
+        "KK Kosmonosy B",
         "1",
         "0",
         "0",
@@ -151,8 +138,8 @@
         "0"
       ],
       [
-        "10.",
-        "Příbram A",
+        "9.",
+        "TJ Kovohutě Příbram A",
         "1",
         "0",
         "0",
@@ -160,6 +147,19 @@
         "3:5",
         "4:8",
         "2441",
+        "0",
+        "0"
+      ],
+      [
+        "10.",
+        "KK Kosmonosy C",
+        "1",
+        "0",
+        "0",
+        "1",
+        "2:6",
+        "4:8",
+        "2516",
         "0",
         "0"
       ],
@@ -191,7 +191,7 @@
       ],
       [
         "13.",
-        "Vršovice A",
+        "TJ Sokol Vršovice A",
         "1",
         "0",
         "0",
@@ -204,7 +204,7 @@
       ],
       [
         "14.",
-        "Sparta Praha A",
+        "AC Sparta Praha A",
         "1",
         "0",
         "0",
@@ -219,8 +219,8 @@
   },
   "debug": {
     "matchesFound": 1,
-    "playedCount": 1,
-    "futureCount": 0,
+    "playedCount": 0,
+    "futureCount": 1,
     "allMatchLinksFound": 7,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov B",
@@ -228,29 +228,29 @@
     "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
     "sample": [
       {
-        "round": 1,
-        "date": "2026-09-16",
-        "time": "17:00",
-        "home": "Benešov B",
-        "away": "TJ Sokol Brandýs nad Labem A",
-        "result": "6:2",
-        "pins": "2607:2501",
-        "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-benesov-b-muzi-tj-sokol-brandys-nad-labem-a-muzi"
+        "round": 2,
+        "date": "2026-09-25",
+        "time": "18:30",
+        "home": "KK Kolín",
+        "away": "TJ Sokol Benešov B",
+        "result": null,
+        "pins": null,
+        "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-2-kk-kolin-muzi-tj-sokol-benesov-b-muzi"
       }
     ]
   },
-  "futureMatches": [],
-  "pastMatches": [
+  "futureMatches": [
     {
-      "round": 1,
-      "date": "2026-09-16",
-      "time": "17:00",
-      "home": "Benešov B",
-      "away": "TJ Sokol Brandýs nad Labem A",
-      "result": "6:2",
-      "pins": "2607:2501",
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-1-benesov-b-muzi-tj-sokol-brandys-nad-labem-a-muzi"
+      "round": 2,
+      "date": "2026-09-25",
+      "time": "18:30",
+      "home": "KK Kolín",
+      "away": "TJ Sokol Benešov B",
+      "result": null,
+      "pins": null,
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-2-kk-kolin-muzi-tj-sokol-benesov-b-muzi"
     }
   ],
+  "pastMatches": [],
   "tableStatus": "updated"
 }
