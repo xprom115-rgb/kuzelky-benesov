@@ -7,7 +7,16 @@
     "teamSlug": "tj-sokol-benesov-c-muzi"
   },
   "updatedAt": "2026-09-24T08:16:53+00:00",
-  "lastMatch": null,
+  "lastMatch": {
+    "round": 1,
+    "date": "2026-09-18",
+    "time": "17:30",
+    "home": "TJ Sokol Benešov C",
+    "away": "TJ Sokol Červené Pečky",
+    "result": "6:2",
+    "pins": "2447:2357",
+    "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-1-tj-sokol-benesov-c-muzi-tj-sokol-cervene-pecky-muzi"
+  },
   "nextMatch": {
     "round": 2,
     "date": "2026-09-24",
@@ -206,7 +215,7 @@
   },
   "debug": {
     "matchesFound": 1,
-    "playedCount": 0,
+    "playedCount": 1,
     "futureCount": 1,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
@@ -224,7 +233,8 @@
         "pins": null,
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-2-tj-sparta-kutna-hora-b-muzi-tj-sokol-benesov-c-muzi"
       }
-    ]
+    ],
+    "storedPlayedCount": 1
   },
   "futureMatches": [
     {
@@ -238,6 +248,17 @@
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-2-tj-sparta-kutna-hora-b-muzi-tj-sokol-benesov-c-muzi"
     }
   ],
-  "pastMatches": [],
+  "pastMatches": [
+    {
+      "round": 1,
+      "date": "2026-09-18",
+      "time": "17:30",
+      "home": "TJ Sokol Benešov C",
+      "away": "TJ Sokol Červené Pečky",
+      "result": "6:2",
+      "pins": "2447:2357",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-1-tj-sokol-benesov-c-muzi-tj-sokol-cervene-pecky-muzi"
+    }
+  ],
   "tableStatus": "updated"
 }
