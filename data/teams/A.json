@@ -6,7 +6,7 @@
     "teamKey": "Benešov",
     "teamSlug": "tj-sokol-benesov-muzi"
   },
-  "updatedAt": "2026-09-24T08:16:39+00:00",
+  "updatedAt": "2026-09-24T13:20:31+00:00",
   "lastMatch": {
     "round": 2,
     "date": "2026-09-19",
@@ -193,7 +193,8 @@
   },
   "debug": {
     "matchesFound": 1,
-    "playedCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 1,
     "futureCount": 0,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,

@@ -6,7 +6,7 @@
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi"
   },
-  "updatedAt": "2026-09-24T08:16:46+00:00",
+  "updatedAt": "2026-09-24T13:20:39+00:00",
   "lastMatch": {
     "round": 1,
     "date": "2026-09-16",
@@ -228,7 +228,8 @@
   },
   "debug": {
     "matchesFound": 1,
-    "playedCount": 1,
+    "newPlayedCount": 0,
+    "storedPlayedCount": 1,
     "futureCount": 1,
     "allMatchLinksFound": 7,
     "teamMatchLinksFound": 1,
@@ -246,9 +247,7 @@
         "pins": null,
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-2-kk-kolin-muzi-tj-sokol-benesov-b-muzi"
       }
-    ],
-    "storedPlayedCount": 1,
-    "newPlayedCount": 1
+    ]
   },
   "futureMatches": [
     {

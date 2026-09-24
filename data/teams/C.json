@@ -6,7 +6,7 @@
     "teamKey": "Benešov C",
     "teamSlug": "tj-sokol-benesov-c-muzi"
   },
-  "updatedAt": "2026-09-24T08:16:53+00:00",
+  "updatedAt": "2026-09-24T13:20:46+00:00",
   "lastMatch": {
     "round": 1,
     "date": "2026-09-18",
@@ -215,7 +215,8 @@
   },
   "debug": {
     "matchesFound": 1,
-    "playedCount": 1,
+    "newPlayedCount": 0,
+    "storedPlayedCount": 1,
     "futureCount": 1,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
@@ -233,8 +234,7 @@
         "pins": null,
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-2-tj-sparta-kutna-hora-b-muzi-tj-sokol-benesov-c-muzi"
       }
-    ],
-    "storedPlayedCount": 1
+    ]
   },
   "futureMatches": [
     {
