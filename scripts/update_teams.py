@@ -174,6 +174,19 @@ def parse_dt(
     return date_string, time_string, parsed_datetime
 
 
+def match_datetime(item: Dict[str, Any]) -> datetime:
+    """Převede datum a čas zápasu na datetime pro řazení."""
+    date_value = norm(str(item.get("date") or ""))
+    time_value = norm(str(item.get("time") or "")) or "00:00"
+
+    try:
+        return datetime.fromisoformat(
+            f"{date_value}T{time_value}:00"
+        ).replace(tzinfo=timezone.utc)
+    except (TypeError, ValueError):
+        return datetime.min.replace(tzinfo=timezone.utc)
+
+
 # ============================================================
 # Celková tabulka soutěže
 # ============================================================
@@ -265,15 +278,7 @@ def clean_team_side(value: str) -> str:
 def parse_match_from_anchor_text(
     anchor_text: str,
 ) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str]]:
-    """
-    Vrátí domácí, hosty, výsledek a kuželky.
-
-    Budoucí zápas:
-    Benešov B. Benešov B – – Soupeř A. Soupeř A
-
-    Odehraný zápas:
-    Benešov B. Benešov B 2607 6 2 2501 Soupeř A. Soupeř A
-    """
+    """Vrátí domácí, hosty, výsledek a kuželky."""
     without_date = DT_RE.sub("", anchor_text, count=1).strip(" |–—-")
 
     future_sides = re.split(
@@ -320,6 +325,7 @@ def parse_match_from_anchor_text(
         f"{home_pins}:{away_pins}",
     )
 
+
 def find_match_container(anchor: Any) -> Optional[Any]:
     """Najde malý rodičovský blok patřící jednomu zápasu."""
     candidate = anchor
@@ -355,12 +361,6 @@ def parse_match_cards(
     team_key: str,
     team_slug: str,
 ) -> List[Dict[str, Any]]:
-    """
-    Načte pouze zápasy konkrétního družstva.
-
-    Domácí, hosté, datum a čas se primárně čtou přímo z textu odkazu.
-    Rodičovský blok se používá jen pro hledání zveřejněného výsledku.
-    """
     output: List[Dict[str, Any]] = []
     seen_urls = set()
     normalized_slug = team_slug.casefold().strip("/")
@@ -412,17 +412,13 @@ def parse_match_cards(
             continue
 
         container = find_match_container(anchor)
-        result_text = ""
-
-        if container is not None:
-            result_text = norm(container.get_text(" ", strip=True))
-        else:
-            result_text = anchor_text
-
+        result_text = (
+            norm(container.get_text(" ", strip=True))
+            if container is not None
+            else anchor_text
+        )
         result_text = DT_RE.sub("", result_text, count=1)
 
-        # Čas již byl odstraněn. Skóre soutěžního utkání je 0 až 8,
-        # případně s půlbodem, například 4,5:3,5.
         score_match = re.search(
             r"(?<!\d)([0-8](?:[.,]5)?)\s*:\s*([0-8](?:[.,]5)?)(?!\d)",
             result_text,
@@ -480,8 +476,8 @@ def parse_match_cards(
     unique = {item["url"]: item for item in output}
     return sorted(unique.values(), key=lambda item: item["dt"])
 
+
 def public_match(item: Dict[str, Any]) -> Dict[str, Any]:
-    """Odstraní interní datetime, který nelze uložit do JSON."""
     return {
         "round": item.get("round"),
         "date": item.get("date"),
@@ -492,6 +488,63 @@ def public_match(item: Dict[str, Any]) -> Dict[str, Any]:
         "pins": item.get("pins"),
         "url": item.get("url"),
     }
+
+
+# ============================================================
+# Zachování historie odehraných zápasů
+# ============================================================
+
+def history_match_key(item: Dict[str, Any]) -> str:
+    """
+    Vytvoří stálý klíč zápasu.
+
+    Přednost má URL detailu. Když chybí, použije se kolo a dvojice týmů.
+    Datum není součástí záložního klíče kvůli předehrávkám a přesunům.
+    """
+    url = norm(str(item.get("url") or ""))
+    if url:
+        return f"url:{url.casefold()}"
+
+    round_value = str(item.get("round") or "")
+    home = normalize_team_name(str(item.get("home") or ""))
+    away = normalize_team_name(str(item.get("away") or ""))
+    return f"match:{round_value}|{home}|{away}"
+
+
+def merge_past_matches(
+    previous_matches: Any,
+    newly_found_matches: List[Dict[str, Any]],
+) -> List[Dict[str, Any]]:
+    """
+    Zachová starou historii a doplní nebo aktualizuje nově nalezené zápasy.
+    """
+    merged: Dict[str, Dict[str, Any]] = {}
+
+    if isinstance(previous_matches, list):
+        for item in previous_matches:
+            if not isinstance(item, dict):
+                continue
+
+            key = history_match_key(item)
+            if key:
+                merged[key] = dict(item)
+
+    for item in newly_found_matches:
+        if not isinstance(item, dict):
+            continue
+
+        key = history_match_key(item)
+        if not key:
+            continue
+
+        # Nově načtená data stejného utkání mají přednost.
+        old_item = merged.get(key, {})
+        merged[key] = {**old_item, **item}
+
+    return sorted(
+        merged.values(),
+        key=match_datetime,
+    )
 
 
 # ============================================================
@@ -515,7 +568,6 @@ def update_cka_team(
             if "/detail-zapasu/" in anchor.get("href", "")
         ]
     )
-
     team_match_links_count = len(
         [
             anchor
@@ -535,34 +587,12 @@ def update_cka_team(
     table = parse_table(soup)
     all_matches = parse_match_cards(soup, team_key, team_slug)
 
-    past_matches = [
+    newly_found_past = [
         public_match(match) for match in all_matches if match["played"]
     ]
     future_matches = [
         public_match(match) for match in all_matches if not match["played"]
     ]
-
-    now = datetime.now(timezone.utc)
-    completed = [
-        match
-        for match in all_matches
-        if match["played"] and match.get("dt") is not None
-    ]
-    upcoming = [
-        match
-        for match in all_matches
-        if (
-            not match["played"]
-            and match.get("dt") is not None
-            and match["dt"] >= now
-        )
-    ]
-
-    completed.sort(key=lambda match: match["dt"])
-    upcoming.sort(key=lambda match: match["dt"])
-
-    last_match = public_match(completed[-1]) if completed else None
-    next_match = public_match(upcoming[0]) if upcoming else None
 
     path = BASE / f"{team_id}.json"
 
@@ -577,6 +607,22 @@ def update_cka_team(
             data = {}
     else:
         data = {}
+
+    previous_past = data.get("pastMatches", [])
+    past_matches = merge_past_matches(previous_past, newly_found_past)
+
+    # Poslední zápas se určuje z celé zachované historie.
+    last_match = past_matches[-1] if past_matches else None
+
+    # Nejbližší budoucí zápas se určuje z aktuálně zveřejněného kola.
+    now = datetime.now(timezone.utc)
+    upcoming = [
+        match
+        for match in future_matches
+        if match_datetime(match) >= now
+    ]
+    upcoming.sort(key=match_datetime)
+    next_match = upcoming[0] if upcoming else None
 
     if table.get("columns") and table.get("rows"):
         data["table"] = table
@@ -602,7 +648,8 @@ def update_cka_team(
     data["tableStatus"] = table_status
     data["debug"] = {
         "matchesFound": len(all_matches),
-        "playedCount": len(past_matches),
+        "newPlayedCount": len(newly_found_past),
+        "storedPlayedCount": len(past_matches),
         "futureCount": len(future_matches),
         "allMatchLinksFound": all_match_links_count,
         "teamMatchLinksFound": team_match_links_count,
@@ -617,7 +664,9 @@ def update_cka_team(
     print(
         f"OK: {team_id}: table={table_status}, "
         f"matches={len(all_matches)}, "
-        f"past={len(past_matches)}, future={len(future_matches)}"
+        f"newPast={len(newly_found_past)}, "
+        f"storedPast={len(past_matches)}, "
+        f"future={len(future_matches)}"
     )
 
 
