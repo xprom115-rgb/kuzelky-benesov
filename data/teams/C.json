@@ -6,27 +6,18 @@
     "teamKey": "Benešov C",
     "teamSlug": "tj-sokol-benesov-c-muzi"
   },
-  "updatedAt": "2026-09-24T13:20:46+00:00",
+  "updatedAt": "2026-09-25T08:39:32+00:00",
   "lastMatch": {
-    "round": 1,
-    "date": "2026-09-18",
-    "time": "17:30",
-    "home": "TJ Sokol Benešov C",
-    "away": "TJ Sokol Červené Pečky",
-    "result": "6:2",
-    "pins": "2447:2357",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-1-tj-sokol-benesov-c-muzi-tj-sokol-cervene-pecky-muzi"
-  },
-  "nextMatch": {
     "round": 2,
     "date": "2026-09-24",
     "time": "18:00",
     "home": "TJ Sparta Kutná Hora B",
     "away": "TJ Sokol Benešov C",
-    "result": null,
-    "pins": null,
+    "result": "7:1",
+    "pins": "2601:2387",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-2-tj-sparta-kutna-hora-b-muzi-tj-sokol-benesov-c-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -44,6 +35,19 @@
     "rows": [
       [
         "1.",
+        "TJ Sparta Kutná Hora B",
+        "2",
+        "2",
+        "0",
+        "0",
+        "13:3",
+        "18.5:5.5",
+        "2548",
+        "4",
+        "0"
+      ],
+      [
+        "2.",
         "TJ Lhotka A",
         "1",
         "1",
@@ -56,7 +60,7 @@
         "+2"
       ],
       [
-        "2.",
+        "3.",
         "KK Sadská B",
         "1",
         "1",
@@ -69,7 +73,7 @@
         "+2"
       ],
       [
-        "3.",
+        "4.",
         "TJ Neratovice",
         "1",
         "1",
@@ -82,7 +86,7 @@
         "0"
       ],
       [
-        "4.",
+        "5.",
         "TJ Sparta Kutná Hora C",
         "1",
         "1",
@@ -95,28 +99,15 @@
         "0"
       ],
       [
-        "5.",
-        "TJ Sparta Kutná Hora B",
-        "1",
-        "1",
-        "0",
-        "0",
-        "6:2",
-        "8.5:3.5",
-        "2494",
-        "2",
-        "0"
-      ],
-      [
         "6.",
         "TJ Sokol Benešov C",
-        "1",
+        "2",
         "1",
         "0",
-        "0",
-        "6:2",
-        "6:6",
-        "2447",
+        "1",
+        "7:9",
+        "8:16",
+        "2417",
         "2",
         "0"
       ],
@@ -215,9 +206,9 @@
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 1,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 2,
+    "futureCount": 0,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov C",
@@ -230,24 +221,13 @@
         "time": "18:00",
         "home": "TJ Sparta Kutná Hora B",
         "away": "TJ Sokol Benešov C",
-        "result": null,
-        "pins": null,
+        "result": "7:1",
+        "pins": "2601:2387",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-2-tj-sparta-kutna-hora-b-muzi-tj-sokol-benesov-c-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 2,
-      "date": "2026-09-24",
-      "time": "18:00",
-      "home": "TJ Sparta Kutná Hora B",
-      "away": "TJ Sokol Benešov C",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-2-tj-sparta-kutna-hora-b-muzi-tj-sokol-benesov-c-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -258,6 +238,16 @@
       "result": "6:2",
       "pins": "2447:2357",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-1-tj-sokol-benesov-c-muzi-tj-sokol-cervene-pecky-muzi"
+    },
+    {
+      "round": 2,
+      "date": "2026-09-24",
+      "time": "18:00",
+      "home": "TJ Sparta Kutná Hora B",
+      "away": "TJ Sokol Benešov C",
+      "result": "7:1",
+      "pins": "2601:2387",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-2-tj-sparta-kutna-hora-b-muzi-tj-sokol-benesov-c-muzi"
     }
   ],
   "tableStatus": "updated"
