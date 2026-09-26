@@ -6,7 +6,7 @@
     "teamKey": "Benešov",
     "teamSlug": "tj-sokol-benesov-muzi"
   },
-  "updatedAt": "2026-09-25T08:39:18+00:00",
+  "updatedAt": "2026-09-26T08:25:58+00:00",
   "lastMatch": {
     "round": 2,
     "date": "2026-09-19",
@@ -17,7 +17,16 @@
     "pins": "3178:3225",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-2-tj-sokol-benesov-muzi-sk-zizkov-praha-muzi"
   },
-  "nextMatch": null,
+  "nextMatch": {
+    "round": 3,
+    "date": "2026-09-26",
+    "time": "14:00",
+    "home": "Kuželky Holýšov",
+    "away": "TJ Sokol Benešov",
+    "result": null,
+    "pins": null,
+    "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-3-kuzelky-holysov-muzi-tj-sokol-benesov-muzi"
+  },
   "table": {
     "columns": [
       "#",
@@ -193,9 +202,9 @@
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 1,
+    "newPlayedCount": 0,
     "storedPlayedCount": 1,
-    "futureCount": 0,
+    "futureCount": 1,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov",
@@ -203,18 +212,29 @@
     "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
     "sample": [
       {
-        "round": 2,
-        "date": "2026-09-19",
-        "time": "10:00",
-        "home": "TJ Sokol Benešov",
-        "away": "SK Žižkov Praha",
-        "result": "2:6",
-        "pins": "3178:3225",
-        "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-2-tj-sokol-benesov-muzi-sk-zizkov-praha-muzi"
+        "round": 3,
+        "date": "2026-09-26",
+        "time": "14:00",
+        "home": "Kuželky Holýšov",
+        "away": "TJ Sokol Benešov",
+        "result": null,
+        "pins": null,
+        "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-3-kuzelky-holysov-muzi-tj-sokol-benesov-muzi"
       }
     ]
   },
-  "futureMatches": [],
+  "futureMatches": [
+    {
+      "round": 3,
+      "date": "2026-09-26",
+      "time": "14:00",
+      "home": "Kuželky Holýšov",
+      "away": "TJ Sokol Benešov",
+      "result": null,
+      "pins": null,
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-3-kuzelky-holysov-muzi-tj-sokol-benesov-muzi"
+    }
+  ],
   "pastMatches": [
     {
       "round": 2,
