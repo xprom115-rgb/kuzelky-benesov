@@ -49,7 +49,8 @@ import {
   deleteDoc,
   collection,
   query,
-  orderBy
+  orderBy,
+  where
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 // =========================================================
@@ -105,7 +106,10 @@ const evMsg = document.getElementById("evMsg");
 
 const btnLoadEvents = document.getElementById("btnLoadEvents");
 const eventsList = document.getElementById("eventsList");
-
+const deleteMonth =
+  document.getElementById("deleteMonth");
+const btnDeleteMonth =
+  document.getElementById("btnDeleteMonth");
 // =========================================================
 // Stav výběru více dnů
 //
@@ -1023,3 +1027,75 @@ if (evMonth && !evMonth.value) {
 }
 
 updateDateModeUI();
+
+// =========================================================
+// Hromadné mazání akcí za měsíc
+// =========================================================
+
+btnDeleteMonth?.addEventListener(
+  "click",
+  async () => {
+
+    const month =
+      (deleteMonth?.value || "").trim();
+
+    if (!month) {
+      alert("Vyber měsíc.");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Opravdu smazat všechny akce za ${month}?`
+      )
+    ) {
+      return;
+    }
+
+    try {
+
+      btnDeleteMonth.disabled = true;
+      btnDeleteMonth.textContent =
+        "Mažu...";
+
+      const monthQuery = query(
+        collection(db, "events"),
+        where("date", ">=", `${month}-01`),
+        where("date", "<=", `${month}-31`)
+      );
+
+      const snapshot =
+        await getDocs(monthQuery);
+
+      let deleted = 0;
+
+      for (const item of snapshot.docs) {
+        await deleteDoc(
+          doc(db, "events", item.id)
+        );
+        deleted++;
+      }
+
+      alert(
+        `Smazáno ${deleted} akcí.`
+      );
+
+      await loadEvents();
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Hromadné mazání selhalo."
+      );
+
+    } finally {
+
+      btnDeleteMonth.disabled = false;
+      btnDeleteMonth.textContent =
+        "Smazat celý měsíc";
+
+    }
+  }
+);
