@@ -40,7 +40,7 @@ let ROUND = null;
 let seasonReady = false;
 
 // Bezpečný testovací režim: nic nezapisuje do Firestore.
-const SUBSTITUTION_TEST_MODE = true;
+const SUBSTITUTION_TEST_MODE = false;
 
 
 // -------------------------
