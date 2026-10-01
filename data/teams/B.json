@@ -6,7 +6,7 @@
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi"
   },
-  "updatedAt": "2026-09-30T09:28:29+00:00",
+  "updatedAt": "2026-10-01T09:55:01+00:00",
   "lastMatch": {
     "round": 2,
     "date": "2026-09-25",
@@ -17,16 +17,7 @@
     "pins": "2744:2674",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-2-kk-kolin-muzi-tj-sokol-benesov-b-muzi"
   },
-  "nextMatch": {
-    "round": 3,
-    "date": "2026-09-30",
-    "time": "17:00",
-    "home": "TJ Sokol Benešov B",
-    "away": "KK Vlašim B",
-    "result": null,
-    "pins": null,
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-3-tj-sokol-benesov-b-muzi-kk-vlasim-b-muzi"
-  },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -45,14 +36,14 @@
       [
         "1.",
         "SK Meteor Praha A",
-        "2",
-        "2",
+        "3",
+        "3",
         "0",
         "0",
-        "13:3",
-        "19:5",
-        "2649",
-        "4",
+        "18:6",
+        "24:12",
+        "2645",
+        "6",
         "+2"
       ],
       [
@@ -175,13 +166,13 @@
       [
         "11.",
         "TJ Kovohutě Příbram A",
-        "1",
+        "2",
         "0",
         "0",
-        "1",
-        "3:5",
-        "4:8",
-        "2441",
+        "2",
+        "6:10",
+        "11:13",
+        "2519",
         "0",
         "0"
       ],
