@@ -125,12 +125,21 @@ function computeTeamsTable(matches, liga) {
     prumer: s.zapasy ? (s.kuzelky / s.zapasy).toFixed(2) : "0.00"
   }));
 
-  // řazení: body 2/1/0 -> rozdíl skóre -> kuželky
+  // Řazení družstev:
+  // 1. body,
+  // 2. rozdíl skóre,
+  // 3. vyšší první číslo ve skóre (scoreFor).
   rows.sort((a, b) => {
     if (b.points !== a.points) return b.points - a.points;
-    const diff = (b.scoreFor - b.scoreAgainst) - (a.scoreFor - a.scoreAgainst);
-    if (diff !== 0) return diff;
-    return b.kuzelky - a.kuzelky;
+
+    const diffA = a.scoreFor - a.scoreAgainst;
+    const diffB = b.scoreFor - b.scoreAgainst;
+    if (diffB !== diffA) return diffB - diffA;
+
+    if (b.scoreFor !== a.scoreFor) return b.scoreFor - a.scoreFor;
+
+    // Pouze stabilní pomocné dořazení při úplné shodě všech kritérií.
+    return csCompare(a.name, b.name);
   });
 
   return rows;
@@ -164,6 +173,17 @@ function renderTeamsTable(matches, liga) {
 // ---------- tabulka hráčů (řazení podle průměru) ----------
 function computePlayersTable(matches, liga) {
   const ps = {};
+  const teamMatchCounts = {};
+
+  // Počet odehraných utkání každého družstva v právě zobrazeném rozsahu.
+  for (const m of matches) {
+    if (m.homeTeam) {
+      teamMatchCounts[m.homeTeam] = (teamMatchCounts[m.homeTeam] || 0) + 1;
+    }
+    if (m.awayTeam) {
+      teamMatchCounts[m.awayTeam] = (teamMatchCounts[m.awayTeam] || 0) + 1;
+    }
+  }
 
   function addLine(playerId, kuzelky, body) {
     const pl = players.find(x => x.id === playerId);
@@ -171,7 +191,14 @@ function computePlayersTable(matches, liga) {
     if (Number(pl.liga) !== Number(liga)) return;
 
     if (!ps[playerId]) {
-      ps[playerId] = { name: pl.name, teamId: pl.teamId, zapasy: 0, kuzelky: 0, body: 0, nv: 0 };
+      ps[playerId] = {
+        name: pl.name,
+        teamId: pl.teamId,
+        zapasy: 0,
+        kuzelky: 0,
+        body: 0,
+        nv: 0
+      };
     }
 
     ps[playerId].zapasy++;
@@ -185,22 +212,46 @@ function computePlayersTable(matches, liga) {
     (m.awayPlayers || []).forEach(p => addLine(p.playerId, p.kuzelky, p.body));
   }
 
-  const rows = Object.values(ps).map(r => ({
-    ...r,
-    teamName: teamName(r.teamId),
-    prumerNum: r.zapasy ? (r.kuzelky / r.zapasy) : 0,
-    prumer: r.zapasy ? (r.kuzelky / r.zapasy).toFixed(2) : "0.00"
-  }));
+  const rows = Object.values(ps).map(r => {
+    const teamMatches = teamMatchCounts[r.teamId] || 0;
+    const minimumMatches = teamMatches / 2;
 
-  // ✅ primárně podle průměru (desc)
-  rows.sort((a, b) => {
-    if (b.prumerNum !== a.prumerNum) return b.prumerNum - a.prumerNum;
-    if (b.nv !== a.nv) return b.nv - a.nv;
-    if (b.kuzelky !== a.kuzelky) return b.kuzelky - a.kuzelky;
-    return csCompare(a.name, b.name);
+    return {
+      ...r,
+      teamName: teamName(r.teamId),
+      teamMatches,
+      minimumMatches,
+      qualified: r.zapasy >= minimumMatches,
+      prumerNum: r.zapasy ? (r.kuzelky / r.zapasy) : 0,
+      prumer: r.zapasy ? (r.kuzelky / r.zapasy).toFixed(2) : "0.00"
+    };
   });
 
-  return rows;
+  // V obou oddílech samostatně platí:
+  // 1. vyšší průměr,
+  // 2. při shodě vyšší nejlepší výkon (NV),
+  // 3. při úplné shodě abecední pořadí.
+  const sortPlayers = (a, b) => {
+    if (b.prumerNum !== a.prumerNum) return b.prumerNum - a.prumerNum;
+    if (b.nv !== a.nv) return b.nv - a.nv;
+    return csCompare(a.name, b.name);
+  };
+
+  const qualifiedRows = rows
+    .filter(row => row.qualified)
+    .sort(sortPlayers);
+
+  const unqualifiedRows = rows
+    .filter(row => !row.qualified)
+    .sort(sortPlayers);
+
+  return [
+    ...qualifiedRows,
+    ...unqualifiedRows.map((row, index) => ({
+      ...row,
+      dividerBefore: index === 0 && qualifiedRows.length > 0
+    }))
+  ];
 }
 
 function renderPlayersTable(matches, liga) {
@@ -212,7 +263,11 @@ function renderPlayersTable(matches, liga) {
     </tr>`;
 
   rows.forEach((r, i) => {
-    html += `<tr>
+    const dividerStyle = r.dividerBefore
+      ? ' style="border-top:5px solid #ffd700;"'
+      : "";
+
+    html += `<tr${dividerStyle}>
       <td>${i + 1}</td>
       <td>${r.name}</td>
       <td>${r.teamName}</td>
