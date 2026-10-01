@@ -65,11 +65,7 @@ function showEmpty(msg) {
   if (tabMatice) tabMatice.innerHTML = "";
 }
 
-/**
- * VARIANTA B:
- * - ve finále matici pouze schováme na obrazovce (CSS class),
- * - ale necháme ji normálně v DOM a normálně ji renderujeme (kvůli tisku).
- */
+
 function toggleMatrixVisibility() {
   if (!maticeSection) return;
 
