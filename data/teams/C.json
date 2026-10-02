@@ -6,7 +6,7 @@
     "teamKey": "Benešov C",
     "teamSlug": "tj-sokol-benesov-c-muzi"
   },
-  "updatedAt": "2026-10-01T19:05:09+00:00",
+  "updatedAt": "2026-10-02T09:33:03+00:00",
   "lastMatch": {
     "round": 2,
     "date": "2026-09-24",
@@ -17,16 +17,7 @@
     "pins": "2601:2387",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-2-tj-sparta-kutna-hora-b-muzi-tj-sokol-benesov-c-muzi"
   },
-  "nextMatch": {
-    "round": 3,
-    "date": "2026-10-02",
-    "time": "17:30",
-    "home": "TJ Sokol Benešov C",
-    "away": "TJ Lhotka A",
-    "result": null,
-    "pins": null,
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-3-tj-sokol-benesov-c-muzi-tj-lhotka-a-muzi"
-  },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -214,40 +205,18 @@
     ]
   },
   "debug": {
-    "matchesFound": 1,
+    "matchesFound": 0,
     "newPlayedCount": 0,
     "storedPlayedCount": 2,
-    "futureCount": 1,
-    "allMatchLinksFound": 6,
-    "teamMatchLinksFound": 1,
+    "futureCount": 0,
+    "allMatchLinksFound": 0,
+    "teamMatchLinksFound": 0,
     "teamKey": "Benešov C",
     "teamSlug": "tj-sokol-benesov-c-muzi",
     "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/krajsky-prebor-1-tridy-2026-2027",
-    "sample": [
-      {
-        "round": 3,
-        "date": "2026-10-02",
-        "time": "17:30",
-        "home": "TJ Sokol Benešov C",
-        "away": "TJ Lhotka A",
-        "result": null,
-        "pins": null,
-        "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-3-tj-sokol-benesov-c-muzi-tj-lhotka-a-muzi"
-      }
-    ]
+    "sample": []
   },
-  "futureMatches": [
-    {
-      "round": 3,
-      "date": "2026-10-02",
-      "time": "17:30",
-      "home": "TJ Sokol Benešov C",
-      "away": "TJ Lhotka A",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-3-tj-sokol-benesov-c-muzi-tj-lhotka-a-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -270,5 +239,5 @@
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-2-tj-sparta-kutna-hora-b-muzi-tj-sokol-benesov-c-muzi"
     }
   ],
-  "tableStatus": "updated"
+  "tableStatus": "kept_previous"
 }
