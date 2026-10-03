@@ -6,7 +6,7 @@
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi"
   },
-  "updatedAt": "2026-10-02T09:32:12+00:00",
+  "updatedAt": "2026-10-03T08:58:57+00:00",
   "lastMatch": {
     "round": 3,
     "date": "2026-09-30",
@@ -61,6 +61,19 @@
       ],
       [
         "3.",
+        "TJ Sokol Kostelec nad Černými lesy A",
+        "3",
+        "2",
+        "0",
+        "1",
+        "13:11",
+        "14:22",
+        "2531",
+        "4",
+        "+2"
+      ],
+      [
+        "4.",
         "TJ Sokol Rudná A",
         "3",
         "2",
@@ -73,7 +86,7 @@
         "0"
       ],
       [
-        "4.",
+        "5.",
         "KK Vlašim B",
         "2",
         "1",
@@ -86,7 +99,33 @@
         "+1"
       ],
       [
-        "5.",
+        "6.",
+        "TJ Sokol Brandýs nad Labem A",
+        "3",
+        "1",
+        "1",
+        "1",
+        "13:11",
+        "19.5:16.5",
+        "2506",
+        "3",
+        "+1"
+      ],
+      [
+        "7.",
+        "KK Vlašim A",
+        "2",
+        "1",
+        "1",
+        "0",
+        "9:7",
+        "12:12",
+        "2623",
+        "3",
+        "-1"
+      ],
+      [
+        "8.",
         "TJ Sokol Benešov B",
         "3",
         "1",
@@ -99,46 +138,20 @@
         "-1"
       ],
       [
-        "6.",
-        "TJ Sokol Kostelec nad Černými lesy A",
-        "2",
-        "1",
-        "0",
-        "1",
-        "8:8",
-        "9:15",
-        "2472",
-        "2",
-        "+2"
-      ],
-      [
-        "7.",
-        "TJ Sokol Brandýs nad Labem A",
-        "2",
-        "1",
-        "0",
-        "1",
-        "9:7",
-        "12:12",
-        "2478",
-        "2",
-        "0"
-      ],
-      [
-        "8.",
-        "KK Vlašim A",
-        "1",
-        "1",
-        "0",
-        "0",
-        "5:3",
-        "7.5:4.5",
-        "2669",
-        "2",
-        "0"
-      ],
-      [
         "9.",
+        "KK Kosmonosy C",
+        "2",
+        "1",
+        "0",
+        "1",
+        "7:8",
+        "10:13",
+        "2577",
+        "2",
+        "0"
+      ],
+      [
+        "10.",
         "AC Sparta Praha A",
         "3",
         "1",
@@ -151,7 +164,7 @@
         "-2"
       ],
       [
-        "10.",
+        "11.",
         "KK Konstruktiva Praha C",
         "3",
         "1",
@@ -164,7 +177,7 @@
         "-2"
       ],
       [
-        "11.",
+        "12.",
         "TJ Kovohutě Příbram A",
         "2",
         "0",
@@ -177,57 +190,55 @@
         "0"
       ],
       [
-        "12.",
-        "KK Kosmonosy C",
-        "1",
-        "0",
-        "0",
-        "1",
-        "2:6",
-        "4:8",
-        "2516",
-        "0",
-        "0"
-      ],
-      [
         "13.",
         "KK Kosmonosy B",
-        "2",
+        "3",
         "0",
         "0",
-        "2",
-        "4:12",
-        "6.5:17.5",
-        "2535",
+        "3",
+        "7:17",
+        "13.5:22.5",
+        "2568",
         "0",
         "-2"
       ],
       [
         "14.",
         "TJ Sokol Vršovice A",
-        "2",
+        "3",
         "0",
         "0",
-        "2",
-        "3:13",
-        "9.5:14.5",
-        "2328",
+        "3",
+        "5:18",
+        "14.5:20.5",
+        "2307",
         "0",
         "-2"
       ]
     ]
   },
   "debug": {
-    "matchesFound": 0,
-    "newPlayedCount": 0,
+    "matchesFound": 1,
+    "newPlayedCount": 1,
     "storedPlayedCount": 3,
     "futureCount": 0,
-    "allMatchLinksFound": 0,
-    "teamMatchLinksFound": 0,
+    "allMatchLinksFound": 7,
+    "teamMatchLinksFound": 1,
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi",
     "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/divize-as-2026-2027",
-    "sample": []
+    "sample": [
+      {
+        "round": 3,
+        "date": "2026-09-30",
+        "time": "17:00",
+        "home": "TJ Sokol Benešov B",
+        "away": "KK Vlašim B",
+        "result": "4:4",
+        "pins": "2432:2417",
+        "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-3-tj-sokol-benesov-b-muzi-kk-vlasim-b-muzi"
+      }
+    ]
   },
   "futureMatches": [],
   "pastMatches": [
@@ -262,5 +273,5 @@
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-3-tj-sokol-benesov-b-muzi-kk-vlasim-b-muzi"
     }
   ],
-  "tableStatus": "kept_previous"
+  "tableStatus": "updated"
 }
