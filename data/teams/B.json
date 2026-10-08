@@ -6,27 +6,18 @@
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi"
   },
-  "updatedAt": "2026-10-07T10:01:15+00:00",
+  "updatedAt": "2026-10-08T10:14:02+00:00",
   "lastMatch": {
-    "round": 3,
-    "date": "2026-09-30",
-    "time": "17:00",
-    "home": "TJ Sokol Benešov B",
-    "away": "KK Vlašim B",
-    "result": "4:4",
-    "pins": "2432:2417",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-3-tj-sokol-benesov-b-muzi-kk-vlasim-b-muzi"
-  },
-  "nextMatch": {
     "round": 4,
     "date": "2026-10-07",
     "time": "17:30",
     "home": "TJ Sokol Rudná A",
     "away": "TJ Sokol Benešov B",
-    "result": null,
-    "pins": null,
+    "result": "5:3",
+    "pins": "2682:2634",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-4-tj-sokol-rudna-a-muzi-tj-sokol-benesov-b-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -70,6 +61,19 @@
       ],
       [
         "3.",
+        "TJ Sokol Rudná A",
+        "4",
+        "3",
+        "0",
+        "1",
+        "20:12",
+        "28:20",
+        "2592",
+        "6",
+        "0"
+      ],
+      [
+        "4.",
         "TJ Sokol Kostelec nad Černými lesy A",
         "3",
         "2",
@@ -80,19 +84,6 @@
         "2531",
         "4",
         "+2"
-      ],
-      [
-        "4.",
-        "TJ Sokol Rudná A",
-        "3",
-        "2",
-        "0",
-        "1",
-        "15:9",
-        "20.5:15.5",
-        "2575",
-        "4",
-        "0"
       ],
       [
         "5.",
@@ -149,13 +140,13 @@
       [
         "9.",
         "TJ Sokol Benešov B",
-        "3",
+        "4",
         "1",
         "1",
-        "1",
-        "12:12",
-        "19:17",
-        "2597",
+        "2",
+        "15:17",
+        "23.5:24.5",
+        "2609",
         "3",
         "-1"
       ],
@@ -228,9 +219,9 @@
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 4,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 5,
+    "futureCount": 0,
     "allMatchLinksFound": 7,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov B",
@@ -243,24 +234,13 @@
         "time": "17:30",
         "home": "TJ Sokol Rudná A",
         "away": "TJ Sokol Benešov B",
-        "result": null,
-        "pins": null,
+        "result": "5:3",
+        "pins": "2682:2634",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-4-tj-sokol-rudna-a-muzi-tj-sokol-benesov-b-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 4,
-      "date": "2026-10-07",
-      "time": "17:30",
-      "home": "TJ Sokol Rudná A",
-      "away": "TJ Sokol Benešov B",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-4-tj-sokol-rudna-a-muzi-tj-sokol-benesov-b-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -301,6 +281,16 @@
       "result": "4:4",
       "pins": "2432:2417",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-3-tj-sokol-benesov-b-muzi-kk-vlasim-b-muzi"
+    },
+    {
+      "round": 4,
+      "date": "2026-10-07",
+      "time": "17:30",
+      "home": "TJ Sokol Rudná A",
+      "away": "TJ Sokol Benešov B",
+      "result": "5:3",
+      "pins": "2682:2634",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-4-tj-sokol-rudna-a-muzi-tj-sokol-benesov-b-muzi"
     }
   ],
   "tableStatus": "updated"
