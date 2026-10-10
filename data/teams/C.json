@@ -6,27 +6,18 @@
     "teamKey": "Benešov C",
     "teamSlug": "tj-sokol-benesov-c-muzi"
   },
-  "updatedAt": "2026-10-09T10:15:20+00:00",
+  "updatedAt": "2026-10-10T09:36:06+00:00",
   "lastMatch": {
-    "round": 3,
-    "date": "2026-10-02",
-    "time": "17:30",
-    "home": "TJ Sokol Benešov C",
-    "away": "TJ Lhotka A",
-    "result": "1:7",
-    "pins": "2296:2585",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-3-tj-sokol-benesov-c-muzi-tj-lhotka-a-muzi"
-  },
-  "nextMatch": {
     "round": 4,
     "date": "2026-10-09",
     "time": "17:00",
     "home": "KK Jiří Poděbrady B",
     "away": "TJ Sokol Benešov C",
-    "result": null,
-    "pins": null,
+    "result": "6:2",
+    "pins": "2661:2554",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-4-kk-jiri-podebrady-b-muzi-tj-sokol-benesov-c-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -44,6 +35,19 @@
     "rows": [
       [
         "1.",
+        "TJ Lhotka A",
+        "4",
+        "4",
+        "0",
+        "0",
+        "27:5",
+        "37:11",
+        "2593",
+        "8",
+        "+4"
+      ],
+      [
+        "2.",
         "TJ Sparta Kutná Hora B",
         "4",
         "4",
@@ -56,7 +60,7 @@
         "+2"
       ],
       [
-        "2.",
+        "3.",
         "KK Sadská B",
         "3",
         "3",
@@ -69,59 +73,59 @@
         "+4"
       ],
       [
-        "3.",
-        "TJ Lhotka A",
-        "3",
-        "3",
-        "0",
-        "0",
-        "21:3",
-        "28:8",
-        "2593",
-        "6",
-        "+4"
-      ],
-      [
         "4.",
         "TJ Neratovice",
-        "2",
-        "2",
+        "3",
+        "3",
         "0",
         "0",
-        "13:3",
-        "17:7",
-        "2417",
-        "4",
-        "0"
+        "19:4",
+        "26:8",
+        "2468",
+        "6",
+        "+2"
       ],
       [
         "5.",
-        "TJ Sparta Kutná Hora C",
+        "KK Jiří Poděbrady B",
+        "4",
         "3",
-        "2",
         "0",
         "1",
-        "15.5:7.5",
-        "19:15",
-        "2303",
-        "4",
+        "21:11",
+        "26:22",
+        "2555",
+        "6",
         "0"
       ],
       [
         "6.",
-        "KK Jiří Poděbrady B",
-        "3",
+        "TJ Sparta Kutná Hora C",
+        "4",
         "2",
         "0",
-        "1",
-        "15:9",
-        "18:18",
-        "2570",
+        "2",
+        "17.5:13.5",
+        "22:24",
+        "2349",
         "4",
         "0"
       ],
       [
         "7.",
+        "Kuželky Tehovec B",
+        "3",
+        "1",
+        "0",
+        "2",
+        "11:13",
+        "21:15",
+        "2284",
+        "2",
+        "0"
+      ],
+      [
+        "8.",
         "KK Vlašim C",
         "2",
         "1",
@@ -134,20 +138,20 @@
         "0"
       ],
       [
-        "8.",
+        "9.",
         "TJ Sokol Benešov C",
-        "3",
+        "4",
         "1",
         "0",
-        "2",
-        "8:16",
-        "12:24",
-        "2379",
+        "3",
+        "10:22",
+        "16:32",
+        "2438",
         "2",
         "-2"
       ],
       [
-        "9.",
+        "10.",
         "KK Kosmonosy D",
         "4",
         "1",
@@ -160,46 +164,20 @@
         "-4"
       ],
       [
-        "10.",
-        "Kuželky Tehovec B",
-        "2",
-        "0",
-        "0",
-        "2",
-        "3:13",
-        "10:14",
-        "2271",
-        "0",
-        "0"
-      ],
-      [
         "11.",
         "TJ Sokol Kostelec nad Černými lesy B",
-        "2",
+        "3",
         "0",
         "0",
-        "2",
-        "2:14",
-        "5.5:18.5",
-        "2339",
+        "3",
+        "2:22",
+        "6.5:29.5",
+        "2261",
         "0",
         "0"
       ],
       [
         "12.",
-        "TJ Sokol Červené Pečky",
-        "3",
-        "0",
-        "0",
-        "3",
-        "6:17",
-        "12:22",
-        "2131",
-        "0",
-        "-2"
-      ],
-      [
-        "13.",
         "TJ Kovohutě Příbram B",
         "4",
         "0",
@@ -210,14 +188,27 @@
         "2239",
         "0",
         "-2"
+      ],
+      [
+        "13.",
+        "TJ Sokol Červené Pečky",
+        "4",
+        "0",
+        "0",
+        "4",
+        "7:23",
+        "13:31",
+        "2131",
+        "0",
+        "-4"
       ]
     ]
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 3,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 4,
+    "futureCount": 0,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov C",
@@ -230,24 +221,13 @@
         "time": "17:00",
         "home": "KK Jiří Poděbrady B",
         "away": "TJ Sokol Benešov C",
-        "result": null,
-        "pins": null,
+        "result": "6:2",
+        "pins": "2661:2554",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-4-kk-jiri-podebrady-b-muzi-tj-sokol-benesov-c-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 4,
-      "date": "2026-10-09",
-      "time": "17:00",
-      "home": "KK Jiří Poděbrady B",
-      "away": "TJ Sokol Benešov C",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-4-kk-jiri-podebrady-b-muzi-tj-sokol-benesov-c-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -278,6 +258,16 @@
       "result": "1:7",
       "pins": "2296:2585",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-3-tj-sokol-benesov-c-muzi-tj-lhotka-a-muzi"
+    },
+    {
+      "round": 4,
+      "date": "2026-10-09",
+      "time": "17:00",
+      "home": "KK Jiří Poděbrady B",
+      "away": "TJ Sokol Benešov C",
+      "result": "6:2",
+      "pins": "2661:2554",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-4-kk-jiri-podebrady-b-muzi-tj-sokol-benesov-c-muzi"
     }
   ],
   "tableStatus": "updated"

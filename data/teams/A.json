@@ -6,16 +6,16 @@
     "teamKey": "Benešov",
     "teamSlug": "tj-sokol-benesov-muzi"
   },
-  "updatedAt": "2026-10-09T10:15:05+00:00",
+  "updatedAt": "2026-10-10T09:35:52+00:00",
   "lastMatch": {
-    "round": 4,
-    "date": "2026-10-03",
-    "time": "10:00",
+    "round": 5,
+    "date": "2026-10-10",
+    "time": null,
     "home": "TJ Sokol Benešov",
-    "away": "Sokol Teplá",
-    "result": "5:3",
-    "pins": "3151:3101",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-4-tj-sokol-benesov-muzi-sokol-tepla-muzi"
+    "away": "TJ Loko České Budějovice",
+    "result": "3:1",
+    "pins": "1137:1118",
+    "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-5-tj-sokol-benesov-muzi-tj-loko-ceske-budejovice-muzi"
   },
   "nextMatch": null,
   "table": {
@@ -194,7 +194,7 @@
   "debug": {
     "matchesFound": 1,
     "newPlayedCount": 1,
-    "storedPlayedCount": 3,
+    "storedPlayedCount": 4,
     "futureCount": 0,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
@@ -203,14 +203,14 @@
     "competitionUrl": "https://vysledky.kuzelky.cz/detail-souteze/3-klm-a-2026-2027",
     "sample": [
       {
-        "round": 4,
-        "date": "2026-10-03",
-        "time": "10:00",
+        "round": 5,
+        "date": "2026-10-10",
+        "time": null,
         "home": "TJ Sokol Benešov",
-        "away": "Sokol Teplá",
-        "result": "5:3",
-        "pins": "3151:3101",
-        "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-4-tj-sokol-benesov-muzi-sokol-tepla-muzi"
+        "away": "TJ Loko České Budějovice",
+        "result": "3:1",
+        "pins": "1137:1118",
+        "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-5-tj-sokol-benesov-muzi-tj-loko-ceske-budejovice-muzi"
       }
     ]
   },
@@ -245,6 +245,16 @@
       "result": "5:3",
       "pins": "3151:3101",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-4-tj-sokol-benesov-muzi-sokol-tepla-muzi"
+    },
+    {
+      "round": 5,
+      "date": "2026-10-10",
+      "time": null,
+      "home": "TJ Sokol Benešov",
+      "away": "TJ Loko České Budějovice",
+      "result": "3:1",
+      "pins": "1137:1118",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/3-klm-a-2026-2027-kolo-5-tj-sokol-benesov-muzi-tj-loko-ceske-budejovice-muzi"
     }
   ],
   "tableStatus": "updated"
