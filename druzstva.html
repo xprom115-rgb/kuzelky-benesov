@@ -2,16 +2,32 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Kuželky Benešov – Družstva</title>
   <link rel="stylesheet" href="./style.css?v=1">
 
   <style>
+    .section-block + .section-block {
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 2px solid rgba(255, 215, 0, 0.45);
+    }
+
+    .section-block h2 {
+      margin-bottom: 8px;
+    }
+
+    .section-block > p {
+      margin-top: 0;
+    }
+
     .tiles {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 14px;
       margin-top: 14px;
     }
+
     .tile {
       display: flex;
       flex-direction: column;
@@ -22,8 +38,19 @@
       border: 1px solid rgba(255,255,255,0.12);
       min-height: 140px;
     }
-    .tile h3 { margin: 0; color: #ffd700; }
-    .tile p { margin: 8px 0 0 0; opacity: 0.9; font-size: 13px; line-height: 1.35; }
+
+    .tile h3 {
+      margin: 0;
+      color: #ffd700;
+    }
+
+    .tile p {
+      margin: 8px 0 0 0;
+      opacity: 0.9;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
     .tile .btn {
       margin-top: 12px;
       align-self: flex-start;
@@ -36,7 +63,11 @@
       display: inline-block;
       text-decoration: none;
     }
-    .tile .btn:hover { background:#ffd700; color:#1e235c; }
+
+    .tile .btn:hover {
+      background: #ffd700;
+      color: #1e235c;
+    }
   </style>
 </head>
 
@@ -44,7 +75,7 @@
 
 <header>
   <div class="header-left">
-    <img src="logo.jpg" class="logo" alt="Logo">
+    <img src="logo.jpg" class="logo" alt="Logo Kuželky Benešov">
   </div>
   <div class="header-title">Kuželky Benešov</div>
   <div class="header-right"></div>
@@ -65,42 +96,84 @@
 
 <main>
   <div class="content-box">
-    <h2>Družstva</h2>
-    <p>Vyberte družstvo pro zobrazení posledních výsledků, tabulky a následujících zápasů.</p>
 
-    <div class="tiles">
-      <div class="tile">
-        <div>
-          <h3>Družstvo „A“</h3>
-          <p>Poslední výsledky • Tabulka • Následující zápasy</p>
-        </div>
-        <a class="btn" href="druzstvo-a.html">Otevřít</a>
-      </div>
+    <section class="section-block" aria-labelledby="vysledky-title">
+      <h2 id="vysledky-title">Družstva</h2>
+      <p>Vyberte družstvo pro zobrazení posledních výsledků, tabulky a následujících zápasů.</p>
 
-      <div class="tile">
-        <div>
-          <h3>Družstvo „B“</h3>
-          <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+      <div class="tiles">
+        <div class="tile">
+          <div>
+            <h3>Družstvo „A“</h3>
+            <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+          </div>
+          <a class="btn" href="druzstvo-a.html">Otevřít</a>
         </div>
-        <a class="btn" href="druzstvo-b.html">Otevřít</a>
-      </div>
 
-      <div class="tile">
-        <div>
-          <h3>Družstvo „C“</h3>
-          <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+        <div class="tile">
+          <div>
+            <h3>Družstvo „B“</h3>
+            <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+          </div>
+          <a class="btn" href="druzstvo-b.html">Otevřít</a>
         </div>
-        <a class="btn" href="druzstvo-c.html">Otevřít</a>
-      </div>
-     
-      <div class="tile">
-        <div>
-          <h3>Dorost</h3>
-          <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+
+        <div class="tile">
+          <div>
+            <h3>Družstvo „C“</h3>
+            <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+          </div>
+          <a class="btn" href="druzstvo-c.html">Otevřít</a>
         </div>
-        <a class="btn" href="dorost.html">Otevřít</a>
+
+        <div class="tile">
+          <div>
+            <h3>Dorost</h3>
+            <p>Poslední výsledky • Tabulka • Následující zápasy</p>
+          </div>
+          <a class="btn" href="dorost.html">Otevřít</a>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <section class="section-block" aria-labelledby="kontakty-title">
+      <h2 id="kontakty-title">Kontakty na vedoucí mužstev a soupisky</h2>
+      <p>Vyberte družstvo pro zobrazení kontaktu na vedoucího mužstva a aktuální soupisky.</p>
+
+      <div class="tiles">
+        <div class="tile">
+          <div>
+            <h3>Družstvo „A“</h3>
+            <p>Kontakt na vedoucího • Soupiska družstva</p>
+          </div>
+          <a class="btn" href="druzstvo-a-kontakty.html">Otevřít</a>
+        </div>
+
+        <div class="tile">
+          <div>
+            <h3>Družstvo „B“</h3>
+            <p>Kontakt na vedoucího • Soupiska družstva</p>
+          </div>
+          <a class="btn" href="druzstvo-b-kontakty.html">Otevřít</a>
+        </div>
+
+        <div class="tile">
+          <div>
+            <h3>Družstvo „C“</h3>
+            <p>Kontakt na vedoucího • Soupiska družstva</p>
+          </div>
+          <a class="btn" href="druzstvo-c-kontakty.html">Otevřít</a>
+        </div>
+
+        <div class="tile">
+          <div>
+            <h3>Dorost</h3>
+            <p>Kontakt na vedoucího • Soupiska družstva</p>
+          </div>
+          <a class="btn" href="dorost-kontakty.html">Otevřít</a>
+        </div>
+      </div>
+    </section>
 
   </div>
 </main>
@@ -109,4 +182,3 @@
 
 </body>
 </html>
-``
