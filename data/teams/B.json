@@ -6,27 +6,18 @@
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi"
   },
-  "updatedAt": "2026-10-14T08:31:42+00:00",
+  "updatedAt": "2026-10-15T08:06:26+00:00",
   "lastMatch": {
-    "round": 4,
-    "date": "2026-10-07",
-    "time": "17:30",
-    "home": "TJ Sokol Rudná A",
-    "away": "TJ Sokol Benešov B",
-    "result": "5:3",
-    "pins": "2682:2634",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-4-tj-sokol-rudna-a-muzi-tj-sokol-benesov-b-muzi"
-  },
-  "nextMatch": {
     "round": 5,
     "date": "2026-10-14",
     "time": "17:00",
     "home": "TJ Sokol Benešov B",
     "away": "KK Kosmonosy C",
-    "result": null,
-    "pins": null,
+    "result": "5:3",
+    "pins": "2504:2472",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-5-tj-sokol-benesov-b-muzi-kk-kosmonosy-c-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -45,27 +36,27 @@
       [
         "1.",
         "KK Kolín",
-        "4",
+        "5",
         "4",
         "0",
-        "0",
-        "25:7",
-        "30:18",
-        "2686",
+        "1",
+        "28:12",
+        "37:23",
+        "2673",
         "8",
         "+4"
       ],
       [
         "2.",
         "SK Meteor Praha A",
+        "5",
         "4",
-        "3",
         "0",
         "1",
-        "21:11",
-        "29:19",
-        "2569",
-        "6",
+        "26:14",
+        "34:26",
+        "2578",
+        "8",
         "+2"
       ],
       [
@@ -109,6 +100,19 @@
       ],
       [
         "6.",
+        "TJ Sokol Benešov B",
+        "5",
+        "2",
+        "1",
+        "2",
+        "20:20",
+        "31.5:28.5",
+        "2607",
+        "5",
+        "-1"
+      ],
+      [
+        "7.",
         "TJ Sokol Kostelec nad Černými lesy A",
         "4",
         "2",
@@ -121,7 +125,7 @@
         "+2"
       ],
       [
-        "7.",
+        "8.",
         "KK Konstruktiva Praha C",
         "4",
         "2",
@@ -134,30 +138,17 @@
         "0"
       ],
       [
-        "8.",
+        "9.",
         "KK Kosmonosy C",
-        "4",
+        "5",
         "2",
         "0",
-        "2",
-        "17:15",
-        "24.5:23.5",
-        "2565",
+        "3",
+        "20:20",
+        "28.5:31.5",
+        "2534",
         "4",
         "-2"
-      ],
-      [
-        "9.",
-        "TJ Sokol Benešov B",
-        "4",
-        "1",
-        "1",
-        "2",
-        "15:17",
-        "23.5:24.5",
-        "2609",
-        "3",
-        "-1"
       ],
       [
         "10.",
@@ -228,9 +219,9 @@
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 5,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 6,
+    "futureCount": 0,
     "allMatchLinksFound": 7,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov B",
@@ -243,24 +234,13 @@
         "time": "17:00",
         "home": "TJ Sokol Benešov B",
         "away": "KK Kosmonosy C",
-        "result": null,
-        "pins": null,
+        "result": "5:3",
+        "pins": "2504:2472",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-5-tj-sokol-benesov-b-muzi-kk-kosmonosy-c-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 5,
-      "date": "2026-10-14",
-      "time": "17:00",
-      "home": "TJ Sokol Benešov B",
-      "away": "KK Kosmonosy C",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-5-tj-sokol-benesov-b-muzi-kk-kosmonosy-c-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -311,6 +291,16 @@
       "result": "5:3",
       "pins": "2682:2634",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-4-tj-sokol-rudna-a-muzi-tj-sokol-benesov-b-muzi"
+    },
+    {
+      "round": 5,
+      "date": "2026-10-14",
+      "time": "17:00",
+      "home": "TJ Sokol Benešov B",
+      "away": "KK Kosmonosy C",
+      "result": "5:3",
+      "pins": "2504:2472",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-5-tj-sokol-benesov-b-muzi-kk-kosmonosy-c-muzi"
     }
   ],
   "tableStatus": "updated"
