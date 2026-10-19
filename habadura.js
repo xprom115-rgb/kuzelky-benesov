@@ -24,6 +24,7 @@ import { db } from "./firebase-config.js";
 import {
   collection,
   getDocs,
+  addDoc,
   setDoc,
   doc,
   Timestamp,
@@ -69,6 +70,11 @@ const sumKuzEl  = document.getElementById("sum-kuz");   // zobrazuje KUŽELKY
 
 const dateInput = document.getElementById("match-date");
 const submitBtn = document.getElementById("submit-match");
+
+const newPlayerSurname = document.getElementById("new-player-surname");
+const newPlayerFirstname = document.getElementById("new-player-firstname");
+const addPlayerButton = document.getElementById("add-player-button");
+const newPlayerMessage = document.getElementById("new-player-message");
 
 const tabDruzstva = document.getElementById("tab-druzstva");
 const tabHracu    = document.getElementById("tab-hracu");
@@ -347,6 +353,104 @@ function fillPlayers(){
   fillSubstituteSelects("home", homePlayers);
   fillSubstituteSelects("away", awayPlayers);
 }
+
+// ----------------------------------------------------
+// Přidání nového hráče přihlášeným týmem
+// ----------------------------------------------------
+function normalizePersonName(value) {
+  return (value || "")
+    .toString()
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function comparablePersonName(value) {
+  return normalizePersonName(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleLowerCase("cs");
+}
+
+function setNewPlayerMessage(text, isError = false) {
+  if (!newPlayerMessage) return;
+  newPlayerMessage.textContent = text || "";
+  newPlayerMessage.style.color = isError ? "#ff9b9b" : "#b9ffbd";
+}
+
+function setAddPlayerBusy(isBusy) {
+  if (!addPlayerButton) return;
+  addPlayerButton.disabled = isBusy;
+  addPlayerButton.textContent = isBusy ? "Přidávám…" : "Přidat hráče";
+}
+
+async function addPlayerForLoggedTeam() {
+  const loggedTeam = window.__habaduraLoggedTeam || null;
+  const surname = normalizePersonName(newPlayerSurname?.value);
+  const firstname = normalizePersonName(newPlayerFirstname?.value);
+
+  setNewPlayerMessage("");
+
+  if (!loggedTeam?.id || !loggedTeam?.name || !Number(loggedTeam?.liga)) {
+    setNewPlayerMessage("Nejprve se přihlaste jako tým.", true);
+    return;
+  }
+  if (!surname || !firstname) {
+    setNewPlayerMessage("Vyplňte příjmení i jméno hráče.", true);
+    return;
+  }
+
+  const fullName = `${surname} ${firstname}`;
+  const comparedName = comparablePersonName(fullName);
+  const duplicate = players.some(player =>
+    player.teamId === loggedTeam.id &&
+    comparablePersonName(player.name) === comparedName
+  );
+
+  if (duplicate) {
+    setNewPlayerMessage(`Hráč ${fullName} už je u tohoto týmu evidovaný.`, true);
+    return;
+  }
+
+  setAddPlayerBusy(true);
+
+  try {
+    const playerData = {
+      name: fullName,
+      team: loggedTeam.name,
+      teamId: loggedTeam.id,
+      liga: Number(loggedTeam.liga),
+      createdAt: Timestamp.now()
+    };
+
+    const createdDocument = await addDoc(collection(db, "players"), playerData);
+    players.push({ id: createdDocument.id, ...playerData });
+    players.sort((a, b) => csCompare(a.name, b.name));
+    fillPlayers();
+
+    newPlayerSurname.value = "";
+    newPlayerFirstname.value = "";
+    setNewPlayerMessage(`Hráč ${fullName} byl přidán.`);
+  } catch (error) {
+    console.error("Nepodařilo se přidat hráče:", error);
+    if (error?.code === "permission-denied") {
+      setNewPlayerMessage("Zápis nebyl povolen. Zkontrolujte Firestore Rules a přihlášení týmu.", true);
+    } else {
+      setNewPlayerMessage("Hráče se nepodařilo přidat.", true);
+    }
+  } finally {
+    setAddPlayerBusy(false);
+  }
+}
+
+addPlayerButton?.addEventListener("click", addPlayerForLoggedTeam);
+[newPlayerSurname, newPlayerFirstname].forEach(input => {
+  input?.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addPlayerForLoggedTeam();
+    }
+  });
+});
 
 // ----------------------------------------------------
 // 4) Přepínání lig

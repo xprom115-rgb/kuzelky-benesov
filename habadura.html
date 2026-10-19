@@ -46,6 +46,28 @@
       color: #ffd700;
     }
 
+    .new-player-box {
+      margin: 14px 0 18px;
+      padding: 16px;
+      border: 1px solid rgba(255,215,0,0.35);
+      border-radius: 14px;
+      background: rgba(255,215,0,0.08);
+    }
+    .new-player-box h3 {
+      margin: 0 0 8px;
+      color: #ffd700;
+    }
+    .new-player-box .toolrow {
+      margin-bottom: 6px;
+    }
+    .new-player-box input {
+      min-width: 190px;
+    }
+    .new-player-message {
+      min-height: 20px;
+      margin-top: 6px;
+    }
+
     .team-login-status {
       display: flex;
       gap: 10px;
@@ -396,6 +418,19 @@
           Odhlásit tým
         </button>
       </div>
+
+      <section id="newPlayerSection" class="new-player-box">
+        <h3>Přidat nového hráče</h3>
+        <p class="small">Hráč bude přidán k přihlášenému týmu a ihned se objeví ve výběru hráčů.</p>
+        <div class="toolrow">
+          <label for="new-player-surname"><strong>Příjmení:</strong></label>
+          <input id="new-player-surname" type="text" maxlength="60" autocomplete="family-name" placeholder="Příjmení">
+          <label for="new-player-firstname"><strong>Jméno:</strong></label>
+          <input id="new-player-firstname" type="text" maxlength="60" autocomplete="given-name" placeholder="Jméno">
+          <button id="add-player-button" class="save-btn" type="button" style="margin-top:0;">Přidat hráče</button>
+        </div>
+        <div id="new-player-message" class="small new-player-message" aria-live="polite"></div>
+      </section>
 
       <h3 style="color:#ffd700;">Zadání výsledku zápasu</h3>
 
