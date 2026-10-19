@@ -2,13 +2,29 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Kontakty – Kuželky Benešov</title>
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        .contact-link {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .contact-link:hover,
+        .contact-link:focus {
+            color: #ffd700;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
 <header>
-    <div class="header-left"><img src="logo.jpg" class="logo"></div>
+    <div class="header-left">
+        <img src="logo.jpg" class="logo" alt="Logo Kuželky Benešov">
+    </div>
     <div class="header-title">Kuželky Benešov</div>
     <div class="header-right"></div>
 </header>
@@ -36,24 +52,26 @@
             <strong>Adresa:</strong><br>
             Tyršova 438<br>
             256 01 Benešov<br>
-            <strong>Email:</strong> benesov.kuzelky@seznam.cz 
+            <strong>E-mail:</strong>
+            <a class="contact-link" href="mailto:benesov.kuzelky@seznam.cz">benesov.kuzelky@seznam.cz</a>
         </p>
 
-        <!-- ✅ ZMENŠENÁ MAPA + PŘESUNUTA NAHORU -->
         <div style="width:100%; height:250px; margin-bottom:15px;">
-            <iframe 
-                width="100%" 
-                height="250" 
-                style="border:0" 
-                loading="lazy" 
-                allowfullscreen 
-                src="https://www.google.com/maps?q=49.7816182,14.682885&hl=cs&z=20&output=embed">
+            <iframe
+                title="Mapa kuželny Benešov"
+                width="100%"
+                height="250"
+                style="border:0"
+                loading="lazy"
+                allowfullscreen
+                src="https://www.google.com/maps?q=49.7816182,14.682885&amp;hl=cs&amp;z=20&amp;output=embed">
             </iframe>
         </div>
 
         <p style="text-align:center; margin-bottom:25px;">
             <a href="https://www.google.com/maps/place/Ku%C5%BEelna/@49.7816052,14.6831344,134m"
-               target="_blank">Otevřít v Google Maps</a>
+               target="_blank"
+               rel="noopener noreferrer">Otevřít v Google Maps</a>
         </p>
 
         <hr>
@@ -63,29 +81,29 @@
         <p>
             <strong>Starosta:</strong><br>
             Ladislav Kalous<br>
-            Tel: 724 112 416<br>
-            E‑mail: benesov.kuzelky@seznam.cz
+            Tel: <a class="contact-link" href="tel:+420724112416">724 112 416</a><br>
+            E-mail: <a class="contact-link" href="mailto:benesov.kuzelky@seznam.cz">benesov.kuzelky@seznam.cz</a>
         </p>
 
         <p>
             <strong>Místostarosta:</strong><br>
             Lukáš Kočí<br>
-            Tel: 724 112 416<br>
-            E‑mail: Koci.Lukas@gmail.com
+            Tel: <a class="contact-link" href="tel:+420724112416">724 112 416</a><br>
+            E-mail: <a class="contact-link" href="mailto:Koci.Lukas@gmail.com">Koci.Lukas@gmail.com</a>
         </p>
 
         <p>
             <strong>Jednatel:</strong><br>
             Marek Červ<br>
-            Tel: 724 268 846<br>
-            E‑mail: CervMarek@seznam.cz
+            Tel: <a class="contact-link" href="tel:+420724268846">724 268 846</a><br>
+            E-mail: <a class="contact-link" href="mailto:CervMarek@seznam.cz">CervMarek@seznam.cz</a>
         </p>
 
         <p>
             <strong>Pokladník:</strong><br>
             Miloslav Procházka<br>
-            Tel: 604 202 384<br>
-            E‑mail: promil@volny.cz
+            Tel: <a class="contact-link" href="tel:+420604202384">604 202 384</a><br>
+            E-mail: <a class="contact-link" href="mailto:promil@volny.cz">promil@volny.cz</a>
         </p>
 
     </div>
@@ -97,4 +115,3 @@
 
 </body>
 </html>
-``
