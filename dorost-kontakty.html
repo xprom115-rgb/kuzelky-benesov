@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kuželky Benešov – Dorost – kontakty a soupiska</title>
+  <link rel="stylesheet" href="./style.css?v=1">
+
+  <style>
+    .detail-section {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .detail-section h3 {
+      margin-top: 0;
+      color: #ffd700;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+    }
+
+    .contact-item,
+    .roster-group {
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.10);
+    }
+
+    .contact-label,
+    .roster-label {
+      display: block;
+      margin-bottom: 5px;
+      color: #ffd700;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .contact-value {
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .contact-value a {
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    .contact-value a:hover {
+      color: #ffd700;
+      text-decoration: underline;
+    }
+
+    .roster-groups {
+      display: grid;
+      gap: 12px;
+    }
+
+    .roster-list {
+      margin: 6px 0 0;
+      padding-left: 20px;
+      line-height: 1.7;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .page-btn {
+      display: inline-block;
+      padding: 10px 14px;
+      border: 1px solid #ffd700;
+      border-radius: 10px;
+      background: #1e235c;
+      color: #ffd700;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .page-btn:hover {
+      background: #ffd700;
+      color: #1e235c;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="header-left">
+    <img src="logo.jpg" class="logo" alt="Logo Kuželky Benešov">
+  </div>
+  <div class="header-title">Kuželky Benešov</div>
+  <div class="header-right"></div>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="index.html">Domů</a></li>
+    <li><a href="aktuality.html">Aktuality</a></li>
+    <li><a href="historie.html">Historie</a></li>
+    <li><a href="druzstva.html">Družstva</a></li>
+    <li><a href="rezervace.html">Rezervace</a></li>
+    <li><a href="habadura.html">Habaďůra</a></li>
+    <li><a href="kontakty.html">Kontakty</a></li>
+    <li><a href="admin.html">Admin</a></li>
+  </ul>
+</nav>
+
+<main>
+  <div class="content-box">
+    <h2>Dorost</h2>
+    <p>Kontakt na vedoucí dorostu a aktuální soupiska podle herní disciplíny.</p>
+
+    <section class="detail-section" aria-labelledby="contact-title">
+      <h3 id="contact-title">Vedoucí mužstva</h3>
+
+      <div class="contact-grid">
+        <div class="contact-item">
+          <span class="contact-label">Jméno</span>
+          <span class="contact-value">Jitka Drábková</span>
+        </div>
+
+        <div class="contact-item">
+          <span class="contact-label">Telefon</span>
+          <span class="contact-value">
+            <a href="tel:+420606719125">606 719 125</a>
+          </span>
+        </div>
+
+        <div class="contact-item">
+          <span class="contact-label">E-mail</span>
+          <span class="contact-value">
+            <a href="mailto:drabci@gmail.com">drabci@gmail.com</a>
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section" aria-labelledby="roster-title">
+      <h3 id="roster-title">Soupiska dorostu</h3>
+
+      <div class="roster-groups">
+        <div class="roster-group">
+          <span class="roster-label">Hra: 100 HS</span>
+          <ul class="roster-list">
+            <li>Procházková Andrea</li>
+            <li>Reichart Marek</li>
+          </ul>
+        </div>
+
+        <div class="roster-group">
+          <span class="roster-label">Hra: 2×30 hodů do plných</span>
+          <ul class="roster-list">
+            <li>Kyndl Adam</li>
+            <li>Brabenec František</li>
+            <li>Harvan Jiří</li>
+            <li>Brabec</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="detail-section" aria-labelledby="back-title">
+      <h3 id="back-title">Dorost</h3>
+      <div class="actions">
+        <a class="page-btn" href="druzstva.html">Zpět na družstva</a>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>© Kuželky Benešov – 2026</footer>
+</body>
+</html>
