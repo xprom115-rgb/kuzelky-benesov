@@ -6,27 +6,18 @@
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi"
   },
-  "updatedAt": "2026-10-19T08:38:23+00:00",
+  "updatedAt": "2026-10-20T08:19:24+00:00",
   "lastMatch": {
-    "round": 5,
-    "date": "2026-10-14",
-    "time": "17:00",
-    "home": "TJ Sokol Benešov B",
-    "away": "KK Kosmonosy C",
-    "result": "5:3",
-    "pins": "2504:2472",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-5-tj-sokol-benesov-b-muzi-kk-kosmonosy-c-muzi"
-  },
-  "nextMatch": {
     "round": 6,
     "date": "2026-10-19",
     "time": "18:00",
     "home": "AC Sparta Praha A",
     "away": "TJ Sokol Benešov B",
-    "result": null,
-    "pins": null,
+    "result": "7:1",
+    "pins": "2712:2555",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-6-ac-sparta-praha-a-muzi-tj-sokol-benesov-b-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -70,6 +61,19 @@
       ],
       [
         "3.",
+        "AC Sparta Praha A",
+        "6",
+        "4",
+        "0",
+        "2",
+        "29:19",
+        "36.5:35.5",
+        "2573",
+        "8",
+        "0"
+      ],
+      [
+        "4.",
         "TJ Sokol Kostelec nad Černými lesy A",
         "5",
         "3",
@@ -80,19 +84,6 @@
         "2511",
         "6",
         "+2"
-      ],
-      [
-        "4.",
-        "AC Sparta Praha A",
-        "5",
-        "3",
-        "0",
-        "2",
-        "22:18",
-        "29:31",
-        "2563",
-        "6",
-        "0"
       ],
       [
         "5.",
@@ -149,13 +140,13 @@
       [
         "9.",
         "TJ Sokol Benešov B",
-        "5",
+        "6",
         "2",
         "1",
-        "2",
-        "20:20",
-        "31.5:28.5",
-        "2607",
+        "3",
+        "21:27",
+        "36:36",
+        "2594",
         "5",
         "-1"
       ],
@@ -228,9 +219,9 @@
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 6,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 7,
+    "futureCount": 0,
     "allMatchLinksFound": 7,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov B",
@@ -243,24 +234,13 @@
         "time": "18:00",
         "home": "AC Sparta Praha A",
         "away": "TJ Sokol Benešov B",
-        "result": null,
-        "pins": null,
+        "result": "7:1",
+        "pins": "2712:2555",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-6-ac-sparta-praha-a-muzi-tj-sokol-benesov-b-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 6,
-      "date": "2026-10-19",
-      "time": "18:00",
-      "home": "AC Sparta Praha A",
-      "away": "TJ Sokol Benešov B",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-6-ac-sparta-praha-a-muzi-tj-sokol-benesov-b-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -321,6 +301,16 @@
       "result": "5:3",
       "pins": "2504:2472",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-5-tj-sokol-benesov-b-muzi-kk-kosmonosy-c-muzi"
+    },
+    {
+      "round": 6,
+      "date": "2026-10-19",
+      "time": "18:00",
+      "home": "AC Sparta Praha A",
+      "away": "TJ Sokol Benešov B",
+      "result": "7:1",
+      "pins": "2712:2555",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-6-ac-sparta-praha-a-muzi-tj-sokol-benesov-b-muzi"
     }
   ],
   "tableStatus": "updated"
