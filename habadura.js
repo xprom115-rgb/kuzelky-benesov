@@ -784,42 +784,87 @@ function computePlayersTable(matches, liga){
     if (Number(pl.liga) !== Number(liga)) return;
 
     if (!ps[playerId]){
-      ps[playerId] = { id: playerId, name: pl.name, teamId: pl.teamId, zapasy: 0, kuzelky: 0, body: 0, nv: 0 };
+      ps[playerId] = {
+        id: playerId,
+        name: pl.name,
+        teamId: pl.teamId,
+        zapasy: 0,
+        kuzelky: 0,
+        body: 0,
+        nv: 0
+      };
     }
+
     ps[playerId].zapasy++;
-    ps[playerId].kuzelky += (kuzelky||0);
-    ps[playerId].body += (body||0);
-    ps[playerId].nv = Math.max(ps[playerId].nv, (kuzelky||0));
+    ps[playerId].kuzelky += (kuzelky || 0);
+    ps[playerId].body += (body || 0);
+    ps[playerId].nv = Math.max(ps[playerId].nv, (kuzelky || 0));
   }
 
-  matches.forEach(m=>{
-    (m.homePlayers||[]).forEach(p => {
+  matches.forEach(m => {
+    (m.homePlayers || []).forEach(p => {
       if (p.substitution || p.excludeFromPlayerStats) return;
       addLine(p.playerId, p.kuzelky, p.body);
     });
-    (m.awayPlayers||[]).forEach(p => {
+
+    (m.awayPlayers || []).forEach(p => {
       if (p.substitution || p.excludeFromPlayerStats) return;
       addLine(p.playerId, p.kuzelky, p.body);
     });
   });
 
-  const rows = Object.values(ps).map(r => ({
-    ...r,
-    teamName: teamName(r.teamId),
-    prumer: r.zapasy ? (r.kuzelky / r.zapasy).toFixed(2) : "0.00"
-  }));
+  // Počet odehraných zápasů každého týmu se počítá samostatně.
+  // Hráč patří do hlavní části pouze tehdy, když odehrál více než
+  // polovinu zápasů svého vlastního týmu.
+  const teamMatches = {};
+  teams
+    .filter(team => Number(team.liga) === Number(liga))
+    .forEach(team => { teamMatches[team.id] = 0; });
 
-  rows.sort((a,b)=>{
-    if (Number(b.prumer) !== Number(a.prumer)) return Number(b.prumer) - Number(a.prumer);
+  matches.forEach(match => {
+    if (match.homeTeam && Object.prototype.hasOwnProperty.call(teamMatches, match.homeTeam)) {
+      teamMatches[match.homeTeam]++;
+    }
+    if (match.awayTeam && Object.prototype.hasOwnProperty.call(teamMatches, match.awayTeam)) {
+      teamMatches[match.awayTeam]++;
+    }
+  });
+
+  const comparePlayers = (a, b) => {
+    if (b.prumerCislo !== a.prumerCislo) return b.prumerCislo - a.prumerCislo;
     if (b.nv !== a.nv) return b.nv - a.nv;
-    return b.kuzelky - a.kuzelky;
+    if (b.zapasy !== a.zapasy) return b.zapasy - a.zapasy;
+    return csCompare(a.name, b.name);
+  };
+
+  const rows = Object.values(ps).map(r => {
+    const prumerCislo = r.zapasy ? r.kuzelky / r.zapasy : 0;
+    const teamZapasy = teamMatches[r.teamId] || 0;
+
+    return {
+      ...r,
+      teamName: teamName(r.teamId),
+      teamZapasy,
+      prumerCislo,
+      prumer: prumerCislo.toFixed(2),
+      // Přesně "více než polovina" zápasů daného týmu.
+      hlavniPoradi: r.zapasy > (teamZapasy / 2)
+    };
   });
 
-  return rows;
+  const qualified = rows.filter(r => r.hlavniPoradi).sort(comparePlayers);
+  const others = rows.filter(r => !r.hlavniPoradi).sort(comparePlayers);
+
+  return {
+    rows: [...qualified, ...others],
+    dividerIndex: qualified.length
+  };
 }
 
 function renderPlayersTable(liga, matches){
-  const rows = computePlayersTable(matches, liga);
+  const result = computePlayersTable(matches, liga);
+  const rows = result.rows;
+  const dividerIndex = result.dividerIndex;
 
   let html = `<table class="tabulka">
     <tr>
@@ -833,9 +878,14 @@ function renderPlayersTable(liga, matches){
       <th>NV</th>
     </tr>`;
 
-  rows.forEach((r,i)=>{
-    html += `<tr>
-      <td>${i+1}</td>
+  rows.forEach((r, i) => {
+    const dividerStyle =
+      i === dividerIndex && dividerIndex > 0 && dividerIndex < rows.length
+        ? ' style="border-top:6px solid #ffd700;"'
+        : "";
+
+    html += `<tr${dividerStyle}>
+      <td>${i + 1}</td>
       <td>${r.name}</td>
       <td>${r.teamName}</td>
       <td>${r.kuzelky}</td>
