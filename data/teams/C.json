@@ -6,27 +6,18 @@
     "teamKey": "Benešov C",
     "teamSlug": "tj-sokol-benesov-c-muzi"
   },
-  "updatedAt": "2026-10-23T08:22:35+00:00",
+  "updatedAt": "2026-10-24T07:58:42+00:00",
   "lastMatch": {
-    "round": 5,
-    "date": "2026-10-16",
-    "time": "17:30",
-    "home": "TJ Sokol Benešov C",
-    "away": "KK Kosmonosy D",
-    "result": "2:6",
-    "pins": "2406:2503",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-5-tj-sokol-benesov-c-muzi-kk-kosmonosy-d-muzi"
-  },
-  "nextMatch": {
     "round": 6,
     "date": "2026-10-23",
     "time": "17:00",
     "home": "TJ Kovohutě Příbram B",
     "away": "TJ Sokol Benešov C",
-    "result": null,
-    "pins": null,
+    "result": "4:4",
+    "pins": "2353:2306",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-6-tj-kovohute-pribram-b-muzi-tj-sokol-benesov-c-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -58,52 +49,52 @@
       [
         "2.",
         "TJ Lhotka A",
+        "6",
         "5",
-        "4",
         "1",
         "0",
-        "31:9",
-        "44:16",
-        "2534.0",
-        "9",
+        "37.5:10.5",
+        "50:22",
+        "2530.1",
+        "11",
         "+5"
       ],
       [
         "3.",
         "KK Sadská B",
-        "4",
-        "4",
+        "5",
+        "5",
         "0",
         "0",
-        "28:4",
-        "38.5:9.5",
-        "2659.8",
-        "8",
+        "34:6",
+        "47.5:12.5",
+        "2648.8",
+        "10",
         "+6"
       ],
       [
         "4.",
         "KK Jiří Poděbrady B",
+        "6",
         "5",
-        "4",
         "0",
         "1",
-        "28:12",
-        "37:23",
-        "2624.4",
-        "8",
+        "36:12",
+        "47.5:24.5",
+        "2627.1",
+        "10",
         "+2"
       ],
       [
         "5.",
         "TJ Neratovice",
-        "4",
+        "5",
         "3",
         "0",
-        "1",
-        "20:11",
-        "30.5:15.5",
-        "2470.7",
+        "2",
+        "21.5:17.5",
+        "36.5:21.5",
+        "2452.1",
         "6",
         "0"
       ],
@@ -136,31 +127,44 @@
       [
         "8.",
         "KK Vlašim C",
-        "3",
+        "4",
         "1",
         "1",
-        "1",
-        "10:14",
-        "18:18",
-        "2426.0",
+        "2",
+        "10:22",
+        "19.5:28.5",
+        "2429.3",
         "3",
         "-1"
       ],
       [
         "9.",
-        "Kuželky Tehovec B",
+        "TJ Sokol Benešov C",
+        "6",
+        "1",
+        "1",
+        "4",
+        "16:32",
+        "27.5:44.5",
+        "2407.5",
         "3",
+        "-3"
+      ],
+      [
+        "10.",
+        "Kuželky Tehovec B",
+        "4",
         "1",
         "0",
-        "2",
-        "11:13",
-        "21:15",
-        "2284.0",
+        "3",
+        "13:19",
+        "24:24",
+        "2342.3",
         "2",
         "0"
       ],
       [
-        "10.",
+        "11.",
         "TJ Sokol Kostelec nad Černými lesy B",
         "5",
         "1",
@@ -173,20 +177,20 @@
         "0"
       ],
       [
-        "11.",
-        "TJ Sokol Benešov C",
-        "5",
-        "1",
+        "12.",
+        "TJ Kovohutě Příbram B",
+        "6",
         "0",
-        "4",
-        "12:28",
-        "21:39",
-        "2441.3",
-        "2",
-        "-4"
+        "1",
+        "5",
+        "10:38",
+        "20:52",
+        "2244.5",
+        "1",
+        "-5"
       ],
       [
-        "12.",
+        "13.",
         "TJ Sokol Červené Pečky",
         "5",
         "0",
@@ -197,27 +201,14 @@
         "2192.6",
         "0",
         "-4"
-      ],
-      [
-        "13.",
-        "TJ Kovohutě Příbram B",
-        "5",
-        "0",
-        "0",
-        "5",
-        "6:34",
-        "14.5:45.5",
-        "2233.3",
-        "0",
-        "-4"
       ]
     ]
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 5,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 6,
+    "futureCount": 0,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov C",
@@ -230,24 +221,13 @@
         "time": "17:00",
         "home": "TJ Kovohutě Příbram B",
         "away": "TJ Sokol Benešov C",
-        "result": null,
-        "pins": null,
+        "result": "4:4",
+        "pins": "2353:2306",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-6-tj-kovohute-pribram-b-muzi-tj-sokol-benesov-c-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 6,
-      "date": "2026-10-23",
-      "time": "17:00",
-      "home": "TJ Kovohutě Příbram B",
-      "away": "TJ Sokol Benešov C",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-6-tj-kovohute-pribram-b-muzi-tj-sokol-benesov-c-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -298,6 +278,16 @@
       "result": "2:6",
       "pins": "2406:2503",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-5-tj-sokol-benesov-c-muzi-kk-kosmonosy-d-muzi"
+    },
+    {
+      "round": 6,
+      "date": "2026-10-23",
+      "time": "17:00",
+      "home": "TJ Kovohutě Příbram B",
+      "away": "TJ Sokol Benešov C",
+      "result": "4:4",
+      "pins": "2353:2306",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-6-tj-kovohute-pribram-b-muzi-tj-sokol-benesov-c-muzi"
     }
   ],
   "tableStatus": "updated"
