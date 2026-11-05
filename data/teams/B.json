@@ -6,27 +6,18 @@
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi"
   },
-  "updatedAt": "2026-11-03T10:36:21+00:00",
+  "updatedAt": "2026-11-05T10:32:02+00:00",
   "lastMatch": {
-    "round": 7,
-    "date": "2026-10-28",
-    "time": "17:00",
-    "home": "TJ Sokol Benešov B",
-    "away": "TJ Sokol Vršovice A",
-    "result": "6:2",
-    "pins": "2588:2478",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-7-tj-sokol-benesov-b-muzi-tj-sokol-vrsovice-a-muzi"
-  },
-  "nextMatch": {
     "round": 8,
     "date": "2026-11-04",
     "time": "17:00",
     "home": "TJ Sokol Benešov B",
     "away": "KK Konstruktiva Praha C",
-    "result": null,
-    "pins": null,
+    "result": "2:6",
+    "pins": "2558:2591",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-8-tj-sokol-benesov-b-muzi-kk-konstruktiva-praha-c-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -57,6 +48,19 @@
       ],
       [
         "2.",
+        "KK Konstruktiva Praha C",
+        "8",
+        "5",
+        "0",
+        "3",
+        "35:29",
+        "52:44",
+        "2553.8",
+        "10",
+        "+2"
+      ],
+      [
+        "3.",
         "AC Sparta Praha A",
         "8",
         "5",
@@ -69,7 +73,20 @@
         "0"
       ],
       [
-        "3.",
+        "4.",
+        "TJ Sokol Rudná A",
+        "7",
+        "5",
+        "0",
+        "2",
+        "32:24",
+        "42:42",
+        "2589.1",
+        "10",
+        "0"
+      ],
+      [
+        "5.",
         "KK Vlašim A",
         "8",
         "4",
@@ -82,7 +99,7 @@
         "+1"
       ],
       [
-        "4.",
+        "6.",
         "SK Meteor Praha A",
         "6",
         "4",
@@ -93,32 +110,6 @@
         "2558.1",
         "8",
         "+2"
-      ],
-      [
-        "5.",
-        "TJ Sokol Rudná A",
-        "6",
-        "4",
-        "0",
-        "2",
-        "27:21",
-        "36:36",
-        "2589.2",
-        "8",
-        "0"
-      ],
-      [
-        "6.",
-        "KK Konstruktiva Praha C",
-        "7",
-        "4",
-        "0",
-        "3",
-        "29:27",
-        "46:38",
-        "2544.5",
-        "8",
-        "0"
       ],
       [
         "7.",
@@ -149,26 +140,26 @@
       [
         "9.",
         "TJ Sokol Benešov B",
-        "7",
+        "8",
         "3",
         "1",
-        "3",
-        "27:29",
-        "43:41",
-        "2598.9",
+        "4",
+        "29:35",
+        "49:47",
+        "2600.2",
         "7",
-        "-1"
+        "-3"
       ],
       [
         "10.",
         "TJ Sokol Kostelec nad Černými lesy A",
-        "7",
+        "8",
         "3",
         "0",
-        "4",
-        "23:33",
-        "31:53",
-        "2524.5",
+        "5",
+        "26:38",
+        "37:59",
+        "2532.9",
         "6",
         "0"
       ],
@@ -228,9 +219,9 @@
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 8,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 9,
+    "futureCount": 0,
     "allMatchLinksFound": 7,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov B",
@@ -243,24 +234,13 @@
         "time": "17:00",
         "home": "TJ Sokol Benešov B",
         "away": "KK Konstruktiva Praha C",
-        "result": null,
-        "pins": null,
+        "result": "2:6",
+        "pins": "2558:2591",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-8-tj-sokol-benesov-b-muzi-kk-konstruktiva-praha-c-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 8,
-      "date": "2026-11-04",
-      "time": "17:00",
-      "home": "TJ Sokol Benešov B",
-      "away": "KK Konstruktiva Praha C",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-8-tj-sokol-benesov-b-muzi-kk-konstruktiva-praha-c-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -341,6 +321,16 @@
       "result": "6:2",
       "pins": "2588:2478",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-7-tj-sokol-benesov-b-muzi-tj-sokol-vrsovice-a-muzi"
+    },
+    {
+      "round": 8,
+      "date": "2026-11-04",
+      "time": "17:00",
+      "home": "TJ Sokol Benešov B",
+      "away": "KK Konstruktiva Praha C",
+      "result": "2:6",
+      "pins": "2558:2591",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-8-tj-sokol-benesov-b-muzi-kk-konstruktiva-praha-c-muzi"
     }
   ],
   "tableStatus": "updated"
