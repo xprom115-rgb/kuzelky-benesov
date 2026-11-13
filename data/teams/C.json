@@ -6,27 +6,18 @@
     "teamKey": "Benešov C",
     "teamSlug": "tj-sokol-benesov-c-muzi"
   },
-  "updatedAt": "2026-11-12T10:47:08+00:00",
+  "updatedAt": "2026-11-13T10:43:45+00:00",
   "lastMatch": {
-    "round": 8,
-    "date": "2026-11-06",
-    "time": "17:30",
-    "home": "TJ Sokol Benešov C",
-    "away": "TJ Sparta Kutná Hora C",
-    "result": "3:5",
-    "pins": "2379:2392",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-8-tj-sokol-benesov-c-muzi-tj-sparta-kutna-hora-c-muzi"
-  },
-  "nextMatch": {
     "round": 9,
     "date": "2026-11-12",
     "time": "17:00",
     "home": "KK Vlašim C",
     "away": "TJ Sokol Benešov C",
-    "result": null,
-    "pins": null,
+    "result": "6:2",
+    "pins": "2399:2359",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-9-kk-vlasim-c-muzi-tj-sokol-benesov-c-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -45,15 +36,15 @@
       [
         "1.",
         "KK Sadská B",
-        "7",
-        "7",
+        "8",
+        "8",
         "0",
         "0",
-        "45:11",
-        "58:26",
-        "2620.9",
-        "14",
-        "+8"
+        "51:13",
+        "66:30",
+        "2622.7",
+        "16",
+        "+10"
       ],
       [
         "2.",
@@ -96,6 +87,19 @@
       ],
       [
         "5.",
+        "KK Vlašim C",
+        "8",
+        "4",
+        "1",
+        "3",
+        "28:36",
+        "42.5:53.5",
+        "2437.6",
+        "9",
+        "+1"
+      ],
+      [
+        "6.",
         "KK Kosmonosy D",
         "8",
         "4",
@@ -108,33 +112,33 @@
         "-2"
       ],
       [
-        "6.",
+        "7.",
         "TJ Sparta Kutná Hora C",
-        "8",
+        "9",
         "4",
         "0",
-        "4",
-        "30:33",
-        "41:53",
-        "2367.9",
+        "5",
+        "32:39",
+        "45:61",
+        "2368.4",
         "8",
-        "0"
-      ],
-      [
-        "7.",
-        "KK Vlašim C",
-        "6",
-        "3",
-        "1",
-        "2",
-        "22:26",
-        "34.5:37.5",
-        "2437.0",
-        "7",
-        "+1"
+        "-2"
       ],
       [
         "8.",
+        "Kuželky Tehovec B",
+        "7",
+        "3",
+        "0",
+        "4",
+        "30:26",
+        "46.5:37.5",
+        "2368.1",
+        "6",
+        "0"
+      ],
+      [
+        "9.",
         "TJ Neratovice",
         "7",
         "3",
@@ -145,19 +149,6 @@
         "2469.9",
         "6",
         "-2"
-      ],
-      [
-        "9.",
-        "Kuželky Tehovec B",
-        "6",
-        "2",
-        "0",
-        "4",
-        "22:26",
-        "34.5:37.5",
-        "2368.1",
-        "4",
-        "0"
       ],
       [
         "10.",
@@ -175,13 +166,13 @@
       [
         "11.",
         "TJ Sokol Benešov C",
-        "8",
+        "9",
         "1",
         "1",
-        "6",
-        "22:42",
-        "40.5:55.5",
-        "2413.7",
+        "7",
+        "24:48",
+        "44.5:63.5",
+        "2402.8",
         "3",
         "-7"
       ],
@@ -215,9 +206,9 @@
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 8,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 9,
+    "futureCount": 0,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov C",
@@ -230,24 +221,13 @@
         "time": "17:00",
         "home": "KK Vlašim C",
         "away": "TJ Sokol Benešov C",
-        "result": null,
-        "pins": null,
+        "result": "6:2",
+        "pins": "2399:2359",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-9-kk-vlasim-c-muzi-tj-sokol-benesov-c-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 9,
-      "date": "2026-11-12",
-      "time": "17:00",
-      "home": "KK Vlašim C",
-      "away": "TJ Sokol Benešov C",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-9-kk-vlasim-c-muzi-tj-sokol-benesov-c-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -328,6 +308,16 @@
       "result": "3:5",
       "pins": "2379:2392",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-8-tj-sokol-benesov-c-muzi-tj-sparta-kutna-hora-c-muzi"
+    },
+    {
+      "round": 9,
+      "date": "2026-11-12",
+      "time": "17:00",
+      "home": "KK Vlašim C",
+      "away": "TJ Sokol Benešov C",
+      "result": "6:2",
+      "pins": "2399:2359",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-9-kk-vlasim-c-muzi-tj-sokol-benesov-c-muzi"
     }
   ],
   "tableStatus": "updated"
