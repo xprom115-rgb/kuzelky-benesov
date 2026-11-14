@@ -6,27 +6,18 @@
     "teamKey": "Benešov B",
     "teamSlug": "benesov-b-muzi"
   },
-  "updatedAt": "2026-11-13T10:43:37+00:00",
+  "updatedAt": "2026-11-14T09:56:57+00:00",
   "lastMatch": {
-    "round": 8,
-    "date": "2026-11-04",
-    "time": "17:00",
-    "home": "TJ Sokol Benešov B",
-    "away": "KK Konstruktiva Praha C",
-    "result": "2:6",
-    "pins": "2558:2591",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-8-tj-sokol-benesov-b-muzi-kk-konstruktiva-praha-c-muzi"
-  },
-  "nextMatch": {
     "round": 9,
     "date": "2026-11-13",
     "time": "17:00",
     "home": "KK Vlašim A",
     "away": "TJ Sokol Benešov B",
-    "result": null,
-    "pins": null,
+    "result": "6:2",
+    "pins": "2612:2471",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-9-kk-vlasim-a-muzi-tj-sokol-benesov-b-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -45,15 +36,15 @@
       [
         "1.",
         "KK Kolín",
+        "9",
         "8",
-        "7",
         "0",
         "1",
-        "48:16",
-        "62:34",
-        "2715.5",
-        "14",
-        "+6"
+        "53:19",
+        "69:39",
+        "2681.6",
+        "16",
+        "+8"
       ],
       [
         "2.",
@@ -83,16 +74,16 @@
       ],
       [
         "4.",
-        "TJ Sokol Rudná A",
-        "8",
+        "KK Vlašim A",
+        "9",
         "5",
-        "0",
+        "1",
         "3",
-        "34:30",
-        "46:50",
-        "2585.8",
-        "10",
-        "0"
+        "42:30",
+        "61.5:46.5",
+        "2619.2",
+        "11",
+        "+1"
       ],
       [
         "5.",
@@ -109,16 +100,16 @@
       ],
       [
         "6.",
-        "KK Vlašim A",
-        "8",
-        "4",
-        "1",
-        "3",
-        "36:28",
-        "54:42",
-        "2619.7",
+        "TJ Sokol Rudná A",
         "9",
-        "+1"
+        "5",
+        "0",
+        "4",
+        "36:36",
+        "52:56",
+        "2578.0",
+        "10",
+        "0"
       ],
       [
         "7.",
@@ -135,58 +126,45 @@
       ],
       [
         "8.",
-        "TJ Sokol Benešov B",
-        "8",
-        "3",
-        "1",
+        "TJ Sokol Kostelec nad Černými lesy A",
+        "9",
         "4",
-        "29:35",
-        "49:47",
-        "2600.2",
-        "7",
-        "-3"
+        "0",
+        "5",
+        "31:41",
+        "43.5:64.5",
+        "2536.5",
+        "8",
+        "0"
       ],
       [
         "9.",
         "TJ Sokol Brandýs nad Labem A",
-        "8",
+        "9",
         "3",
         "1",
-        "4",
-        "29:35",
-        "48.5:47.5",
-        "2480.1",
+        "5",
+        "32:40",
+        "53.5:54.5",
+        "2479.1",
         "7",
-        "+1"
+        "-1"
       ],
       [
         "10.",
-        "KK Kosmonosy C",
-        "8",
+        "TJ Sokol Benešov B",
+        "9",
         "3",
-        "0",
+        "1",
         "5",
-        "28:36",
-        "43.5:52.5",
-        "2474.4",
-        "6",
-        "-4"
+        "31:41",
+        "53.5:54.5",
+        "2574.4",
+        "7",
+        "-3"
       ],
       [
         "11.",
-        "TJ Sokol Kostelec nad Černými lesy A",
-        "8",
-        "3",
-        "0",
-        "5",
-        "26:38",
-        "37:59",
-        "2532.9",
-        "6",
-        "0"
-      ],
-      [
-        "12.",
         "TJ Kovohutě Příbram A",
         "9",
         "3",
@@ -197,6 +175,19 @@
         "2507.5",
         "6",
         "-2"
+      ],
+      [
+        "12.",
+        "KK Kosmonosy C",
+        "9",
+        "3",
+        "0",
+        "6",
+        "31:41",
+        "49:59",
+        "2509.6",
+        "6",
+        "-4"
       ],
       [
         "13.",
@@ -214,23 +205,23 @@
       [
         "14.",
         "KK Kosmonosy B",
-        "8",
-        "1",
+        "9",
+        "2",
         "0",
         "7",
-        "24:40",
-        "41.5:54.5",
-        "2495.1",
-        "2",
+        "30:42",
+        "47.5:60.5",
+        "2494.3",
+        "4",
         "-4"
       ]
     ]
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 9,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 10,
+    "futureCount": 0,
     "allMatchLinksFound": 7,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov B",
@@ -243,24 +234,13 @@
         "time": "17:00",
         "home": "KK Vlašim A",
         "away": "TJ Sokol Benešov B",
-        "result": null,
-        "pins": null,
+        "result": "6:2",
+        "pins": "2612:2471",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-9-kk-vlasim-a-muzi-tj-sokol-benesov-b-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 9,
-      "date": "2026-11-13",
-      "time": "17:00",
-      "home": "KK Vlašim A",
-      "away": "TJ Sokol Benešov B",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-9-kk-vlasim-a-muzi-tj-sokol-benesov-b-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -351,6 +331,16 @@
       "result": "2:6",
       "pins": "2558:2591",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-8-tj-sokol-benesov-b-muzi-kk-konstruktiva-praha-c-muzi"
+    },
+    {
+      "round": 9,
+      "date": "2026-11-13",
+      "time": "17:00",
+      "home": "KK Vlašim A",
+      "away": "TJ Sokol Benešov B",
+      "result": "6:2",
+      "pins": "2612:2471",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/divize-as-2026-2027-kolo-9-kk-vlasim-a-muzi-tj-sokol-benesov-b-muzi"
     }
   ],
   "tableStatus": "updated"
