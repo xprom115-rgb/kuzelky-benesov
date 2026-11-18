@@ -697,8 +697,9 @@ function computeTeamsTable(matches, liga){
       scoreFor: 0,
       scoreAgainst: 0,
 
-      // NV — max týmový výkon kuželek v jednom zápase
-      nv: 0
+      // Maximum a minimum týmového výkonu v jednom zápase
+      maximum: 0,
+      minimum: null
     };
   });
 
@@ -713,7 +714,8 @@ function computeTeamsTable(matches, liga){
     home.points += (m.leaguePointsHome || 0);
     home.scoreFor += (m.scoreHome || 0);
     home.scoreAgainst += (m.scoreAway || 0);
-    home.nv = Math.max(home.nv, (m.sumHome || 0));
+    home.maximum = Math.max(home.maximum, (m.sumHome || 0));
+    home.minimum = home.minimum === null ? (m.sumHome || 0) : Math.min(home.minimum, (m.sumHome || 0));
 
     // hosté
     away.zapasy++;
@@ -721,7 +723,8 @@ function computeTeamsTable(matches, liga){
     away.points += (m.leaguePointsAway || 0);
     away.scoreFor += (m.scoreAway || 0);
     away.scoreAgainst += (m.scoreHome || 0);
-    away.nv = Math.max(away.nv, (m.sumAway || 0));
+    away.maximum = Math.max(away.maximum, (m.sumAway || 0));
+    away.minimum = away.minimum === null ? (m.sumAway || 0) : Math.min(away.minimum, (m.sumAway || 0));
   });
 
   const rows = Object.values(stats).map(s => ({
@@ -745,26 +748,15 @@ function renderTeamsTable(liga, matches){
 
   let html = `<table class="tabulka">
     <tr>
-      <th>Poř</th>
-      <th>Družstvo</th>
-      <th>Celkem</th>
-      <th>Zápasy</th>
-      <th>Průměr</th>
-      <th>Skóre</th>
-      <th>Body</th>
-      <th>NV</th>
+      <th>Poř</th><th>Družstvo</th><th>Zápasy</th><th>Průměr</th>
+      <th>Skóre</th><th>Body</th><th>Maximum</th><th>Minimum</th>
     </tr>`;
 
   rows.forEach((r,i)=>{
     html += `<tr>
-      <td>${i+1}</td>
-      <td>${r.name}</td>
-      <td>${r.kuzelky}</td>
-      <td>${r.zapasy}</td>
-      <td>${r.prumer}</td>
-      <td>${r.scoreFor}:${r.scoreAgainst}</td>
-      <td>${r.points}</td>
-      <td>${r.nv}</td>
+      <td>${i+1}</td><td>${r.name}</td><td>${r.zapasy}</td><td>${r.prumer}</td>
+      <td>${r.scoreFor}:${r.scoreAgainst}</td><td>${r.points}</td>
+      <td>${r.zapasy ? r.maximum : "—"}</td><td>${r.minimum === null ? "—" : r.minimum}</td>
     </tr>`;
   });
 
@@ -798,7 +790,8 @@ function computePlayersTable(matches, liga){
     ps[playerId].zapasy++;
     ps[playerId].kuzelky += (kuzelky || 0);
     ps[playerId].body += (body || 0);
-    ps[playerId].nv = Math.max(ps[playerId].nv, (kuzelky || 0));
+    ps[playerId].maximum = Math.max(ps[playerId].maximum, (kuzelky || 0));
+    ps[playerId].minimum = ps[playerId].minimum === null ? (kuzelky || 0) : Math.min(ps[playerId].minimum, (kuzelky || 0));
   }
 
   matches.forEach(m => {
@@ -832,7 +825,7 @@ function computePlayersTable(matches, liga){
 
   const comparePlayers = (a, b) => {
     if (b.prumerCislo !== a.prumerCislo) return b.prumerCislo - a.prumerCislo;
-    if (b.nv !== a.nv) return b.nv - a.nv;
+    if (b.maximum !== a.maximum) return b.maximum - a.maximum;
     if (b.zapasy !== a.zapasy) return b.zapasy - a.zapasy;
     return csCompare(a.name, b.name);
   };
@@ -847,8 +840,8 @@ function computePlayersTable(matches, liga){
       teamZapasy,
       prumerCislo,
       prumer: prumerCislo.toFixed(2),
-      // Přesně "více než polovina" zápasů daného týmu.
-      hlavniPoradi: r.zapasy > (teamZapasy / 2)
+      // Polovina nebo více zápasů daného týmu patří nad žlutou čáru.
+      hlavniPoradi: r.zapasy >= (teamZapasy / 2)
     };
   });
 
@@ -868,31 +861,20 @@ function renderPlayersTable(liga, matches){
 
   let html = `<table class="tabulka">
     <tr>
-      <th>Poř</th>
-      <th>Hráč</th>
-      <th>Družstvo</th>
-      <th>Celkem</th>
-      <th>Zápasy</th>
-      <th>Průměr</th>
-      <th>Body</th>
-      <th>NV</th>
+      <th>Poř</th><th>Hráč</th><th>Družstvo</th><th>Zápasy</th>
+      <th>Průměr</th><th>Body</th><th>Maximum</th><th>Minimum</th>
     </tr>`;
 
   rows.forEach((r, i) => {
-    const dividerStyle =
-      i === dividerIndex && dividerIndex > 0 && dividerIndex < rows.length
-        ? ' style="border-top:6px solid #ffd700;"'
-        : "";
+    const classes = [];
+    if (i === dividerIndex && dividerIndex > 0 && dividerIndex < rows.length) classes.push("player-divider");
+    if (i >= dividerIndex) classes.push("player-under-limit");
+    const classAttribute = classes.length ? ` class="${classes.join(" ")}"` : "";
 
-    html += `<tr${dividerStyle}>
-      <td>${i + 1}</td>
-      <td>${r.name}</td>
-      <td>${r.teamName}</td>
-      <td>${r.kuzelky}</td>
-      <td>${r.zapasy}</td>
-      <td>${r.prumer}</td>
-      <td>${r.body}</td>
-      <td>${r.nv}</td>
+    html += `<tr${classAttribute}>
+      <td>${i + 1}</td><td>${r.name}</td><td>${r.teamName}</td><td>${r.zapasy}</td>
+      <td>${r.prumer}</td><td>${r.body}</td><td>${r.maximum}</td>
+      <td>${r.minimum === null ? "—" : r.minimum}</td>
     </tr>`;
   });
 
