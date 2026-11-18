@@ -190,32 +190,23 @@
   background:rgba(255,255,255,.05);
 }
   
-
-  /* Vysledkove tabulky - varianta B: vzdusne, pouze vodorovne linky */
+  /* Vysledkove tabulky - varianta B */
   #tab-druzstva, #tab-hracu { width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; }
-  #tab-druzstva .tabulka, #tab-hracu .tabulka { width:100%; min-width:900px; border-collapse:collapse; table-layout:auto; }
+  #tab-druzstva .tabulka, #tab-hracu .tabulka { width:100%; min-width:920px; border-collapse:collapse; table-layout:auto; }
   #tab-druzstva .tabulka th, #tab-druzstva .tabulka td,
-  #tab-hracu .tabulka th, #tab-hracu .tabulka td {
-    padding:10px 14px; border:0; border-bottom:1px solid rgba(255,255,255,.20);
-    text-align:right; white-space:nowrap;
-  }
-  #tab-druzstva .tabulka th, #tab-hracu .tabulka th {
-    padding-top:12px; padding-bottom:12px; background:rgba(18,43,82,.90); color:#fff; font-weight:700;
-  }
+  #tab-hracu .tabulka th, #tab-hracu .tabulka td { padding:10px 16px; border:0; border-bottom:1px solid rgba(255,255,255,.22); text-align:right; white-space:nowrap; }
+  #tab-druzstva .tabulka th, #tab-hracu .tabulka th { padding-top:12px; padding-bottom:12px; background:rgba(18,43,82,.92); color:#fff; font-weight:700; }
   #tab-druzstva .tabulka tr:nth-child(even) td, #tab-hracu .tabulka tr:nth-child(even) td { background:rgba(255,255,255,.035); }
   #tab-druzstva .tabulka th:nth-child(1), #tab-druzstva .tabulka td:nth-child(1),
   #tab-hracu .tabulka th:nth-child(1), #tab-hracu .tabulka td:nth-child(1) { width:58px; text-align:center; }
-  #tab-druzstva .tabulka th:nth-child(2), #tab-druzstva .tabulka td:nth-child(2) { min-width:175px; text-align:left; }
-  #tab-hracu .tabulka th:nth-child(2), #tab-hracu .tabulka td:nth-child(2) { min-width:220px; text-align:left; }
-  #tab-hracu .tabulka th:nth-child(3), #tab-hracu .tabulka td:nth-child(3) { min-width:155px; text-align:left; }
+  #tab-druzstva .tabulka th:nth-child(2), #tab-druzstva .tabulka td:nth-child(2) { min-width:190px; text-align:left; }
+  #tab-hracu .tabulka th:nth-child(2), #tab-hracu .tabulka td:nth-child(2) { min-width:230px; text-align:left; }
+  #tab-hracu .tabulka th:nth-child(3), #tab-hracu .tabulka td:nth-child(3) { min-width:170px; text-align:left; }
   #tab-druzstva .tabulka th:nth-child(n+3), #tab-druzstva .tabulka td:nth-child(n+3),
-  #tab-hracu .tabulka th:nth-child(n+4), #tab-hracu .tabulka td:nth-child(n+4) { min-width:92px; }
+  #tab-hracu .tabulka th:nth-child(n+4), #tab-hracu .tabulka td:nth-child(n+4) { min-width:105px; }
   #tab-hracu .tabulka tr.player-divider td { border-top:6px solid #ffd700; }
   #tab-hracu .tabulka tr.player-under-limit td { color:rgba(255,255,255,.76); }
-  @media (max-width:700px) {
-    #tab-druzstva .tabulka th, #tab-druzstva .tabulka td,
-    #tab-hracu .tabulka th, #tab-hracu .tabulka td { padding:9px 11px; }
-  }
+
 </style>
 </head>
 
@@ -549,7 +540,7 @@
 <footer>© Kuželky Benešov – 2026</footer>
 
 
-<script type="module" src="./habadura.js?v=10001"></script>
+<script type="module" src="./habadura.js?v=10002"></script>
 <script type="module" src="./habadura-team-login.js?v=1"></script>
 </body>
 </html>
