@@ -265,7 +265,7 @@ saveButton?.addEventListener("click", async () => {
     setMessage("Rozpis byl uložen. Prázdná místa zůstala jako rezervy pro pozdější doplnění.");
   } catch (error) {
     console.error("Uložení rozpisu selhalo:", error);
-    setMessage("Rozpis se nepodařilo uložit. Zkontrolujte pravidla Firestore.", true);
+    setMessage(`Uložení selhalo: ${error?.code || "neznámá-chyba"} – ${error?.message || "bez popisu"}`, true);
   } finally {
     saveButton.disabled = false;
   }
