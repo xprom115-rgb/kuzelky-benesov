@@ -234,7 +234,27 @@
       padding-left:4px; padding-right:4px; font-size:clamp(10px, 1.65vw, 16px);
     }
   }
-  </style>
+  
+.schedule-admin-box{margin:18px 0;padding:16px;border:1px solid #ffd700;border-radius:14px;background:rgba(20,24,48,.82)}
+.schedule-admin-box h3{margin-top:0;color:#ffd700}.schedule-editor-controls{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:10px}.schedule-editor-controls label{display:flex;gap:8px;align-items:center;font-weight:700}.schedule-editor-controls input,.schedule-editor-controls select{padding:7px;border-radius:6px}.schedule-edit-match{margin:14px 0;padding:10px;border:1px solid rgba(255,255,255,.2);border-radius:10px}.schedule-edit-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:8px}.schedule-edit-heading input{padding:6px}.schedule-editor-table{width:100%;border-collapse:collapse;table-layout:fixed}.schedule-editor-table th{background:#ffd700;color:#1e235c;padding:7px}.schedule-editor-table td{padding:4px;border-bottom:1px solid rgba(255,255,255,.15)}.schedule-editor-table th:first-child,.schedule-editor-table td:first-child{width:70px}.schedule-editor-table input{width:100%;box-sizing:border-box;padding:7px;background:rgba(255,255,255,.95);border:0;border-radius:4px}@media(max-width:700px){.schedule-editor-table{font-size:12px}.schedule-editor-table input{padding:5px}.schedule-edit-heading{align-items:flex-start;flex-direction:column}}
+
+.schedule-action-buttons{display:flex;gap:12px;flex-wrap:wrap}.schedule-pdf-button{background:#fff!important;color:#1e235c!important}.schedule-number{width:72px}.schedule-time{min-width:88px}
+@media print{
+  @page{size:A4 portrait;margin:10mm}
+  body.print-schedule-only *{visibility:hidden!important}
+  body.print-schedule-only .schedule-box,body.print-schedule-only .schedule-box *{visibility:visible!important}
+  body.print-schedule-only .schedule-box{position:absolute;left:0;top:0;width:100%;margin:0;padding:0;border:0!important;background:#fff!important;color:#000!important;box-shadow:none!important}
+  body.print-schedule-only .schedule-box h3{color:#000!important;font-size:18pt;margin:0 0 10px}
+  body.print-schedule-only .schedule-table{width:100%!important;color:#000!important;background:#fff!important;border-collapse:collapse!important;font-size:8.5pt!important}
+  body.print-schedule-only .schedule-table th,body.print-schedule-only .schedule-table td{color:#000!important;background:#fff!important;border:1px solid #000!important;padding:4px 3px!important}
+  body.print-schedule-only .schedule-table th:nth-child(1),body.print-schedule-only .schedule-table td:nth-child(1){width:7%!important}
+  body.print-schedule-only .schedule-table th:nth-child(2),body.print-schedule-only .schedule-table td:nth-child(2){width:13%!important}
+  body.print-schedule-only .schedule-table th:nth-child(3),body.print-schedule-only .schedule-table td:nth-child(3){width:10%!important}
+  body.print-schedule-only .schedule-table th:nth-child(n+4),body.print-schedule-only .schedule-table td:nth-child(n+4){width:17.5%!important;word-break:break-word!important;white-space:normal!important}
+  body.print-schedule-only header,body.print-schedule-only nav,body.print-schedule-only footer{display:none!important}
+  *{-webkit-print-color-adjust:economy!important;print-color-adjust:economy!important;text-shadow:none!important}
+}
+</style>
 </head>
 
 <body>
@@ -277,7 +297,7 @@
   <table class="schedule-table">
     <thead>
       <tr>
-        <th>Kolo</th>
+        <th>Zápas č.</th>
         <th>Datum</th>
         <th>Čas</th>
         <th>Dráha 1</th>
@@ -411,6 +431,28 @@
     </tbody>
   </table>
 </div>
+
+    <section id="scheduleEditorBenesovD" class="schedule-admin-box" hidden>
+      <h3>Úprava rozpisu zápasů – pouze Benešov D</h3>
+      <div class="schedule-editor-controls">
+        <label>Soutěžní kolo v hlavičce
+          <select id="schedule-round-select">
+            <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+          </select>
+        </label>
+        <label>Počet zápasů v tabulce
+          <input id="schedule-match-count" type="number" min="1" max="30" value="5">
+        </label>
+      </div>
+      <p class="small">Lze zpětně měnit číslo zápasu, datum, čas i názvy týmů. Prázdná pole se uloží jako rezervy. Změní se pouze právě upravované soutěžní kolo.</p>
+      <div id="schedule-editor-rows"></div>
+      <div class="schedule-action-buttons">
+        <button id="schedule-save-button" type="button" class="save-btn">Uložit rozpis</button>
+        <button id="schedule-pdf-button" type="button" class="save-btn schedule-pdf-button">Tisk / převod do PDF</button>
+      </div>
+      <div id="schedule-editor-message" class="small" aria-live="polite"></div>
+    </section>
+
     <!-- =====================================================
          TÝMOVÉ PŘIHLÁŠENÍ
 
@@ -568,6 +610,7 @@
 
 
 <script type="module" src="./habadura.js?v=10003"></script>
-<script type="module" src="./habadura-team-login.js?v=1"></script>
+<script type="module" src="./habadura-team-login.js?v=2"></script>
+<script type="module" src="./habadura-schedule.js?v=2"></script>
 </body>
 </html>
