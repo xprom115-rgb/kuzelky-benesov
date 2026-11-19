@@ -1,7 +1,7 @@
 // Rozpis zapasu Habadury. Verejne cteni, editace pouze v UI tymu Benesov D.
 import { db } from "./firebase-config.js";
 import {
-  doc, getDoc, setDoc, onSnapshot, serverTimestamp
+  doc, getDoc, setDoc, onSnapshot, serverTimestamp, collection, getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
 const COLLECTION = "habaduraSchedules";
@@ -26,6 +26,7 @@ let loggedTeam = window.__habaduraLoggedTeam || null;
 let activeRound = 1;
 let draft = null;
 let stopListening = null;
+let teamNames = [];
 
 function emptyMatch(number) {
   return {
@@ -138,6 +139,45 @@ function readEditorIntoDraft() {
   }));
   draft.matchCount = draft.matches.length;
 }
+async function loadTeamNames() {
+  try {
+    const snapshot = await getDocs(collection(db, "teams"));
+    teamNames = snapshot.docs
+      .map((teamDoc) => teamDoc.data())
+      .filter((team) => Number(team.liga) === LEAGUE && typeof team.name === "string")
+      .map((team) => team.name.trim())
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b, "cs"));
+    teamNames = [...new Set(teamNames)];
+    if (draft && canEdit(loggedTeam)) renderEditor();
+  } catch (error) {
+    console.error("Seznam týmů nelze načíst:", error);
+    setMessage("Seznam týmů se nepodařilo načíst.", true);
+  }
+}
+function createTeamSelect(value, timeIndex, laneIndex) {
+  const select = document.createElement("select");
+  select.className = "schedule-team-select";
+  select.dataset.time = timeIndex;
+  select.dataset.lane = laneIndex;
+
+  const emptyOption = document.createElement("option");
+  emptyOption.value = "";
+  emptyOption.textContent = "— volné / rezerva —";
+  select.appendChild(emptyOption);
+
+  const options = [...teamNames];
+  if (value && !options.includes(value)) options.push(value);
+  options.sort((a, b) => a.localeCompare(b, "cs"));
+  options.forEach((name) => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = name;
+    select.appendChild(option);
+  });
+  select.value = value || "";
+  return select;
+}
 function renderEditor() {
   if (!editorRows || !draft) return;
   editorRows.innerHTML = "";
@@ -157,13 +197,8 @@ function renderEditor() {
       tr.innerHTML = `<td><input class="schedule-time" type="time" data-time-value="${timeIndex}" value="${time}"></td>`;
       for (let lane = 0; lane < LANES; lane += 1) {
         const td = document.createElement("td");
-        const input = document.createElement("input");
-        input.type = "text";
-        input.placeholder = "volné";
-        input.value = match.slots[timeIndex][lane] || "";
-        input.dataset.time = timeIndex;
-        input.dataset.lane = lane;
-        td.appendChild(input);
+        const select = createTeamSelect(match.slots[timeIndex][lane] || "", timeIndex, lane);
+        td.appendChild(select);
         tr.appendChild(td);
       }
       tbody.appendChild(tr);
@@ -228,10 +263,31 @@ pdfButton?.addEventListener("click", () => {
 });
 window.addEventListener("afterprint", () => document.body.classList.remove("print-schedule-only"));
 
+pdfButton?.addEventListener("click", () => {
+  if (!canEdit(loggedTeam)) return setMessage("PDF může vytvořit pouze přihlášený tým Benešov D.", true);
+  readEditorIntoDraft();
+  renderPublic(draft);
+  document.body.classList.add("print-schedule-only");
+  window.print();
+  setTimeout(() => document.body.classList.remove("print-schedule-only"), 500);
+});
+window.addEventListener("afterprint", () => document.body.classList.remove("print-schedule-only"));
+
+pdfButton?.addEventListener("click", () => {
+  if (!canEdit(loggedTeam)) return setMessage("PDF může vytvořit pouze přihlášený tým Benešov D.", true);
+  readEditorIntoDraft();
+  renderPublic(draft);
+  document.body.classList.add("print-schedule-only");
+  window.print();
+  setTimeout(() => document.body.classList.remove("print-schedule-only"), 500);
+});
+window.addEventListener("afterprint", () => document.body.classList.remove("print-schedule-only"));
+
 window.addEventListener("habadura-team-changed", (event) => {
   loggedTeam = event.detail?.team || null;
   if (editor) editor.hidden = !canEdit(loggedTeam);
   if (canEdit(loggedTeam) && draft) renderEditor();
 });
 if (editor) editor.hidden = !canEdit(loggedTeam);
+loadTeamNames();
 loadRound(activeRound);
