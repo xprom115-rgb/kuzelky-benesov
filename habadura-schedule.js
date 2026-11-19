@@ -26,7 +26,7 @@ let loggedTeam = window.__habaduraLoggedTeam || null;
 let activeRound = 1;
 let draft = null;
 let stopListening = null;
-let teamNames = [];
+let teamOptions = [];
 
 function emptyMatch(number) {
   return {
@@ -142,13 +142,18 @@ function readEditorIntoDraft() {
 async function loadTeamNames() {
   try {
     const snapshot = await getDocs(collection(db, "teams"));
-    teamNames = snapshot.docs
+    const uniqueTeams = new Map();
+    snapshot.docs
       .map((teamDoc) => teamDoc.data())
-      .filter((team) => Number(team.liga) === LEAGUE && typeof team.name === "string")
-      .map((team) => team.name.trim())
-      .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b, "cs"));
-    teamNames = [...new Set(teamNames)];
+      .filter((team) => [1, 2].includes(Number(team.liga)) && typeof team.name === "string")
+      .forEach((team) => {
+        const name = team.name.trim();
+        const liga = Number(team.liga);
+        if (name) uniqueTeams.set(`${liga}|${name}`, { name, liga });
+      });
+    teamOptions = [...uniqueTeams.values()].sort((a, b) =>
+      a.liga - b.liga || a.name.localeCompare(b.name, "cs")
+    );
     if (draft && canEdit(loggedTeam)) renderEditor();
   } catch (error) {
     console.error("Seznam týmů nelze načíst:", error);
@@ -166,15 +171,27 @@ function createTeamSelect(value, timeIndex, laneIndex) {
   emptyOption.textContent = "— volné / rezerva —";
   select.appendChild(emptyOption);
 
-  const options = [...teamNames];
-  if (value && !options.includes(value)) options.push(value);
-  options.sort((a, b) => a.localeCompare(b, "cs"));
-  options.forEach((name) => {
+  const groups = new Map();
+  teamOptions.forEach((team) => {
+    if (!groups.has(team.liga)) {
+      const group = document.createElement("optgroup");
+      group.label = `${team.liga}. liga`;
+      groups.set(team.liga, group);
+      select.appendChild(group);
+    }
     const option = document.createElement("option");
-    option.value = name;
-    option.textContent = name;
-    select.appendChild(option);
+    option.value = team.name;
+    option.textContent = team.name;
+    groups.get(team.liga).appendChild(option);
   });
+
+  // Zachování staršího názvu, i když už není v kolekci teams.
+  if (value && !teamOptions.some((team) => team.name === value)) {
+    const legacyOption = document.createElement("option");
+    legacyOption.value = value;
+    legacyOption.textContent = `${value} (dříve uložený tým)`;
+    select.appendChild(legacyOption);
+  }
   select.value = value || "";
   return select;
 }
