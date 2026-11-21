@@ -6,7 +6,7 @@ const box=document.querySelector(".schedule-box"), title=box?.querySelector("h3"
 const editor=document.getElementById("scheduleEditorBenesovD"), roundSel=document.getElementById("schedule-round-select");
 const countInput=document.getElementById("schedule-match-count"), rowsEl=document.getElementById("schedule-editor-rows");
 const saveBtn=document.getElementById("schedule-save-button"), pdfBtn=document.getElementById("schedule-pdf-button"), msg=document.getElementById("schedule-editor-message");
-let loggedTeam=window.__habaduraLoggedTeam||null, activeRound=1, draft=null, unsubscribe=null, teams=[];
+let loggedTeam=window.__habaduraLoggedTeam||null, activeRound=2, draft=null, unsubscribe=null, teams=[];
 
 const canEdit=t=>String(t?.name||"").trim().localeCompare(ALLOWED,"cs",{sensitivity:"base"})===0;
 const ref=r=>doc(db,COLLECTION,`liga-${LEAGUE}-kolo-${r}`);
@@ -43,7 +43,14 @@ function renderEditor(){if(!rowsEl||!draft)return;rowsEl.innerHTML="";draft.matc
 function resize(n){readEditor();n=Math.max(1,Math.min(30,Number(n)||1));while(draft.matches.length<n)draft.matches.push(emptyMatch(draft.matches.length+1));draft.matches=draft.matches.slice(0,n);draft.matchCount=n;renderEditor();}
 function loadRound(r){activeRound=Number(r);unsubscribe?.();unsubscribe=onSnapshot(ref(activeRound),snap=>{draft=normalize(snap.exists()?snap.data():(activeRound===1?initialData:{}),activeRound);renderPublic(draft);if(canEdit(loggedTeam))renderEditor();},e=>message(`Rozpis nelze načíst: ${e.code||e.message}`,true));}
 
-roundSel?.addEventListener("change",()=>loadRound(roundSel.value));countInput?.addEventListener("change",()=>resize(countInput.value));
+roundSel?.addEventListener("change",()=>loadRound(roundSel.value));
+window.addEventListener("habadura-active-round-changed", event => {
+  const nextRound = Number(event.detail?.round || 1);
+  if (![1,2,3].includes(nextRound)) return;
+  if (roundSel) roundSel.value = String(nextRound);
+  loadRound(nextRound);
+});
+countInput?.addEventListener("change",()=>resize(countInput.value));
 saveBtn?.addEventListener("click",async()=>{if(!canEdit(loggedTeam))return message("Rozpis může upravovat pouze tým Benešov D.",true);readEditor();saveBtn.disabled=true;message("Ukládám…");try{
   // Firestore nepodporuje pole uvnitř pole. 3x4 mřížku proto ukládáme jako jediné ploché pole slotsFlat.
   const payload={...draft,matches:draft.matches.map(m=>({number:m.number,date:m.date,times:m.times,slotsFlat:m.slots.flat()})),updatedAt:serverTimestamp(),updatedByTeamId:loggedTeam.id||"",updatedByTeamName:loggedTeam.name||""};
@@ -51,4 +58,9 @@ saveBtn?.addEventListener("click",async()=>{if(!canEdit(loggedTeam))return messa
 }catch(e){console.error(e);message(`Uložení selhalo: ${e.code||"neznámá-chyba"} – ${e.message||"bez popisu"}`,true);}finally{saveBtn.disabled=false;}});
 pdfBtn?.addEventListener("click",()=>{if(!canEdit(loggedTeam))return message("PDF může vytvořit pouze přihlášený tým Benešov D.",true);readEditor();renderPublic(draft);document.body.classList.add("print-schedule-only");window.print();setTimeout(()=>document.body.classList.remove("print-schedule-only"),500);});
 window.addEventListener("afterprint",()=>document.body.classList.remove("print-schedule-only"));window.addEventListener("habadura-team-changed",e=>{loggedTeam=e.detail?.team||null;if(editor)editor.hidden=!canEdit(loggedTeam);if(canEdit(loggedTeam)&&draft)renderEditor();});
-if(editor)editor.hidden=!canEdit(loggedTeam);loadTeams();loadRound(activeRound);
+if(editor)editor.hidden=!canEdit(loggedTeam);
+const initialActiveRound = Number(window.__habaduraActiveRound || activeRound);
+activeRound = [1,2,3].includes(initialActiveRound) ? initialActiveRound : 1;
+if (roundSel) roundSel.value = String(activeRound);
+loadTeams();
+loadRound(activeRound);

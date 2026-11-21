@@ -1006,6 +1006,10 @@ const changed = (SEASON_ID !== s.id) || (ROUND !== newRound);
       
 SEASON_ID = s.id;
 ROUND = newRound;
+window.__habaduraActiveRound = ROUND;
+window.dispatchEvent(new CustomEvent("habadura-active-round-changed", {
+  detail: { round: ROUND, seasonId: SEASON_ID }
+}));
 
 seasonReady = true;
 submitBtn.disabled = false;
