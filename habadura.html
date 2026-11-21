@@ -431,7 +431,7 @@
     <section id="scheduleEditorBenesovD" class="schedule-admin-box" hidden>
       <h3>Úprava rozpisu zápasů – pouze Benešov D</h3>
       <div class="schedule-editor-controls">
-        <label>Soutěžní kolo v hlavičce
+        <label>Kolo pro úpravu
           <select id="schedule-round-select">
             <option value="1">1</option><option value="2">2</option><option value="3">3</option>
           </select>
@@ -440,10 +440,11 @@
           <input id="schedule-match-count" type="number" min="1" max="30" value="5">
         </label>
       </div>
-      <p class="small">Lze zpětně měnit číslo zápasu, datum, čas i názvy týmů. Prázdná pole se uloží jako rezervy. Změní se pouze právě upravované soutěžní kolo.</p>
+      <p class="small">Lze zpětně měnit číslo zápasu, datum, čas i názvy týmů. Prázdná pole se uloží jako rezervy. Změní se pouze právě upravované soutěžní kolo. Tlačítkem „Zobrazit toto kolo veřejně“ určíte, které kolo uvidí všichni návštěvníci stránky.</p>
       <div id="schedule-editor-rows"></div>
       <div class="schedule-action-buttons">
         <button id="schedule-save-button" type="button" class="save-btn">Uložit rozpis</button>
+          <button id="schedule-display-button" type="button" class="save-btn">Zobrazit toto kolo veřejně</button>
         <button id="schedule-pdf-button" type="button" class="save-btn schedule-pdf-button">Tisk / převod do PDF</button>
       </div>
       <div id="schedule-editor-message" class="small" aria-live="polite"></div>
@@ -605,8 +606,8 @@
 <footer>© Kuželky Benešov – 2026</footer>
 
 
-<script type="module" src="./habadura.js?v=10004"></script>
+<script type="module" src="./habadura.js?v=10003"></script>
 <script type="module" src="./habadura-team-login.js?v=2"></script>
-<script type="module" src="./habadura-schedule.js?v=4"></script>
+<script type="module" src="./habadura-schedule.js?v=5"></script>
 </body>
 </html>
