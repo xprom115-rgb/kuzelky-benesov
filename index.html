@@ -6,6 +6,10 @@
   <title>Kuželky Benešov</title>
 
   <link rel="stylesheet" href="./style.css?v=1">
+
+<style>
+.vk-widget{margin:16px 0;padding:18px;border:1px solid #ffd700;border-radius:14px;background:rgba(20,24,48,.82);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.vk-widget h2{color:#ffd700;margin:0 auto 0 0}.vk-widget a{display:inline-block;padding:10px 14px;border-radius:9px;font-weight:700;text-decoration:none}.vk-pdf{background:#fff;color:#18204b}.vk-register{background:#ffd700;color:#18204b}
+</style>
 </head>
 
 <body>
@@ -35,6 +39,7 @@
   <div class="content-box">
 
     <h2>Vítejte na oficiálním webu kuželek TJ Sokol Benešov</h2>
+      <div id="vanocni-kouleni-widget" hidden></div>
   
 
     <!-- DLAŽDICE: Zápasy (budoucí) -->
@@ -63,5 +68,6 @@
 
 <!-- načtení dlaždice Zápasy (Firestore -> team_current/A,B,C.future) -->
 <script type="module" src="./index-matches.js?v=1"></script>
+<script type="module" src="./vanocni-kouleni-widget.js?v=1"></script>
 </body>
 </html>
