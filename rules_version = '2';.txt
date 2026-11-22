@@ -1,0 +1,275 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===== ADMIN =====
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.uid == "x2WyPjWjLEb7LqQHgNYA41aIe7I2";
+    }
+
+    // Prihlaseny ucet odpovida konkretnimu dokumentu tymu.
+    function isTeamOwner(teamId) {
+      return request.auth != null
+        && teamId is string
+        && exists(/databases/$(database)/documents/teams/$(teamId))
+        && get(/databases/$(database)/documents/teams/$(teamId)).data.authUid
+          == request.auth.uid;
+    }
+
+    // ===== SEASONS =====
+    match /seasons/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ===== HABADURA - TYMY =====
+    match /teams/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ===== HABADURA - HRACI =====
+    match /players/{id} {
+      allow read: if true;
+
+      allow create: if isAdmin()
+        || (
+          isTeamOwner(request.resource.data.teamId)
+          && request.resource.data.keys().hasOnly([
+            "name",
+            "team",
+            "teamId",
+            "liga",
+            "createdAt"
+          ])
+          && request.resource.data.keys().hasAll([
+            "name",
+            "team",
+            "teamId",
+            "liga",
+            "createdAt"
+          ])
+          && request.resource.data.name is string
+          && request.resource.data.name.size() >= 3
+          && request.resource.data.name.size() <= 121
+          && request.resource.data.team is string
+          && request.resource.data.team
+            == get(
+              /databases/$(database)/documents/teams/$(request.resource.data.teamId)
+            ).data.name
+          && request.resource.data.liga is int
+          && request.resource.data.liga
+            == get(
+              /databases/$(database)/documents/teams/$(request.resource.data.teamId)
+            ).data.liga
+          && request.resource.data.createdAt is timestamp
+        );
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ===== HABADURA - VYSLEDKY ZAPASU =====
+    match /matches/{id} {
+      allow read: if true;
+
+      allow create: if isAdmin()
+        || (
+          request.auth != null
+          && request.resource.data.keys().hasAll([
+            "homeTeam",
+            "awayTeam"
+          ])
+          && exists(
+            /databases/$(database)/documents/teams/$(request.resource.data.homeTeam)
+          )
+          && exists(
+            /databases/$(database)/documents/teams/$(request.resource.data.awayTeam)
+          )
+          && (
+            get(
+              /databases/$(database)/documents/teams/$(request.resource.data.homeTeam)
+            ).data.authUid == request.auth.uid
+            ||
+            get(
+              /databases/$(database)/documents/teams/$(request.resource.data.awayTeam)
+            ).data.authUid == request.auth.uid
+          )
+        );
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ===== ROZPIS ZAPASU HABADURY =====
+    match /habaduraSchedules/{scheduleId} {
+      allow read: if true;
+
+      allow create, update: if isAdmin()
+        || (
+          request.auth != null
+          && request.resource.data.updatedByTeamId is string
+          && exists(
+            /databases/$(database)/documents/teams/$(request.resource.data.updatedByTeamId)
+          )
+          && get(
+            /databases/$(database)/documents/teams/$(request.resource.data.updatedByTeamId)
+          ).data.authUid == request.auth.uid
+          && get(
+            /databases/$(database)/documents/teams/$(request.resource.data.updatedByTeamId)
+          ).data.name == "Benešov D"
+        );
+
+      allow delete: if isAdmin();
+    }
+
+    // ===== REZERVACE =====
+    match /reservations/{id} {
+      allow read: if true;
+      allow create: if true;
+      allow delete: if true;
+      allow update: if false;
+    }
+
+    // ===== ARCHIV HABADURY =====
+    match /habadura_history/{seasonId}/rounds/{round}/matches/{matchId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ===== TYMOVA DATA =====
+    match /team_feeds/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /team_manual/{docId} {
+      allow read: if docId == "DOROST";
+      allow write: if isAdmin();
+    }
+
+    match /team_history/{teamId}/seasons/{seasonId} {
+      allow read: if teamId in ["A", "B", "C"];
+      allow create: if isAdmin();
+      allow update, delete: if false;
+    }
+
+    match /team_current/{teamId} {
+      allow read: if teamId in ["A", "B", "C"];
+      allow write: if isAdmin();
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+match /vanocni_kouleni/{docId} {
+  allow read: if true;
+  allow create, update, delete: if isAdmin();
+}
+
+match /vanocni_kouleni_reservations/{slotId} {
+  allow read: if true;
+
+  // Veřejnost může slot pouze poprvé vytvořit. Existující rezervaci nepřepíše.
+  allow create: if
+    request.resource.data.keys().hasOnly([
+      "eventId", "eventType", "date", "start", "lane",
+      "name", "blocked", "createdAt"
+    ])
+    && request.resource.data.eventId is string
+    && request.resource.data.eventType in ["main", "pre"]
+    && request.resource.data.date is string
+    && request.resource.data.start is string
+    && request.resource.data.lane is int
+    && request.resource.data.lane >= 1
+    && request.resource.data.lane <= 4
+    && request.resource.data.name is string
+    && request.resource.data.name.size() >= 3
+    && request.resource.data.name.size() <= 80
+    && request.resource.data.blocked == false
+    && request.resource.data.createdAt is timestamp;
+
+  allow update, delete: if isAdmin();
+}
+
+match /vanocni_kouleni_names/{nameKey} {
+  // Veřejné čtení je nutné pro transakční kontrolu jedné rezervace na jméno.
+  allow read: if true;
+
+  // Jeden dokument na normalizované jméno. Vytvoření podruhé Firestore odmítne.
+  allow create: if
+    request.resource.data.keys().hasOnly([
+      "name", "reservationId", "createdAt"
+    ])
+    && request.resource.data.name is string
+    && request.resource.data.name.size() >= 3
+    && request.resource.data.name.size() <= 80
+    && request.resource.data.reservationId is string
+    && request.resource.data.createdAt is timestamp;
+
+  allow update, delete: if isAdmin();
+}
+match /vanocni_kouleni/{docId} {
+  allow read: if true;
+  allow create, update, delete: if isAdmin();
+}
+
+match /vanocni_kouleni_reservations/{slotId} {
+  allow read: if true;
+
+  // Veřejnost může slot pouze poprvé vytvořit. Existující rezervaci nepřepíše.
+  allow create: if
+    request.resource.data.keys().hasOnly([
+      "eventId", "eventType", "date", "start", "lane",
+      "name", "playerType", "gender", "blocked", "createdAt"
+    ])
+    && request.resource.data.eventId is string
+    && request.resource.data.eventType in ["main", "pre"]
+    && request.resource.data.date is string
+    && request.resource.data.start is string
+    && request.resource.data.lane is int
+    && request.resource.data.lane >= 1
+    && request.resource.data.lane <= 4
+    && request.resource.data.name is string
+    && request.resource.data.name.size() >= 3
+    && request.resource.data.name.size() <= 80
+    && request.resource.data.playerType is string
+    && request.resource.data.playerType in ["registered", "unregistered"]
+    && request.resource.data.gender is string
+    && request.resource.data.gender in ["men", "women"]
+    && request.resource.data.blocked == false
+    && request.resource.data.createdAt is timestamp;
+
+  allow update, delete: if isAdmin();
+}
+
+match /vanocni_kouleni_names/{nameKey} {
+  // Veřejné čtení je nutné pro transakční kontrolu jedné rezervace na jméno.
+  allow read: if true;
+
+  // Jeden dokument na normalizované jméno. Vytvoření podruhé Firestore odmítne.
+  allow create: if
+    request.resource.data.keys().hasOnly([
+      "name", "reservationId", "createdAt"
+    ])
+    && request.resource.data.name is string
+    && request.resource.data.name.size() >= 3
+    && request.resource.data.name.size() <= 80
+    && request.resource.data.reservationId is string
+    && request.resource.data.createdAt is timestamp;
+
+  allow update, delete: if isAdmin();
+}
+
+match /vanocni_kouleni_results/{reservationId} {
+  allow read: if true;
+  allow create, update, delete: if isAdmin();
+}
+
+    // ===== VSE OSTATNI ZAMKNOUT =====
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
