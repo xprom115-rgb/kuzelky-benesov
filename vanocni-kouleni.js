@@ -10,6 +10,7 @@ const schedule=document.getElementById("vk-schedule");
 const status=document.getElementById("vk-status");
 const modal=document.getElementById("vk-modal");
 const nameInput=document.getElementById("vk-name");
+const playerTypeInput=document.getElementById("vk-player-type");
 const modalInfo=document.getElementById("vk-modal-info");
 const reserveBtn=document.getElementById("vk-reserve");
 const closeBtn=document.getElementById("vk-close");
@@ -47,11 +48,13 @@ function renderSchedule(event){
     }).join("")}</div></section>`).join("");
   schedule.querySelectorAll(".vk-slot.free").forEach(btn=>btn.onclick=()=>openModal(event,btn));
 }
-function openModal(event,btn){selected={event,lane:Number(btn.dataset.lane),start:btn.dataset.time,id:btn.dataset.slot};nameInput.value="";modalInfo.textContent=`${fmtDate(event.date)}, ${btn.dataset.time}, dráha ${btn.dataset.lane}`;modal.hidden=false;nameInput.focus();}
+function openModal(event,btn){selected={event,lane:Number(btn.dataset.lane),start:btn.dataset.time,id:btn.dataset.slot};nameInput.value="";playerTypeInput.value="registered";modalInfo.textContent=`${fmtDate(event.date)}, ${btn.dataset.time}, dráha ${btn.dataset.lane}`;modal.hidden=false;nameInput.focus();}
 function closeModal(){modal.hidden=true;selected=null;}
 async function reserve(){
   const name=normalizeName(nameInput.value);
+  const playerType=playerTypeInput.value;
   if(name.length<3||name.length>80)return setStatus("Zadejte celé jméno v délce 3 až 80 znaků.",true);
+  if(!["registered","unregistered"].includes(playerType))return setStatus("Vyberte typ hráče.",true);
   if(!selected)return;
   reserveBtn.disabled=true;setStatus("Ukládám rezervaci…");
   const nameKey=slug(name), lockRef=doc(db,"vanocni_kouleni_names",nameKey), slotRef=doc(db,"vanocni_kouleni_reservations",selected.id);
@@ -60,7 +63,7 @@ async function reserve(){
       const [slotSnap,nameSnap]=await Promise.all([tx.get(slotRef),tx.get(lockRef)]);
       if(slotSnap.exists())throw new Error("Tento termín už byl právě obsazen.");
       if(nameSnap.exists())throw new Error("Toto jméno už má jednu rezervaci.");
-      const data={eventId:eventId(selected.event),eventType:selected.event.type,date:selected.event.date,start:selected.start,lane:selected.lane,name,blocked:false,createdAt:serverTimestamp()};
+      const data={eventId:eventId(selected.event),eventType:selected.event.type,date:selected.event.date,start:selected.start,lane:selected.lane,name,playerType,blocked:false,createdAt:serverTimestamp()};
       tx.set(slotRef,data);tx.set(lockRef,{name,reservationId:selected.id,createdAt:serverTimestamp()});
     });
     closeModal();setStatus(`Rezervace byla uložena pro ${name}.`);
