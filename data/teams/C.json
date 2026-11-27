@@ -6,27 +6,18 @@
     "teamKey": "Benešov C",
     "teamSlug": "tj-sokol-benesov-c-muzi"
   },
-  "updatedAt": "2026-11-26T12:04:10+00:00",
+  "updatedAt": "2026-11-27T11:54:42+00:00",
   "lastMatch": {
-    "round": 10,
-    "date": "2026-11-20",
-    "time": "17:30",
-    "home": "TJ Sokol Benešov C",
-    "away": "TJ Neratovice",
-    "result": "5:3",
-    "pins": "2408:2349",
-    "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-10-tj-sokol-benesov-c-muzi-tj-neratovice-muzi"
-  },
-  "nextMatch": {
     "round": 11,
     "date": "2026-11-26",
-    "time": "17:00",
+    "time": "18:00",
     "home": "TJ Sokol Kostelec nad Černými lesy B",
     "away": "TJ Sokol Benešov C",
-    "result": null,
-    "pins": null,
+    "result": "6:2",
+    "pins": "2547:2467",
     "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-11-tj-sokol-kostelec-nad-cernymi-lesy-b-muzi-tj-sokol-benesov-c-muzi"
   },
+  "nextMatch": null,
   "table": {
     "columns": [
       "#",
@@ -57,6 +48,19 @@
       ],
       [
         "2.",
+        "TJ Lhotka A",
+        "10",
+        "8",
+        "2",
+        "0",
+        "61.5:18.5",
+        "81.5:38.5",
+        "2532.1",
+        "18",
+        "+10"
+      ],
+      [
+        "3.",
         "KK Jiří Poděbrady B",
         "9",
         "8",
@@ -69,30 +73,17 @@
         "+4"
       ],
       [
-        "3.",
-        "TJ Lhotka A",
-        "9",
-        "7",
-        "2",
-        "0",
-        "55.5:16.5",
-        "73:35",
-        "2523.1",
-        "16",
-        "+8"
-      ],
-      [
         "4.",
         "TJ Sparta Kutná Hora B",
-        "9",
+        "10",
         "8",
         "0",
-        "1",
-        "51.5:20.5",
-        "67:41",
-        "2553.0",
+        "2",
+        "53.5:26.5",
+        "70.5:49.5",
+        "2552.6",
         "16",
-        "+6"
+        "+4"
       ],
       [
         "5.",
@@ -148,6 +139,19 @@
       ],
       [
         "9.",
+        "TJ Sokol Kostelec nad Černými lesy B",
+        "10",
+        "3",
+        "1",
+        "6",
+        "31:49",
+        "49:71",
+        "2358.5",
+        "7",
+        "-1"
+      ],
+      [
+        "10.",
         "Kuželky Tehovec B",
         "9",
         "3",
@@ -160,28 +164,15 @@
         "-2"
       ],
       [
-        "10.",
-        "TJ Sokol Kostelec nad Černými lesy B",
-        "9",
-        "2",
-        "1",
-        "6",
-        "25:47",
-        "42:66",
-        "2360.7",
-        "5",
-        "-1"
-      ],
-      [
         "11.",
         "TJ Sokol Benešov C",
-        "10",
+        "11",
         "2",
         "1",
-        "7",
-        "29:51",
-        "52.5:67.5",
-        "2402.8",
+        "8",
+        "31:57",
+        "57.5:74.5",
+        "2413.5",
         "5",
         "-7"
       ],
@@ -215,9 +206,9 @@
   },
   "debug": {
     "matchesFound": 1,
-    "newPlayedCount": 0,
-    "storedPlayedCount": 10,
-    "futureCount": 1,
+    "newPlayedCount": 1,
+    "storedPlayedCount": 11,
+    "futureCount": 0,
     "allMatchLinksFound": 6,
     "teamMatchLinksFound": 1,
     "teamKey": "Benešov C",
@@ -227,27 +218,16 @@
       {
         "round": 11,
         "date": "2026-11-26",
-        "time": "17:00",
+        "time": "18:00",
         "home": "TJ Sokol Kostelec nad Černými lesy B",
         "away": "TJ Sokol Benešov C",
-        "result": null,
-        "pins": null,
+        "result": "6:2",
+        "pins": "2547:2467",
         "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-11-tj-sokol-kostelec-nad-cernymi-lesy-b-muzi-tj-sokol-benesov-c-muzi"
       }
     ]
   },
-  "futureMatches": [
-    {
-      "round": 11,
-      "date": "2026-11-26",
-      "time": "17:00",
-      "home": "TJ Sokol Kostelec nad Černými lesy B",
-      "away": "TJ Sokol Benešov C",
-      "result": null,
-      "pins": null,
-      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-11-tj-sokol-kostelec-nad-cernymi-lesy-b-muzi-tj-sokol-benesov-c-muzi"
-    }
-  ],
+  "futureMatches": [],
   "pastMatches": [
     {
       "round": 1,
@@ -348,6 +328,16 @@
       "result": "5:3",
       "pins": "2408:2349",
       "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-10-tj-sokol-benesov-c-muzi-tj-neratovice-muzi"
+    },
+    {
+      "round": 11,
+      "date": "2026-11-26",
+      "time": "18:00",
+      "home": "TJ Sokol Kostelec nad Černými lesy B",
+      "away": "TJ Sokol Benešov C",
+      "result": "6:2",
+      "pins": "2547:2467",
+      "url": "https://vysledky.kuzelky.cz/detail-zapasu/krajsky-prebor-1-tridy-2026-2027-kolo-11-tj-sokol-kostelec-nad-cernymi-lesy-b-muzi-tj-sokol-benesov-c-muzi"
     }
   ],
   "tableStatus": "updated"
